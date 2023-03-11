@@ -1,11 +1,10 @@
 
 module PC_module (rst, clk, sign_extend, PC_next, MemRead);
-	input rst, clk;  //Branch, zero; 
+	input rst, clk;
 	input [31:0] sign_extend;
 	input MemRead;
 	output [7:0] PC_next;
 	
-	//wire PCSrc;
 	wire [31:0] sign_extend_shift; 
 	reg [7:0] PC_next_register;
 	
