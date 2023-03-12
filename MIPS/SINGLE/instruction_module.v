@@ -1,6 +1,6 @@
 //32bits (4bytes) size instruction
 //4byte = address >> PC_next[7:2] or mem[PC_next>>2] used!
-//How many registers to use? 1024. This can be changed.
+//How many registers to use? 64. This can be changed.
 
 module Instruction_module (PC_next, instruction);
 	input [7:0] PC_next; //address for next executing
@@ -9,7 +9,7 @@ module Instruction_module (PC_next, instruction);
    	//wire [31:0] instruction_memory[63:0];  
    	//assign instruction = instruction_memory[PC_next[7:2]];
 	
-	reg [31:0] inst_mem[0:1024];
+	reg [31:0] inst_mem[0:63];
 
 	initial
 	begin
