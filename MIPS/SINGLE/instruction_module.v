@@ -1,11 +1,24 @@
+//32bits (4bytes) size instruction
+//4byte = address >> PC_next[7:2] or mem[PC_next>>2] used!
+//How many registers to use? 1024. This can be changed.
 
 module Instruction_module (PC_next, instruction);
-   	input [7:0] PC_next;
+	input [7:0] PC_next; //address for next executing
    	output [31:0] instruction;
 
-   	wire [31:0] instruction_memory[63:0];  
-   	assign instruction = instruction_memory[PC_next[7:2]];
+   	//wire [31:0] instruction_memory[63:0];  
+   	//assign instruction = instruction_memory[PC_next[7:2]];
 	
+	reg [31:0] inst_mem[0:1024];
+
+	initial
+	begin
+		$readmemh("code.txt",inst_mem);
+	end
+
+	assign instruction = inst_mem[PC_next>>2];	
+	
+/*
 	assign instruction_memory[0] = 32'b0;                                     // nop
 	assign instruction_memory[1] = 32'b100011_00000_01000_00000_00000_000001; // lw $t0, 1($zero)
 	assign instruction_memory[2] = 32'b0; //32'b000100_01000_00000_00000_00000_000010; // beq $t0, $zero, 2
@@ -74,5 +87,5 @@ module Instruction_module (PC_next, instruction);
 	assign instruction_memory[61] = 32'b0;
 	assign instruction_memory[62] = 32'b0;
 	assign instruction_memory[63] = 32'b0;
-
+*/
 endmodule
