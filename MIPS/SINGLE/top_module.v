@@ -16,7 +16,7 @@
 // ALL connections are standard MIPS 32bit
 // Use postive "RESET", "CLK" instance name for module.
 
-module Top_single ( 
+module Top_single( 
 	RESET, 
 	CLK
 );
@@ -56,7 +56,7 @@ module Top_single (
 	wire [31:0] Read_data;			//[12.Data_memory] 
 	
 	// 2. PC	-YUNSUNG
-	PC PC(
+	PC PC_top(
 		.CLK(CLK),		//IN
 		.RESET(RESET),		//IN
 		.PC_next(PC_next),	//IN
@@ -71,16 +71,16 @@ module Top_single (
 	);
 	
 	// 4. Instruction_memory	-[AHJIN]
-	Instruction_memory Instruction_memory(
-		.CLK(CLK)			//IN
+	Instruction_memory Instruction_memory_top(
+		.CLK(CLK),			//IN
 		.RESET(RESET),			//IN
 		.Read_address(Read_address),	//IN
 		.Instruction(Instruction)	//OUT
 	);
 	
 	// 5. Control	-[AHJIN]
-	Control Control(
-		.opcode(instruction[31:26]), 	//IN
+	Control Control_top(
+		.opcode(Instruction[31:26]), 	//IN
 		.RegDst(RegDst),		//OUT
 		.Branch(Branch),		//OUT
 		.MemRead(MemRead),		//OUT
@@ -92,7 +92,7 @@ module Top_single (
 	);
 	
 	//6. Mux1	-[AHJIN]
-	MUX1 MUX(
+	MUX MUX1(
 		.MUX_a(Instruction[20:16]),		//IN
 		.MUX_b(Instruction[15:11]),		//IN
 		.MUX_sig(Reg_Dst),			//IN
@@ -100,7 +100,7 @@ module Top_single (
 	);
 	
 	//7. Registers	-[AHJIN]
-	Registers Registers(
+	Registers Registers_top(
 		.CLK(CLK),				//IN
 		.RESET(RESET),				//IN
 		.Read_register_1(Instruction[20:16]),	//IN
@@ -112,13 +112,13 @@ module Top_single (
 	);
 	
 	// 8. Sign_extend	-[AHJIN]
-	Sign_extend Sign_extend(
+	Sign_extend Sign_extend_top(
 		.Sign_extend_in(Instruction[15:0]),	//IN
 		.Sign_extend(Sign_extend)		//OUT
 	);
 	
 	//6. Mux2	-[SEUNGWON]
-	MUX2 MUX(
+	MUX MUX2(
 		.MUX_a(Read_data_2),		//IN
 		.MUX_b(Sign_extend),		//IN
 		.MUX_sig(ALUSrc),		//IN
@@ -126,7 +126,7 @@ module Top_single (
 	);	
 	
 	// 10. ALU_control	-[SEUNGWON]
-	ALU_control ALU_control(
+	ALU_control ALU_control_top(
 		.ALU_control_IN(Instruction[5:0]),	//IN
 		.ALUOp(ALUOp),				//IN
 		.ALU_control(ALU_control)		//OUT
@@ -134,7 +134,7 @@ module Top_single (
 	
 	
 	// 9. ALU	-[SEUNGWON]
-	ALU ALU(
+	ALU ALU_top(
 		.ALU_IN_1(Read_data_1),		//IN
 		.ALU_IN_2(MUX_Registers),	//IN
 		.ALU_control(ALU_control),	//IN
@@ -143,7 +143,7 @@ module Top_single (
 	);
 	
 	// 11. Shift_left_2	-YUNSUNG
-	Shift_left_2 Shift_left_2(
+	Shift_left_2 Shift_left_2_top(
 		.Sign_extend(Sign_extend),
 		.Shift_left_2_OUT(Shift_left_2_OUT)
 	);
@@ -156,14 +156,14 @@ module Top_single (
 	);	
 	
 	// 13. And	-YUNSUNG
-	AND AND(
+	AND AND_top(
 		.AND_a(Branch),			//IN
 		.AND_b(ALU_zero),		//IN
 		.AND_out(AND_out)		//OUT
 	);
 	
 	//6. Mux3	-YUNSUNG
-	MUX3 MUX(
+	MUX MUX3(
 		.MUX_a(ADD_OUT_1),		//IN
 		.MUX_b(Add_result),		//IN
 		.MUX_sig(AND_out),		//IN
@@ -171,7 +171,7 @@ module Top_single (
 	);	
 	
 	// 12. Data_memory	-[SEUNGWON]
-	Data_memory Data_memory(
+	Data_memory Data_memory_top(
 		.Address(ALU_result),		//IN
 		.Write_data(Read_data_2),	//IN
 		.MemWrite(MemWrite),		//IN
@@ -180,7 +180,7 @@ module Top_single (
 	);
 	
 	//6. Mux4	-[SEUNGWON]
-	MUX4 MUX(
+	MUX MUX4(
 		.MUX_a(Read_data),		//IN
 		.MUX_b(ALU_result),		//IN
 		.MUX_sig(MemtoReg),		//IN
