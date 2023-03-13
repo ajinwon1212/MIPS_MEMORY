@@ -8,16 +8,53 @@
 // 7. Registers			AHJIN
 // 8. Sign_extend		AHJIN
 // 9. ALU			SEUNGWON
-// 10. Shift_left_2		YUNSUNG
-// 11. Data_memory		SEUNGWON
-// 12. And			YUNSUNG
+// 10. ALU_control		SEUNGWON
+// 11. Shift_left_2		YUNSUNG
+// 12. Data_memory		SEUNGWON
+// 13. And			YUNSUNG
 //
 // ALL connections are standard MIPS 32bit
-//
+// Use postive "RESET", "CLK" instance name for module.
 
-module Top_module( rst, clk, PC_next, opcode, funct, rs, rt, rd, shamt, shift, RegDst, 
-		ALUSrc, MemtoReg, Regwrite, MemRead, MemWrite, ALUOp, instruction, readata1,    //Branch, zero, 
-		readata2, ALUinput1, ALUinput2, ALUresult, Readata, outdata, offset, sign_extend, ALUcontrol);
+module Top_single ( 
+	RESET, 
+	CLK, 
+	PC,			//[2.PC]
+	PC_next,		//[2.PC], [3.Add] (PC+4)
+	Read_address,		//[4.Instruction_memory]
+	Instruction,		//[4.Instruction_memory], [5.Control], [6.MUX], [7.Registers], [8.Sign_extend]
+	RegDst,			//[5.Control], [6.MUX]
+	Branch,			//[5.Control], [13.And]
+	MemRead,		//[5.Control], [12.Data_memory]
+	MemtoReg,		//[5.Control], 
+	ALUOp,			//[5.Control], [10.ALU_control]
+	MemWrite, 		//[5.Control], [12.Data_memory]
+	ALUSrc, 		//[5.Control], [6.MUX]
+	RegWrite, 		//[5.Control], [7.Registers]
+	MUX_a,			//[6.MUX]
+	MUX_b,			//[6.MUX]
+	MUX_sig,		//[6.MUX]
+	MUX_out,		//[6.MUX]
+	Read_register_1,	//[7.Registers]
+	Read_register_2, 	//[7.Registers]
+	Write_register,		//[6.MUX], [7.Registers]
+	Write_Data, 		//[6.MUX], [7.Registers]
+	Read_data_1,   		//[7.Registers], [9.ALU]
+	Read_data_2, 		//[7.Registers], [6.MUX]
+	Sign_extend,		//[8.Sign_extend], [11.Shift_left_2]
+	ADD_a, 			//[3.Add]
+	ADD_b, 			//[3.Add]
+	ADD_out, 		//[3.Add]
+	ALU_control, 		//[10.ALU_control], [9.ALU]
+	ALU_result,		//[9.ALU], [12.Data_memory] 
+	ALU_zero, 		//[9.ALU], [13.And]
+	AND_a,			//[13.And]
+	AND_b,			//[13.And]
+	AND_out,		//[13.And]
+	Address,		//[12.Data_memory] 
+	Write_data,		//[12.Data_memory] 
+	Read_data		//[12.Data_memory] 
+);
 
 	input clk, rst;
 	output wire [7:0] PC_next; 
