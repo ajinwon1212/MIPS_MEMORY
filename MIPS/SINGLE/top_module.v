@@ -1,11 +1,19 @@
-
-//jump
-//instruction_mem 
-//reset 
-//memory empty
-//32'bZ
-//datamem
-//*4 :jump beq
+//	<Module names>		<Editor>
+// 1. TOP_single		AHJIN
+// 2. PC			YUNSUNG
+// 3. Add			YUNSUNG
+// 4. Instruction_memory	AHJIN
+// 5. Control			AHJIN
+// 6. Mux			AHJIN, YUNSUNG, SEUNGWON
+// 7. Registers			AHJIN
+// 8. Sign_extend		AHJIN
+// 9. ALU			SEUNGWON
+// 10. Shift_left_2		YUNSUNG
+// 11. Data_memory		SEUNGWON
+// 12. And			YUNSUNG
+//
+// ALL connections are standard MIPS 32bit
+//
 
 module Top_module( rst, clk, PC_next, opcode, funct, rs, rt, rd, shamt, shift, RegDst, 
 		ALUSrc, MemtoReg, Regwrite, MemRead, MemWrite, ALUOp, instruction, readata1,    //Branch, zero, 
