@@ -30,7 +30,6 @@ module Top_single(
 	
 	wire [31:0] PC;				//[2.PC]
 	wire [31:0] PC_next;			//[2.PC], [3.Add] (PC+4)
-	wire [31:0] Read_address;		//[4.Instruction_memory]
 	wire [31:0] Instruction;		//[4.Instruction_memory], [5.Control], [6.MUX], [7.Registers], [8.Sign_extend]
 	wire RegDst;				//[5.Control], [6.MUX]
 	wire Branch; 				//[5.Control], [12.Data_memory]
@@ -74,7 +73,7 @@ module Top_single(
 	Instruction_memory Instruction_memory_top(
 		.CLK(CLK),			//IN
 		.RESET(RESET),			//IN
-		.Read_address(Read_address),	//IN
+		.Read_address(PC),		//IN
 		.Instruction(Instruction)	//OUT
 	);
 	
