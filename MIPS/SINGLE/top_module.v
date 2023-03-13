@@ -41,7 +41,7 @@ module Top_single (
 	wire RegWrite; 				//[5.Control], [7.Registers]
 	wire [31:0] MUX_a;			//[6.MUX]
 	wire [31:0] MUX_b;			//[6.MUX]
-	wire [31:0] MUX_sig;			//[6.MUX]
+	wire MUX_sig;				//[6.MUX]
 	wire [31:0] MUX_out;			//[6.MUX]
 	wire [4:0] Read_register_1;		//[7.Registers]
 	wire [4:0] Read_register_2; 		//[7.Registers]
@@ -95,6 +95,14 @@ module Top_single (
 		.MemWrite(MemWrite),		//OUT
 		.ALUSrc(ALUSrc),		//OUT
 		.RegWrite(RegWrite)		//OUT
+	);
+	
+	//6. Mux
+	MUX MUX(
+		.MUX_a(MUX_a),		//IN
+		.MUX_b(MUX_b),		//IN
+		.MUX_sig(MUX_sig),	//IN
+		.MUX_out(MUX_out)	//OUT
 	);
 	
 	
