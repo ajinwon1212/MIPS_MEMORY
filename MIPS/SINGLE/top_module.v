@@ -100,14 +100,14 @@ module Top_single(
 	
 	//7. Registers	-[AHJIN]
 	Registers Registers_top(
-		.CLK(CLK),				//IN
-		.RESET(RESET),				//IN
-		.Read_register_1(Instruction[20:16]),	//IN
-		.Read_register_2(Instruction[15:11]),	//IN
-		.Write_register(Write_register[4:0]),	//IN
-		.Write_Data(Write_Data),		//IN
-		.Read_data_1(Read_data_1),		//OUT
-		.Read_data_2(Read_data_2)		//OUT
+		.CLK(CLK),					//IN
+		.RESET(RESET),					//IN
+		.Read_register_1(Instruction[20:16]),		//IN
+		.Read_register_2(Instruction[15:11]),		//IN
+		.Write_register(Write_register_31[4:0]),	//IN
+		.Write_Data(Write_Data),			//IN
+		.Read_data_1(Read_data_1),			//OUT
+		.Read_data_2(Read_data_2)			//OUT
 	);
 	
 	// 8. Sign_extend	-[AHJIN]
