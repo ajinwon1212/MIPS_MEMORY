@@ -90,7 +90,7 @@ module Top_single(
 		.RegWrite(RegWrite)		//OUT
 	);
 	
-	//6. Mux1	-[AHJIN]
+	//6. Mux1	5bit mux-[AHJIN]
 	MUX MUX1(
 		.MUX_a(Instruction[20:16]),		//IN
 		.MUX_b(Instruction[15:11]),		//IN
@@ -116,7 +116,7 @@ module Top_single(
 		.Sign_extend(Sign_extend)		//OUT
 	);
 	
-	//6. Mux2	-[SEUNGWON]
+	//6. Mux2	32bit mux -YUNSUNG
 	MUX MUX2(
 		.MUX_a(Read_data_2),		//IN
 		.MUX_b(Sign_extend),		//IN
@@ -161,7 +161,7 @@ module Top_single(
 		.AND_out(AND_out)		//OUT
 	);
 	
-	//6. Mux3	-YUNSUNG
+	//6. Mux3	32bit mux -YUNSUNG
 	MUX MUX3(
 		.MUX_a(ADD_OUT_1),		//IN
 		.MUX_b(Add_result),		//IN
@@ -178,7 +178,7 @@ module Top_single(
 		.Read_data(Read_data)		//OUT
 	);
 	
-	//6. Mux4	-[SEUNGWON]
+	//6. Mux4	32bit mux -YUNSUNG
 	MUX MUX4(
 		.MUX_a(Read_data),		//IN
 		.MUX_b(ALU_result),		//IN
