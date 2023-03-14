@@ -38,7 +38,7 @@ module Top_single(
 	wire MemWrite; 				//[5.Control], [12.Data_memory]
 	wire ALUSrc; 				//[5.Control], [6.MUX]
 	wire RegWrite; 				//[5.Control], [7.Registers]
-	wire [4:0] Write_register;		//[6.MUX], [7.Registers]
+	wire [31:0] Write_register_31;		//[6.MUX], [7.Registers]
 	wire [31:0] Write_Data; 		//[6.MUX], [7.Registers]
 	wire [31:0] Read_data_1;   		//[7.Registers], [9.ALU]
 	wire [31:0] Read_data_2; 		//[7.Registers], [6.MUX]
@@ -90,12 +90,12 @@ module Top_single(
 		.RegWrite(RegWrite)		//OUT
 	);
 	
-	//6. Mux1	5bit mux-[AHJIN]
+	//6. Mux1	-[AHJIN]
 	MUX MUX1(
-		.MUX_a(Instruction[20:16]),		//IN
-		.MUX_b(Instruction[15:11]),		//IN
+		.MUX_a((27'b0, Instruction[20:16])),	//IN
+		.MUX_b((27'b0, Instruction[15:11])),	//IN
 		.MUX_sig(Reg_Dst),			//IN
-		.MUX_out(Write_register)		//OUT
+		.MUX_out(Write_register_31)		//OUT
 	);
 	
 	//7. Registers	-[AHJIN]
@@ -104,7 +104,7 @@ module Top_single(
 		.RESET(RESET),				//IN
 		.Read_register_1(Instruction[20:16]),	//IN
 		.Read_register_2(Instruction[15:11]),	//IN
-		.Write_register(Write_register),	//IN
+		.Write_register(Write_register[4:0]),	//IN
 		.Write_Data(Write_Data),		//IN
 		.Read_data_1(Read_data_1),		//OUT
 		.Read_data_2(Read_data_2)		//OUT
