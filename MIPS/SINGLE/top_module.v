@@ -31,9 +31,10 @@ module Top_single(
 	wire [31:0] PC;				//[2.PC]
 	wire [31:0] PC_next;			//[2.PC], [3.Add] (PC+4)
 	wire [31:0] Instruction;		//[4.Instruction_memory], [5.Control], [6.MUX], [7.Registers], [8.Sign_extend]
-	wire [31:0] Jump_address_without_PC;	//[14.Shift_left_2]
-	wire [31:0] MUX_IN			//[MUX]
+	wire [31:0] Jump_address_without_PC;	//[11.Shift_left_2]
+	wire [31:0] MUX_IN			//[6.MUX]
 	wire RegDst;				//[5.Control], [6.MUX]
+	wire Jump;				//[5.Control], [6.MUX]
 	wire Branch; 				//[5.Control], [12.Data_memory]
 	wire MemtoReg;				//[5.Control], 
 	wire [1:0] ALUOp;			//[5.Control], [10.ALU_control]
