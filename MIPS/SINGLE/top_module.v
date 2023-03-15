@@ -186,7 +186,7 @@ module Top_single(
 	//6. Mux4	32bit mux -YUNSUNG
 	MUX MUX4(
 		.MUX_a(MUX_IN),							//IN
-		.MUX_b((ADD_OUT_1[3:0], Jump_address_without_PC[27:0])),	//IN
+		.MUX_b((ADD_OUT_1[31:28], Jump_address_without_PC[27:0])),	//IN
 		.MUX_sig(Jump),							//IN
 		.MUX_out(PC_next)						//OUT
 	);
