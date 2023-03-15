@@ -171,7 +171,7 @@ module Top_single(
 	
 	// 13. And	-YUNSUNG
 	AND AND_top(
-		.AND_a(Branch[0]),		//IN
+		.AND_a(Branch),		//IN
 		.AND_b(ALU_zero),		//IN
 		.AND_out(AND_out)		//OUT
 	);
