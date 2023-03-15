@@ -40,7 +40,7 @@ module Top_single(
 	wire Branch; 				//[5.Control], [13.And]
 	wire MemRead;				//[5.Control], [12.Data_memory]
 	wire MemtoReg;				//[5.Control], [6.MUX]
-	wire ALUOp;				//[5.Control], [10.ALU_control]
+	wire [1:0] ALUOp;				//[5.Control], [10.ALU_control]
 	wire MemWrite; 				//[5.Control], [12.Data_memory]
 	wire ALUSrc; 				//[5.Control], [6.MUX]
 	wire RegWrite; 				//[5.Control], [7.Registers]
