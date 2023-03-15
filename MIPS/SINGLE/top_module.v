@@ -116,6 +116,7 @@ module Top_single(
 	Registers Registers_top(
 		.CLK(CLK),					//IN
 		.RESET(RESET),					//IN
+		.RegWrite(RegWrite),				//IN
 		.Read_register_1(Instruction[25:21]),		//IN
 		.Read_register_2(Instruction[20:16]),		//IN
 		.Write_register(Write_register_31[4:0]),	//IN
