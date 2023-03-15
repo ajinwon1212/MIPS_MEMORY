@@ -31,6 +31,7 @@ module Top_single(
 	wire [31:0] PC;				//[2.PC]
 	wire [31:0] PC_next;			//[2.PC], [3.Add] (PC+4)
 	wire [31:0] Instruction;		//[4.Instruction_memory], [5.Control], [6.MUX], [7.Registers], [8.Sign_extend]
+	wire [31:0] Jump_address_without_PC;	//[14.Shift_left_2]
 	wire RegDst;				//[5.Control], [6.MUX]
 	wire Branch; 				//[5.Control], [12.Data_memory]
 	wire MemtoReg;				//[5.Control], 
@@ -75,6 +76,12 @@ module Top_single(
 		.RESET(RESET),			//IN
 		.Read_address(PC),		//IN
 		.Instruction(Instruction)	//OUT
+	);
+	
+	// 11. Shift_left_2	-YUNSUNG
+	Shift_left_2 Shift_left_2_top(
+		.Shift_left_2_IN(6'b0, Instruction[25:0]),
+		.Shift_left_2_OUT(Jump_address_without_PC)
 	);
 	
 	// 5. Control	-[AHJIN]
@@ -143,7 +150,7 @@ module Top_single(
 	
 	// 11. Shift_left_2	-YUNSUNG
 	Shift_left_2 Shift_left_2_top(
-		.Sign_extend(Sign_extend),
+		.Shift_left_2_IN(Sign_extend),
 		.Shift_left_2_OUT(Shift_left_2_OUT)
 	);
 	
