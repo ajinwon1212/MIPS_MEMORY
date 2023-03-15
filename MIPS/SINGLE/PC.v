@@ -1,15 +1,16 @@
 module PC (
 	input CLK, RESET,
 	input [31:0] PC_next,
-	output [31:0] PC
+	output reg [31:0] PC
 	);
 
-always @(posedge rst or posedge clk) begin
-	if (rst == 1'b1) begin
-		PC <= 8'b0;
+always @(posedge RESET or posedge CLK) begin
+	if (RESET == 1'b1) begin
+		PC <= 32'b0;
 	end
 	else begin
-		PC <= PC_NEXT;
+		PC <= PC_next;
 	end
+end
 
 endmodule
