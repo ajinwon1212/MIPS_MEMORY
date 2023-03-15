@@ -86,7 +86,7 @@ module Top_single(
 	
 	// 11. Shift_left_2_1	-YUNSUNG
 	Shift_left_2 Shift_left_2_Ins_top(
-		.Shift_left_2_IN({6'b0, Instruction[25:0]}),	//IN
+		.Shift_left_2_IN({6'd0, Instruction[25:0]}),	//IN
 		.Shift_left_2_OUT(Jump_address_without_PC)	//OUT
 	);
 	
@@ -106,8 +106,8 @@ module Top_single(
 	
 	//6. Mux1	-[AHJIN]
 	MUX MUX1(
-		.MUX_a({27'b0, Instruction[20:16]}),	//IN
-		.MUX_b({27'b0, Instruction[15:11]}),	//IN
+		.MUX_a({27'd0, Instruction[20:16]}),	//IN
+		.MUX_b({27'd0, Instruction[15:11]}),	//IN
 		.MUX_sig(Reg_Dst),			//IN
 		.MUX_out(Write_register_31)		//OUT
 	);
