@@ -32,6 +32,7 @@ module Top_single(
 	wire [31:0] PC_next;			//[2.PC], [3.Add] (PC+4)
 	wire [31:0] Instruction;		//[4.Instruction_memory], [5.Control], [6.MUX], [7.Registers], [8.Sign_extend]
 	wire [31:0] Jump_address_without_PC;	//[14.Shift_left_2]
+	wire [31:0] MUX_IN			//[MUX]
 	wire RegDst;				//[5.Control], [6.MUX]
 	wire Branch; 				//[5.Control], [12.Data_memory]
 	wire MemtoReg;				//[5.Control], 
@@ -79,7 +80,7 @@ module Top_single(
 	);
 	
 	// 11. Shift_left_2	-YUNSUNG
-	Shift_left_2 Shift_left_2_top(
+	Shift_left_2 Shift_left_2_Ins_top(
 		.Shift_left_2_IN(6'b0, Instruction[25:0]),
 		.Shift_left_2_OUT(Jump_address_without_PC)
 	);
@@ -173,8 +174,16 @@ module Top_single(
 		.MUX_a(ADD_OUT_1),		//IN
 		.MUX_b(Add_result),		//IN
 		.MUX_sig(AND_out),		//IN
-		.MUX_out(PC_next)		//OUT
+		.MUX_out(MUX_IN)		//OUT
 	);	
+	
+	//6. Mux4	32bit mux -YUNSUNG
+	MUX MUX4(
+		.MUX_a(MUX_IN),		//IN
+		.MUX_b(ADD_OUT_1[3:0], Jump_address_without_PC[27:0]),		//IN
+		.MUX_sig(Jump),		//IN
+		.MUX_out(PC_next)		//OUT
+	);
 	
 	// 12. Data_memory	-[SEUNGWON]
 	Data_memory Data_memory_top(
@@ -185,8 +194,8 @@ module Top_single(
 		.Read_data(Read_data)		//OUT
 	);
 	
-	//6. Mux4	32bit mux -YUNSUNG
-	MUX MUX4(
+	//6. Mux5	32bit mux -YUNSUNG
+	MUX MUX5(
 		.MUX_a(Read_data),		//IN
 		.MUX_b(ALU_result),		//IN
 		.MUX_sig(MemtoReg),		//IN
