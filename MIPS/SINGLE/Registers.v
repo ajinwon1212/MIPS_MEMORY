@@ -1,7 +1,7 @@
 module Registers( CLK, RESET, RegWrite, Read_register_1, Read_register_2, Write_register, Write_Data, Read_data_1, Read_data_2);
 
 	input CLK, RESET;
-	input [2:0] RegWrite;
+	input RegWrite;
 	input [4:0] Read_register_1, Read_register_2, Write_register; //rs, rt, rd
 	input [31:0] Write_Data;
 	output [31:0] Read_data_1, Read_data_2;
@@ -84,7 +84,7 @@ module Registers( CLK, RESET, RegWrite, Read_register_1, Read_register_2, Write_
 			Register[30]	<=	Register[30]	;
 			Register[31]	<=	Register[31]	;
 			
-			if (RegWrite == 3'd1) 
+			if (RegWrite == 1'b1) 
 			begin 
 				Register[Write_register] <= Write_Data;
 			end
