@@ -33,14 +33,18 @@ module Top_single(
 	wire [31:0] Instruction;		//[4.Instruction_memory], [5.Control], [6.MUX], [7.Registers], [8.Sign_extend]
 	wire [31:0] Jump_address_without_PC;	//[11.Shift_left_2]
 	wire [31:0] MUX_IN			//[6.MUX]
-	wire RegDst;				//[5.Control], [6.MUX]
-	wire Jump;				//[5.Control], [6.MUX]
-	wire Branch; 				//[5.Control], [12.Data_memory]
-	wire MemtoReg;				//[5.Control], 
-	wire [1:0] ALUOp;			//[5.Control], [10.ALU_control]
-	wire MemWrite; 				//[5.Control], [12.Data_memory]
-	wire ALUSrc; 				//[5.Control], [6.MUX]
-	wire RegWrite; 				//[5.Control], [7.Registers]
+	
+	//Control Signal
+	wire [2:0] RegDst;				//[5.Control], [6.MUX]
+	wire [2:0] Jump;				//[5.Control], [6.MUX]
+	wire [2:0] Branch; 				//[5.Control], [13.And]
+	wire [2:0] MemRead;				//[5.Control], [12.Data_memory]
+	wire [2:0] MemtoReg;				//[5.Control], [6.MUX]
+	wire [1:0] ALUOp;				//[5.Control], [10.ALU_control]
+	wire [2:0] MemWrite; 				//[5.Control], [12.Data_memory]
+	wire [2:0] ALUSrc; 				//[5.Control], [6.MUX]
+	wire [2:0] RegWrite; 				//[5.Control], [7.Registers]
+	
 	wire [31:0] Write_register_31;		//[6.MUX], [7.Registers]
 	wire [31:0] Write_Data; 		//[6.MUX], [7.Registers]
 	wire [31:0] Read_data_1;   		//[7.Registers], [9.ALU]
@@ -80,16 +84,17 @@ module Top_single(
 		.Instruction(Instruction)	//OUT
 	);
 	
-	// 11. Shift_left_2	-YUNSUNG
+	// 11. Shift_left_2_1	-YUNSUNG
 	Shift_left_2 Shift_left_2_Ins_top(
-		.Shift_left_2_IN(6'b0, Instruction[25:0]),
-		.Shift_left_2_OUT(Jump_address_without_PC)
+		.Shift_left_2_IN((6'b0, Instruction[25:0])),	//IN
+		.Shift_left_2_OUT(Jump_address_without_PC)	//OUT
 	);
 	
 	// 5. Control	-[AHJIN]
 	Control Control_top(
 		.opcode(Instruction[31:26]), 	//IN
 		.RegDst(RegDst),		//OUT
+		.Jump(Jump),			//OUT
 		.Branch(Branch),		//OUT
 		.MemRead(MemRead),		//OUT
 		.MemtoReg(MemtoReg),		//OUT
@@ -111,8 +116,8 @@ module Top_single(
 	Registers Registers_top(
 		.CLK(CLK),					//IN
 		.RESET(RESET),					//IN
-		.Read_register_1(Instruction[20:16]),		//IN
-		.Read_register_2(Instruction[15:11]),		//IN
+		.Read_register_1(Instruction[25:21]),		//IN
+		.Read_register_2(Instruction[20:16]),		//IN
 		.Write_register(Write_register_31[4:0]),	//IN
 		.Write_Data(Write_Data),			//IN
 		.Read_data_1(Read_data_1),			//OUT
@@ -150,7 +155,7 @@ module Top_single(
 		.ALU_result(ALU_result)		//OUT
 	);
 	
-	// 11. Shift_left_2	-YUNSUNG
+	// 11. Shift_left_2_2	-YUNSUNG
 	Shift_left_2 Shift_left_2_top(
 		.Shift_left_2_IN(Sign_extend),
 		.Shift_left_2_OUT(Shift_left_2_OUT)
@@ -180,10 +185,10 @@ module Top_single(
 	
 	//6. Mux4	32bit mux -YUNSUNG
 	MUX MUX4(
-		.MUX_a(MUX_IN),		//IN
-		.MUX_b(ADD_OUT_1[3:0], Jump_address_without_PC[27:0]),		//IN
-		.MUX_sig(Jump),		//IN
-		.MUX_out(PC_next)		//OUT
+		.MUX_a(MUX_IN),							//IN
+		.MUX_b((ADD_OUT_1[3:0], Jump_address_without_PC[27:0])),	//IN
+		.MUX_sig(Jump),							//IN
+		.MUX_out(PC_next)						//OUT
 	);
 	
 	// 12. Data_memory	-[SEUNGWON]
