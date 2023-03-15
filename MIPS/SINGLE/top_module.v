@@ -32,7 +32,7 @@ module Top_single(
 	wire [31:0] PC_next;			//[2.PC], [3.Add] (PC+4)
 	wire [31:0] Instruction;		//[4.Instruction_memory], [5.Control], [6.MUX], [7.Registers], [8.Sign_extend]
 	wire [31:0] Jump_address_without_PC;	//[11.Shift_left_2]
-	wire [31:0] MUX_IN			//[6.MUX]
+	wire [31:0] MUX_IN;			//[6.MUX]
 	
 	//Control Signal
 	wire [2:0] RegDst;				//[5.Control], [6.MUX]
@@ -86,7 +86,7 @@ module Top_single(
 	
 	// 11. Shift_left_2_1	-YUNSUNG
 	Shift_left_2 Shift_left_2_Ins_top(
-		.Shift_left_2_IN((6'b0, Instruction[25:0])),	//IN
+		.Shift_left_2_IN({6'b0, Instruction[25:0]}),	//IN
 		.Shift_left_2_OUT(Jump_address_without_PC)	//OUT
 	);
 	
@@ -106,8 +106,8 @@ module Top_single(
 	
 	//6. Mux1	-[AHJIN]
 	MUX MUX1(
-		.MUX_a((27'b0, Instruction[20:16])),	//IN
-		.MUX_b((27'b0, Instruction[15:11])),	//IN
+		.MUX_a({27'b0, Instruction[20:16]}),	//IN
+		.MUX_b({27'b0, Instruction[15:11]}),	//IN
 		.MUX_sig(Reg_Dst),			//IN
 		.MUX_out(Write_register_31)		//OUT
 	);
@@ -187,7 +187,7 @@ module Top_single(
 	//6. Mux4	32bit mux -YUNSUNG
 	MUX MUX4(
 		.MUX_a(MUX_IN),							//IN
-		.MUX_b((ADD_OUT_1[31:28], Jump_address_without_PC[27:0])),	//IN
+		.MUX_b({ADD_OUT_1[31:28], Jump_address_without_PC[27:0]}),	//IN
 		.MUX_sig(Jump),							//IN
 		.MUX_out(PC_next)						//OUT
 	);
