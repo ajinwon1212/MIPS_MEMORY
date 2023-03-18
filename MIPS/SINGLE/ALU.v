@@ -19,31 +19,31 @@
 // 참고 자료 https://chayan-memorias.tistory.com/176
 
 module ALU( 
-	opA, 
-	opB,
-	AluOp ,
-	result,
-	zero
+	ALU_IN_1, 
+	ALU_IN_2,
+	ALU_control ,
+	ALU_zero,
+	ALU_result
 );
 
-   	input [31:0] opA; // 32bit input
-	input [31:0] opB; // 32bit input
-	input [3:0] ALUop; // the number of opcodes in https://opencores.org/projects/plasma/opcodes 
+	input [31:0] ALU_IN_1; // 32bit input
+	input [31:0] ALU_IN_2; // 32bit input
+	input [3:0] ALU_control; // the number of opcodes in https://opencores.org/projects/plasma/opcodes 
 	
-	output result, zero;
+	output ALU_zero, ALU_result;
 
-	reg result;
+	reg ALU_result;
 
-	assign zero = (result == 0); 
+	assign ALU_zero = (ALU_result == 0); 
 
 	always @(*) begin
-		case(ALUop)
-			4'b0000: result=opA&opB; // AND
-			4'b0001: result=opA|opB; // OR
-			4'b0010: result=opA+opB; // add
-			4'b0110: result=opA-opB; // sub
-			4'b0111: result=opA<opB?1:0; //slt, set on less than
-			4'b1100: result=~(opA|opB); // NOR
+		case(ALU_control)
+			4'b0000: ALU_result=ALU_IN_1&ALU_IN_2; // AND
+			4'b0001: ALU_result=ALU_IN_1|ALU_IN_2; // OR
+			4'b0010: ALU_result=ALU_IN_1+ALU_IN_2; // add
+			4'b0110: ALU_result=ALU_IN_1-ALU_IN_2; // sub
+			4'b0111: ALU_result=ALU_IN_1<ALU_IN_2?1:0; //slt, set on less than
+			4'b1100: ALU_result=~(ALU_IN_1|ALU_IN_2); // NOR
 		endcase
 	end
 
