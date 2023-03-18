@@ -1,49 +1,38 @@
-//	<Module names>		<Editor>
-// 1. TOP_single		AHJIN
-// 2. PC			YUNSUNG
-// 3. Add			YUNSUNG				Use 32bit input & output
-// 4. Instruction_memory	AHJIN
-// 5. Control			AHJIN
-// 6. Mux			AHJIN, YUNSUNG, SEUNGWON	Use 32bit input & 1 bit select sig
-// 7. Registers			AHJIN
-// 8. Sign_extend		AHJIN
-// 9. ALU			SEUNGWON
-// 10. ALU_control		SEUNGWON
-// 11. Shift_left_2		YUNSUNG
-// 12. Data_memory		SEUNGWON
-// 13. And			YUNSUNG				Use 1bit input & output
-//
-// ALL connections are standard MIPS 32bit
-// Use postive "RESET", "CLK" instance name for module.
+/*	// 10. ALU_control	-[SEUNGWON]
+	ALU_control ALU_control_top(
+		.ALU_control_IN(Instruction[5:0]),	//IN
+		.ALUOp(ALUOp),				//IN
+		.ALU_control(ALU_control)		//OUT
+	);
+*/
+
 
 module ALU_control( 
-	opA, 
-	opB,
-	ALUop,
-	result,
-	zero
+	ALU_control_IN, // function field for R-type instruction
+	ALUOp, // Aluop
+	ALU_control , // 4 bit
 );
 
-   	input [31:0] opA; // 32bit input
-	input [31:0] opB; // 32bit input
-	input [3:0] ALUop; // the number of opcodes in https://opencores.org/projects/plasma/opcodes 
-	
-	output result, zero;
+	input [5:0] ALU_control_IN; // 6bit input
+	input [1:0] ALUOp; // 2bit input
+		
+	output [3:0] ALU_control; // 4 bit output
 
-	reg result;
+    always@(ALUOp or ALU_control_IN)begin // I referred to page 261 of the textbook.
+        casex({ALUOp,ALU_control_IN})
+            8'b00_xxxxxx:AluCtrl=4'b0010; //lw / sw
+            8'b01_xxxxxx:AluCtrl=4'b0110; //beq(Branch equal) // I referred to page 260 of the textbook. (Fig. 4.12)
+            8'b1x_xx0000:AluCtrl=4'b0010; //add
+            8'b1x_xx0010:AluCtrl=4'b0110; //sub
+            8'b1x_xx0100:AluCtrl=4'b0000; //and
+            8'b1x_xx0101:AluCtrl=4'b0001; //or
+            8'b1x_xx1010:AluCtrl=4'b0111; //slt
+        endcase
+    end
+    
+    
 
-	assign zero = (result == 0); 
 
-	always @(*) begin
-		case(ALUop)
-			4'b0000: result=opA&opB; // AND
-			4'b0001: result=opA|opB; // OR
-			4'b0010: result=opA+opB; // add
-			4'b0110: result=opA-opB; // sub
-			4'b0111: result=opA<opB?1:0; //slt, set on less than
-			4'b1100: result=~(opA|opB); // NOR
-		endcase
-	end
+
 
 endmodule
-
