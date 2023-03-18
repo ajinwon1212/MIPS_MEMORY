@@ -3,15 +3,15 @@ module Control( opcode, RegDst, Jump, Branch, MemRead, MemtoReg, ALUOp, MemWrite
 	input [5:0] opcode;
 
 	//Use reg for behavioral
-	output reg [2:0] RegDst;
-	output reg [2:0] Jump;
-	output reg [2:0] Branch;
-	output reg [2:0] MemRead;
-	output reg [2:0] MemtoReg;
+	output reg RegDst;
+	output reg Jump;
+	output reg Branch;
+	output reg MemRead;
+	output reg MemtoReg;
 	output reg [1:0] ALUOp;
-	output reg [2:0] MemWrite;
-	output reg [2:0] ALUSrc;
-	output reg [2:0] RegWrite;
+	output reg MemWrite;
+	output reg ALUSrc;
+	output reg RegWrite;
 
 	always @(*) 
 	begin //R formmat 000000  is default
