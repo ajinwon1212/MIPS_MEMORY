@@ -21,29 +21,36 @@
 module ALU( 
 	ALU_IN_1, 
 	ALU_IN_2,
-	ALU_control ,
+	ALU_control,
+	Shampt,
 	ALU_zero,
 	ALU_result
 );
 
 	input [31:0] ALU_IN_1; // 32bit input
 	input [31:0] ALU_IN_2; // 32bit input
-	input [3:0] ALU_control; // the number of opcodes in https://opencores.org/projects/plasma/opcodes 
+	input [3:0] ALU_control; //4bit input
+	
+	input [5:0] Shamt; //5bit input, shift size
 	
 	output ALU_zero, ALU_result;
 
 	reg ALU_result;
 
-	assign ALU_zero = (ALU_result == 0); 
+	assign ALU_zero = (ALU_result == 0) ? ((ALU_control[0] == 1) ? 0 : 1 ) : ((ALU_control[0] == 1) ? 1 : 0 ); 
 
 	always @(*) begin
-		case(ALU_control)
-			4'b0000: ALU_result=ALU_IN_1&ALU_IN_2; // AND
-			4'b0001: ALU_result=ALU_IN_1|ALU_IN_2; // OR
-			4'b0010: ALU_result=ALU_IN_1+ALU_IN_2; // add
-			4'b0110: ALU_result=ALU_IN_1-ALU_IN_2; // sub
-			4'b0111: ALU_result=ALU_IN_1<ALU_IN_2?1:0; //slt, set on less than
-			4'b1100: ALU_result=~(ALU_IN_1|ALU_IN_2); // NOR
+		casex(ALU_control)
+			4'b0000: ; // ADD
+			4'b0001: ; // AND
+			4'b001x: ; // SUB (0:beq, 1:bne)
+			4'b0100: ; // NOR
+			4'b0101: ; // OR (ORI)
+			4'b0110: ; // SLT (SLTI)
+			4'b0111: ; // SHIFT_LEFT (sll)
+			4'b1000: ; // SHIFT_RIGHT (srl)
+			4'b1001: ; // DIV @need float therefore only use division quotient
+			4'b1010: ; // MULT
 		endcase
 	end
 
