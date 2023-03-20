@@ -36,7 +36,7 @@ module Top_single(
 	
 	//Control Signal
 	wire [1:0] RegDst;				//[5.Control], [6.MUX]
-	wire Jump;				//[5.Control], [6.MUX]
+	wire [1:0] Jump;				//[5.Control], [6.MUX]
 	wire Branch; 				//[5.Control], [13.And]
 	wire MemRead;				//[5.Control], [12.Data_memory]
 	wire [1:0] MemtoReg;				//[5.Control], [6.MUX]
