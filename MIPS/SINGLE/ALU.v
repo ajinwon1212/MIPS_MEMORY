@@ -44,7 +44,7 @@ module ALU(
 			4'b0000: ALU_result = ALU_IN_1 + ALU_IN_2; // ADD
 			4'b0001: ALU_result = ALU_IN_1 & ALU_IN_2; // AND
 			4'b001x: ALU_result = ALU_IN_1 - ALU_IN_2; // SUB (0:beq, 1:bne)
-			4'b0100: ALU_result = ALU_IN_1 ~^ ALU_IN_2; // NOR
+			4'b0100: ALU_result = ALU_IN_1 ~| ALU_IN_2; // NOR
 			4'b0101: ALU_result = ALU_IN_1 | ALU_IN_2; // OR (ORI)
 			4'b0110: ALU_result = ALU_IN_1 < ALU_IN_2 ? 1 : 0; // SLT (SLTI)
 			4'b0111: ALU_result = ALU_IN_1 << ALU_IN_2; // SHIFT_LEFT (sll)
