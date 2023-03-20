@@ -35,11 +35,11 @@ module Top_single(
 	wire [31:0] MUX_IN;			//[6.MUX]
 	
 	//Control Signal
-	wire RegDst;				//[5.Control], [6.MUX]
+	wire [1:0] RegDst;				//[5.Control], [6.MUX]
 	wire Jump;				//[5.Control], [6.MUX]
 	wire Branch; 				//[5.Control], [13.And]
 	wire MemRead;				//[5.Control], [12.Data_memory]
-	wire MemtoReg;				//[5.Control], [6.MUX]
+	wire [1:0] MemtoReg;				//[5.Control], [6.MUX]
 	wire [1:0] ALUOp;				//[5.Control], [10.ALU_control]
 	wire MemWrite; 				//[5.Control], [12.Data_memory]
 	wire ALUSrc; 				//[5.Control], [6.MUX]
@@ -105,9 +105,11 @@ module Top_single(
 	);
 	
 	//6. Mux1	-[AHJIN]
-	MUX MUX1(
+	FourOneMUX MUX1(
 		.MUX_a({27'd0, Instruction[20:16]}),	//IN
 		.MUX_b({27'd0, Instruction[15:11]}),	//IN
+		.MUX_c(32'd31),	//IN
+		.MUX_d(32'd0),	//IN
 		.MUX_sig(Reg_Dst),			//IN
 		.MUX_out(Write_register_31)		//OUT
 	);
@@ -186,9 +188,11 @@ module Top_single(
 	);	
 	
 	//6. Mux4	32bit mux -YUNSUNG
-	MUX MUX4(
+	FourOneMUX MUX4(
 		.MUX_a(MUX_IN),							//IN
 		.MUX_b({ADD_OUT_1[31:28], Jump_address_without_PC[27:0]}),	//IN
+		.MUX_c(Read_data_1),		//IN
+		.MUX_d(32'd0),		//IN
 		.MUX_sig(Jump),							//IN
 		.MUX_out(PC_next)						//OUT
 	);
@@ -203,9 +207,11 @@ module Top_single(
 	);
 	
 	//6. Mux5	32bit mux -YUNSUNG
-	MUX MUX5(
+	FourOneMUX MUX5(
 		.MUX_a(Read_data),		//IN
 		.MUX_b(ALU_result),		//IN
+		.MUX_c(ADD_OUT_1),		//IN
+		.MUX_d(32'b0),		//IN
 		.MUX_sig(MemtoReg),		//IN
 		.MUX_out(Write_Data)		//OUT	
 	);
