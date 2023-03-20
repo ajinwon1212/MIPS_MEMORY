@@ -152,6 +152,7 @@ module Top_single(
 		.ALU_IN_1(Read_data_1),		//IN
 		.ALU_IN_2(MUX_Registers),	//IN
 		.ALU_control(ALU_control),	//IN
+		.Shampt(Instruction[10:6]),		//IN
 		.ALU_zero(ALU_zero),		//OUT
 		.ALU_result(ALU_result)		//OUT
 	);
