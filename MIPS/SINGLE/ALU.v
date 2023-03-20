@@ -47,8 +47,8 @@ module ALU(
 			4'b0100: ALU_result = ALU_IN_1 ~| ALU_IN_2; // NOR
 			4'b0101: ALU_result = ALU_IN_1 | ALU_IN_2; // OR (ORI)
 			4'b0110: ALU_result = ALU_IN_1 < ALU_IN_2 ? 1 : 0; // SLT (SLTI)
-			4'b0111: ALU_result = ALU_IN_1 << ALU_IN_2; // SHIFT_LEFT (sll)
-			4'b1000: ALU_result = ALU_IN_1 >> ALU_IN_2; // SHIFT_RIGHT (srl)
+			4'b0111: ALU_result = ALU_IN_1 << Shamt; // SHIFT_LEFT (sll)
+			4'b1000: ALU_result = ALU_IN_1 >> Shamt; // SHIFT_RIGHT (srl)
 			4'b1001: ALU_result = ALU_IN_1 / ALU_IN_2; // DIV @need float therefore only use division quotient
 			4'b1010: ALU_result = ALU_IN_1 * ALU_IN_2; // MULT
 		endcase
