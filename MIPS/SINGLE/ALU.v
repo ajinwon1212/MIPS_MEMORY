@@ -16,7 +16,7 @@
 // ALL connections are standard MIPS 32bit
 // Use postive "RESET", "CLK" instance name for module.
 
-// 참고 자료 https://chayan-memorias.tistory.com/176
+// reference; https://chayan-memorias.tistory.com/176
 
 module ALU( 
 	ALU_IN_1, 
@@ -41,16 +41,16 @@ module ALU(
 
 	always @(*) begin
 		casex(ALU_control)
-			4'b0000: ; // ADD
-			4'b0001: ; // AND
-			4'b001x: ; // SUB (0:beq, 1:bne)
-			4'b0100: ; // NOR
-			4'b0101: ; // OR (ORI)
-			4'b0110: ; // SLT (SLTI)
-			4'b0111: ; // SHIFT_LEFT (sll)
-			4'b1000: ; // SHIFT_RIGHT (srl)
-			4'b1001: ; // DIV @need float therefore only use division quotient
-			4'b1010: ; // MULT
+			4'b0000: ALU_result = ALU_IN_1 + ALU_IN_2; // ADD
+			4'b0001: ALU_result = ALU_IN_1 & ALU_IN_2; // AND
+			4'b001x: ALU_result = ALU_IN_1 - ALU_IN_2; // SUB (0:beq, 1:bne)
+			4'b0100: ALU_result = ALU_IN_1 ~^ ALU_IN_2; // NOR
+			4'b0101: ALU_result = ALU_IN_1 | ALU_IN_2; // OR (ORI)
+			4'b0110: ALU_result = ALU_IN_1 < ALU_IN_2 ? 1 : 0; // SLT (SLTI)
+			4'b0111: ALU_result = ALU_IN_1 << ALU_IN_2; // SHIFT_LEFT (sll)
+			4'b1000: ALU_result = ALU_IN_1 >> ALU_IN_2; // SHIFT_RIGHT (srl)
+			4'b1001: ALU_result = ALU_IN_1 / ALU_IN_2; // DIV @need float therefore only use division quotient
+			4'b1010: ALU_result = ALU_IN_1 * ALU_IN_2; // MULT
 		endcase
 	end
 
