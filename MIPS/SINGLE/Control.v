@@ -3,11 +3,11 @@ module Control( opcode, RegDst, Jump, Branch, MemRead, MemtoReg, ALUOp, MemWrite
 	input [5:0] opcode;
 
 	//Use reg for behavioral
-	output reg RegDst;
-	output reg Jump;
+	output reg [1:0] RegDst;
+	output reg [1:0] Jump;
 	output reg Branch;
 	output reg MemRead;
-	output reg MemtoReg;
+	output reg [1:0] MemtoReg;
 	output reg [1:0] ALUOp;
 	output reg MemWrite;
 	output reg ALUSrc;
