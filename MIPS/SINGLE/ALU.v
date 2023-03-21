@@ -51,7 +51,7 @@ module ALU(
 			4'b0011: ALU_result = ALU_IN_1 >> Shamt; // SHIFT_RIGHT (srl)
 			4'b1011: ALU_result = ALU_IN_1 / ALU_IN_2; // DIV @need float therefore only use division quotient
 			4'b1101: ALU_result = ALU_IN_1 * ALU_IN_2; // MULT
-			4'b1101: ALU_result = 1'b0; // Do nothing
+			4'b1111: ALU_result = 1'b0; // Do nothing
 		endcase
 	end
 
