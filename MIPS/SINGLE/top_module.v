@@ -93,6 +93,7 @@ module Top_single(
 	// 5. Control	-[AHJIN]
 	Control Control_top(
 		.opcode(Instruction[31:26]), 	//IN
+		.funct(Instruction[5:0]),	//IN
 		.RegDst(RegDst),		//OUT
 		.Jump(Jump),			//OUT
 		.Branch(Branch),		//OUT
