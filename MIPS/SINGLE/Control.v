@@ -4,14 +4,14 @@ module Control( opcode, funct, RegDst, Jump, Branch, MemRead, MemtoReg, ALUOp, M
 	input [6:0] funct;
 
 	//Use reg for behavioral
-	output reg [1:0] RegDst;
+	output reg [1:0] RegDst; // Write register select // 00: rd[25:21], 01: rd[15:11] , 10: ra
 	output reg [1:0] Jump;
 	output reg Branch;
 	output reg MemRead;
 	output reg [1:0] MemtoReg;
 	output reg [2:0] ALUOp;
 	output reg MemWrite;
-	output reg ALUSrc;
+	output reg ALUSrc; //Immediate or not
 	output reg RegWrite;
 
 	always @(*) 
@@ -63,48 +63,48 @@ module Control( opcode, funct, RegDst, Jump, Branch, MemRead, MemtoReg, ALUOp, M
 			/* I format */
 			6'b001000: // addi
 			begin	
-				RegDst		<= 2'b10; 
-				Jump		<= 2'b01; 
+				RegDst		<= 2'b00; //@
+				Jump		<= 2'b00; 
 				Branch		<= 1'b0;
 				MemRead		<= 1'b0;
 				MemtoReg	<= 2'b10; 
 				ALUOp		<= 3'b000; //@
 				MemWrite	<= 1'b0; 
-				ALUSrc		<= 1'b0;	
+				ALUSrc		<= 1'b1; //@	
 				RegWrite	<= 1'b1;
 			end
 			
 			6'b001100: // andi
 			begin	
-				RegDst		<= 2'b10; 
-				Jump		<= 2'b01; 
+				RegDst		<= 2'b00; //@
+				Jump		<= 2'b00; 
 				Branch		<= 1'b0;
 				MemRead		<= 1'b0;
 				MemtoReg	<= 2'b10; 
 				ALUOp		<= 3'b010; //@ 
 				MemWrite	<= 1'b0; 
-				ALUSrc		<= 1'b0;	
+				ALUSrc		<= 1'b1; //@	
 				RegWrite	<= 1'b1;
 			end
 			
 			6'b001101: // ori
 			begin	
-				RegDst		<= 2'b10; 
-				Jump		<= 2'b01; 
+				RegDst		<= 2'b00; //@ 
+				Jump		<= 2'b00; 
 				Branch		<= 1'b0;
 				MemRead		<= 1'b0;
 				MemtoReg	<= 2'b10; 
 				ALUOp		<= 3'b011; /@ 
 				MemWrite	<= 1'b0; 
-				ALUSrc		<= 1'b0;	
+				ALUSrc		<= 1'b1; //@	
 				RegWrite	<= 1'b1;
 			end
 			
 			6'b000100: // beq
 			begin	
-				RegDst		<= 2'b10; 
-				Jump		<= 2'b01; 
-				Branch		<= 1'b0;
+				//RegDst		<= 2'b10; 
+				Jump		<= 2'b00; 
+				Branch		<= 1'b1; //@
 				MemRead		<= 1'b0;
 				MemtoReg	<= 2'b10; 
 				ALUOp		<= 3'b100; //@ 
@@ -115,9 +115,9 @@ module Control( opcode, funct, RegDst, Jump, Branch, MemRead, MemtoReg, ALUOp, M
 			
 			6'b000101: // bne
 			begin	
-				RegDst		<= 2'b10; 
-				Jump		<= 2'b01; 
-				Branch		<= 1'b0;
+				//RegDst		<= 2'b10; //@
+				Jump		<= 2'b00; 
+				Branch		<= 1'b1; //@
 				MemRead		<= 1'b0;
 				MemtoReg	<= 2'b10; 
 				ALUOp		<= 3'b101; //@
@@ -128,40 +128,40 @@ module Control( opcode, funct, RegDst, Jump, Branch, MemRead, MemtoReg, ALUOp, M
 			
 			6'b100011: // lw
 			begin	
-				RegDst		<= 2'b10; 
-				Jump		<= 2'b01; 
+				RegDst		<= 2'b00; //@
+				Jump		<= 2'b00; 
 				Branch		<= 1'b0;
 				MemRead		<= 1'b0;
 				MemtoReg	<= 2'b10; 
 				ALUOp		<= 3'b000; //@ 
 				MemWrite	<= 1'b0; 
-				ALUSrc		<= 1'b0;	
+				ALUSrc		<= 1'b1; //@	
 				RegWrite	<= 1'b1;
 			end
 			
 			6'b101011: // sw
 			begin	
-				RegDst		<= 2'b10; 
-				Jump		<= 2'b01; 
+				//RegDst		<= 2'b10; 
+				Jump		<= 2'b00; 
 				Branch		<= 1'b0;
 				MemRead		<= 1'b0;
 				MemtoReg	<= 2'b10; 
 				ALUOp		<= 3'b000; //@ 
 				MemWrite	<= 1'b0; 
-				ALUSrc		<= 1'b0;	
+				ALUSrc		<= 1'b1; //@	
 				RegWrite	<= 1'b1;
 			end
 			
 			6'b001010: // slti
 			begin	
-				RegDst		<= 2'b10; 
-				Jump		<= 2'b01; 
+				RegDst		<= 2'b00; //@ 
+				Jump		<= 2'b00; 
 				Branch		<= 1'b0;
 				MemRead		<= 1'b0;
 				MemtoReg	<= 2'b10; 
 				ALUOp		<= 3'b110; //@ 
 				MemWrite	<= 1'b0; 
-				ALUSrc		<= 1'b0;	
+				ALUSrc		<= 1'b1; //@	
 				RegWrite	<= 1'b1;
 			end
 			
