@@ -35,12 +35,12 @@ module Top_single(
 	wire [31:0] MUX_IN;			//[6.MUX]
 	
 	//Control Signal
-	wire [1:0] RegDst;				//[5.Control], [6.MUX]
-	wire [1:0] Jump;				//[5.Control], [6.MUX]
+	wire [1:0] RegDst;			//[5.Control], [6.MUX]
+	wire [1:0] Jump;			//[5.Control], [6.MUX]
 	wire Branch; 				//[5.Control], [13.And]
 	wire MemRead;				//[5.Control], [12.Data_memory]
-	wire [1:0] MemtoReg;				//[5.Control], [6.MUX]
-	wire [1:0] ALUOp;				//[5.Control], [10.ALU_control]
+	wire [1:0] MemtoReg;			//[5.Control], [6.MUX]
+	wire [2:0] ALUOp;			//[5.Control], [10.ALU_control]
 	wire MemWrite; 				//[5.Control], [12.Data_memory]
 	wire ALUSrc; 				//[5.Control], [6.MUX]
 	wire RegWrite; 				//[5.Control], [7.Registers]
