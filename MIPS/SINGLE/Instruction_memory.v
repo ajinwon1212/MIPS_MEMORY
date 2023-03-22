@@ -35,6 +35,12 @@ module Instruction_memory (CLK, RESET, Read_address, Instruction);
 	end
 
 	assign Instruction = inst_mem[Read_address>>2];	
+	
+	always@(posedge CLK)
+	begin
+		$display("Current Instruction: %b", Instruction);	
+	end
+	
 /*
 	initial 
 	begin
