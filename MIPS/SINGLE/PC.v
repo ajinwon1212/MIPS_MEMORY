@@ -12,6 +12,7 @@ always @(posedge RESET or posedge CLK) begin
 		PC <= PC_next;
 	end
 	$display($time);
+	$display("______PC.v______);
 	$display("Current PC: %d", PC_next);
 end
 
