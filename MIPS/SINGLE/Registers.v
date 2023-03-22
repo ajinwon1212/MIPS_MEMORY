@@ -89,6 +89,11 @@ module Registers( CLK, RESET, RegWrite, Read_register_1, Read_register_2, Write_
 				Register[Write_register] <= Write_Data;
 			end
 		end
+		
+		$display("______Registers.v______);
+		$display("Read_reg_1	: %d, Read_data_1	: %h", Read_register_1,Register[Read_register_1]);
+		$display("Read_reg_1	: %d, Read_data_2	: %h", Read_register_2,Register[Read_register_2]);
+		$display("Write_reg	: %d, Wrtie_Data	: %h", Write_register,Write_Data);
 /*
 		$display($time);
 		$display("Read_reg_1 : %d, Read_data_1 : %h", Read_register_1,Register[Read_register_1]);
