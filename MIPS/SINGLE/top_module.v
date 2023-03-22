@@ -192,8 +192,8 @@ module Top_single(
 	FourOneMUX MUX4(
 		.MUX_a(MUX_IN),							//IN
 		.MUX_b({ADD_OUT_1[31:28], Jump_address_without_PC[27:0]}),	//IN
-		.MUX_c(Read_data_1),		//IN
-		.MUX_d(32'd0),		//IN
+		.MUX_c(Read_data_1),						//IN
+		.MUX_d(32'd0),							//IN
 		.MUX_sig(Jump),							//IN
 		.MUX_out(PC_next)						//OUT
 	);
@@ -212,7 +212,7 @@ module Top_single(
 		.MUX_a(Read_data),		//IN
 		.MUX_b(ALU_result),		//IN
 		.MUX_c(ADD_OUT_1),		//IN
-		.MUX_d(32'b0),		//IN
+		.MUX_d(32'b0),			//IN
 		.MUX_sig(MemtoReg),		//IN
 		.MUX_out(Write_Data)		//OUT	
 	);
