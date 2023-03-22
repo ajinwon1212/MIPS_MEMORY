@@ -30,7 +30,12 @@ module Control( opcode, funct, RegDst, Jump, Branch, MemRead, MemtoReg, ALUOp, M
 			/* R format */
 			6'b000000: //R 
 			begin	
-				if (funct = 6'b001000) Jump <= 2'b10; //jr
+				if (funct = 6'b001000) //jr
+				begin 
+					Jump <= 2'b10;  
+					$display("[jr]: %b", opcode); 
+				end
+				else $display("[R format]: %b", opcode);
 			end
 			
 			/* J format */
@@ -45,6 +50,7 @@ module Control( opcode, funct, RegDst, Jump, Branch, MemRead, MemtoReg, ALUOp, M
 				MemWrite	<= 1'b0; //@
 				//ALUSrc		<= 1'b0;	
 				RegWrite	<= 1'b0; //@
+				$display("[j]: %b", opcode); 
 			end
 			
 			6'b00001x: // jal
@@ -58,6 +64,7 @@ module Control( opcode, funct, RegDst, Jump, Branch, MemRead, MemtoReg, ALUOp, M
 				MemWrite	<= 1'b0; 
 				//ALUSrc		<= 1'b0;	
 				RegWrite	<= 1'b1;
+				$display("[jal]: %b", opcode); 
 			end
 			
 			/* I format */
@@ -72,6 +79,7 @@ module Control( opcode, funct, RegDst, Jump, Branch, MemRead, MemtoReg, ALUOp, M
 				MemWrite	<= 1'b0; 
 				ALUSrc		<= 1'b1; //@	
 				RegWrite	<= 1'b1;
+				$display("[addi]: %b", opcode); 
 			end
 			
 			6'b001100: // andi
@@ -85,6 +93,7 @@ module Control( opcode, funct, RegDst, Jump, Branch, MemRead, MemtoReg, ALUOp, M
 				MemWrite	<= 1'b0; 
 				ALUSrc		<= 1'b1; //@	
 				RegWrite	<= 1'b1;
+				$display("[andi]: %b", opcode); 
 			end
 			
 			6'b001101: // ori
@@ -98,6 +107,7 @@ module Control( opcode, funct, RegDst, Jump, Branch, MemRead, MemtoReg, ALUOp, M
 				MemWrite	<= 1'b0; 
 				ALUSrc		<= 1'b1; //@	
 				RegWrite	<= 1'b1;
+				$display("[ori]: %b", opcode); 
 			end
 			
 			6'b000100: // beq
@@ -111,6 +121,7 @@ module Control( opcode, funct, RegDst, Jump, Branch, MemRead, MemtoReg, ALUOp, M
 				MemWrite	<= 1'b0; 
 				ALUSrc		<= 1'b0;	
 				RegWrite	<= 1'b0; //@
+				$display("[beq]: %b", opcode); 
 			end
 			
 			6'b000101: // bne
@@ -124,6 +135,7 @@ module Control( opcode, funct, RegDst, Jump, Branch, MemRead, MemtoReg, ALUOp, M
 				MemWrite	<= 1'b0; 
 				ALUSrc		<= 1'b0;	
 				RegWrite	<= 1'b0; //@
+				$display("[bne]: %b", opcode); 
 			end
 			
 			6'b100011: // lw
@@ -137,6 +149,7 @@ module Control( opcode, funct, RegDst, Jump, Branch, MemRead, MemtoReg, ALUOp, M
 				MemWrite	<= 1'b0; 
 				ALUSrc		<= 1'b1; // Immediate	
 				RegWrite	<= 1'b1;
+				$display("[lw]: %b", opcode); 
 			end
 			
 			6'b101011: // sw
@@ -150,6 +163,7 @@ module Control( opcode, funct, RegDst, Jump, Branch, MemRead, MemtoReg, ALUOp, M
 				MemWrite	<= 1'b1; //Data memory write
 				ALUSrc		<= 1'b1; // Immediate
 				RegWrite	<= 1'b0; // No register memory write
+				$display("[sw]: %b", opcode); 
 			end
 			
 			6'b001010: // slti
@@ -163,6 +177,7 @@ module Control( opcode, funct, RegDst, Jump, Branch, MemRead, MemtoReg, ALUOp, M
 				MemWrite	<= 1'b0; 
 				ALUSrc		<= 1'b1; //Immediate	
 				RegWrite	<= 1'b1;
+				$display("[slti]: %b", opcode); 
 			end
 			
 		endcase
