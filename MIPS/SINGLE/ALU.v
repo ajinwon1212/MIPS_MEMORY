@@ -53,6 +53,8 @@ module ALU(
 			4'b1101: ALU_result = ALU_IN_1 * ALU_IN_2; // MULT
 			4'b1111: ALU_result = 1'b0; // Do nothing
 		endcase
+		$display("______ALU.v______");
+		$display("ALU_result: %d, ALU_zero: %d", ALU_result, ALU_zero);
 	end
 
 endmodule
