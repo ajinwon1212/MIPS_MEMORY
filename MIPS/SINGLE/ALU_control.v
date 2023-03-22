@@ -18,8 +18,12 @@ module ALU_control(
 		
 	output [3:0] ALU_control; // 4 bit output
 
-    always@(ALUOp or ALU_control_IN)begin // I referred to page 261 of the textbook.
-        casex({ALUOp,ALU_control_IN})
+    always@(ALUOp or ALU_control_IN)
+	begin // I referred to page 261 of the textbook.
+		
+		$display("______ALU_control.v______");
+		
+		casex({ALUOp,ALU_control_IN})
 		9'b111_xxxxxx: begin 
 				AluCtrl=4'b1111;	//Do nothing in ALU
 			$display("[j, jal] ALUop: %b", ALUOp); 
