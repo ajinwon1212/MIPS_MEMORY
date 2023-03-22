@@ -25,7 +25,8 @@ module Control( opcode, funct, RegDst, Jump, Branch, MemRead, MemtoReg, ALUOp, M
 		MemWrite	<= 1'b0;
 		ALUSrc		<= 1'b0;	
 		RegWrite	<= 1'b1;
-
+		
+		$display("______Control.v______);
 		casex (opcode)
 			/* R format */
 			6'b000000: //R 
