@@ -15,10 +15,10 @@
 //	6	26
 
 
-module Instruction_memory (CLK, RESET, PC, Instruction);
+module Instruction_memory (CLK, RESET, PC, IF_Instruction);
 	input CLK, RESET;
 	input [31:0] PC
-   	output [31:0] Instruction;
+   	output [31:0] IF_Instruction;
 	
 	reg [31:0] inst_mem[0:63];
 
@@ -44,12 +44,12 @@ module Instruction_memory (CLK, RESET, PC, Instruction);
 		
 	end
 
-	assign Instruction = inst_mem[PC>>2];	
+	assign IF_Instruction = inst_mem[PC>>2];	
 	
 /*
 	initial 
 	begin
-	$monitor($time, " inst_mem = %b", Instruction);
+	$monitor($time, " inst_mem = %b", IF_Instruction);
 	end
 */
 endmodule
