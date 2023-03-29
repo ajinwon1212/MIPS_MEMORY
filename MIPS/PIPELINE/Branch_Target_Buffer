@@ -1,0 +1,23 @@
+module Branch_Target_Buffer (
+	input CLK, RESET,
+	input [31:0] PC_4,
+	input [31:0] IF_Instruction,	//IN
+	output reg [31:0] Branch_Addr		//OUT
+	);
+
+reg [31:0] imm;
+
+always @(posedge CLK or posedge RESET)
+begin
+	if (RESET == 1'b0)
+	begin
+		Branch_Addr <= 32'b0;
+	end
+	else
+	begin
+		imm <= {16'b0, IF_Instruction[15:0]};
+		Branch_Addr <= PC_4 + imm;
+	end
+end
+
+endmodule
