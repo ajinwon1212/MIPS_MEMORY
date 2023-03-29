@@ -13,13 +13,20 @@ begin
 	end
 	else
 	begin
-		if (IF_Instruction[15] == 1'b0)
+		if (IF_Instruction[31:27] == 5'b00010)
 		begin
-			Branch_Addr <= PC_4 + (IF_Instruction[15:0] << 2);
+			if (IF_Instruction[15] == 1'b0)
+			begin
+				Branch_Addr <= PC_4 + (IF_Instruction[15:0] << 2);
+			end
+			else
+			begin
+				Branch_Addr <= PC_4 + 32'b11111111111111000000000000000000 + (IF_Instruction[15:0] << 2);
+			end
 		end
 		else
 		begin
-			Branch_Addr <= PC_4 + 32'b11111111111111000000000000000000 + (IF_Instruction[15:0] << 2);
+			Branch_Addr <= PC_4;
 		end
 	end
 end
