@@ -126,7 +126,7 @@ module Top_pipe(CLK, RESET);
 	Branch_Target_Buffer BTB(
 		.CLK(CLK),			//IN
 		.RESET(RESET),			//IN
-		.PC(PC),			//IN
+		.PC_4(IF_PC_4),			//IN
 		.IF_Insruction(IF_Insruction),	//IN
 		.Branch_Addr(BTB_Addr)		//OUT
 	);
