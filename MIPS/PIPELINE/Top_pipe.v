@@ -275,7 +275,7 @@ module Top_pipe(CLK, RESET);
 		.out(Branch)			//OUT
 	);
 
-	Forwarding_Unit_ID FWU1(		//Use only Branch INST
+	Forwarding_Unit_ID FWU_ID(		//Use only Branch INST
 		.opcode(ID_Instruction[31:26]),	//IN
 		.ID_RS(ID_Instruction[25:21]),	//IN
 		.ID_RT(ID_Instruction[20:16]),	//IN
@@ -376,7 +376,7 @@ module Top_pipe(CLK, RESET);
 	);
 
 
-	Forwarding_Unit_ID FWU2(	
+	Forwarding_Unit_EX FWU_EX(	
 		.opcode(EX_Opcode),		//IN
 		.EX_RS(EX_RS),			//IN
 		.EX_RT(EX_RT),			//IN
