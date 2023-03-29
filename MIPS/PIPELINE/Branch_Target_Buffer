@@ -15,7 +15,7 @@ begin
 	end
 	else
 	begin
-		imm <= {16'b0, IF_Instruction[15:0]};
+		imm <= {14'b0, IF_Instruction[15:0] << 2};
 		Branch_Addr <= PC_4 + imm;
 	end
 end
