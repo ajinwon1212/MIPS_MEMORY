@@ -119,23 +119,23 @@ module Top_pipe(CLK, RESET);
 		.CLK(CLK),			//IN
 		.RESET(RESET),			//IN
 		.PC(PC),			//IN
-		.IF_Insruction(IF_Insruction)	//OUT
+		.IF_Instruction(IF_Instruction)	//OUT
 	);
 
 	//Branch Taken Case
 	Branch_Target_Buffer BTB(
-		.CLK(CLK),			//IN
-		.RESET(RESET),			//IN
-		.PC_4(IF_PC_4),			//IN
-		.IF_Insruction(IF_Insruction),	//IN
-		.Branch_Addr(BTB_Addr)		//OUT
+		.CLK(CLK),				//IN
+		.RESET(RESET),				//IN
+		.PC_4(IF_PC_4),				//IN
+		.IF_Instruction(IF_Instruction),	//IN
+		.Branch_Addr(BTB_Addr)			//OUT
 	);
 
 	IFID_Reg IFID(
 		.CLK(CLK),				//IN
 		.RESET(RESET),				//IN
 		.IDIFWrite(IDIFWrite),			//IN
-		.IF_Insruction(IF_Insruction),		//IN
+		.IF_Instruction(IF_Instruction),	//IN
 		.IF_Flush(IF_Flush),			//IN
 		.IF_PC_4(IF_PC_4),			//IN
 		.ID_Instruction(ID_Instruction),	//OUT
