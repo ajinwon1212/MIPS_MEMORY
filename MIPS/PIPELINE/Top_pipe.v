@@ -174,19 +174,19 @@ module Top_pipe(CLK, RESET);
 	);
 
 	Shift_left_2 Shift_left_2_Jump(
-		.Shift_left_2_IN(ID_Instruction[15:0]),		//IN
+		.Shift_left_2_IN({6'd0, ID_Instruction[25:0]}),		//IN
 		.Shift_left_2_OUT(Jump_WO_PC)	//OUT
 	);
 
 
 	ADD ADD2(
-		.a({PC[31:28],28'd0}),	//IN
+		.a{ID_PC_4}),	//IN
 		.b(Branch_WO_PC),	//IN
 		.out(BTB_Addr)		//OUT
 	);
 
 	ADD ADD3(
-		.a({PC[31:28],28'd0}),	//IN
+		.a({ID_PC_4[31:28],28'd0}),	//IN
 		.b(Jump_WO_PC),		//IN
 		.out(Jump_Addr)		//OUT
 	);
