@@ -69,6 +69,7 @@ module Top_pipe(CLK, RESET);
 	wire [4:0] EX_Shmpt;
 	wire [5:0] EX_Funct;
 	wire [4:0] EX_RD;
+	wire [31:0] EX_PC_4;
 
 	wire [31:0] EX_RS_DATA, EX_RT_DATA; //After Forwarding RS, RT Data
 	wire [1:0] FW_sig_EX_1, FW_sig_EX_2;
