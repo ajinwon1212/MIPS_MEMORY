@@ -51,7 +51,7 @@ module Top_pipe(CLK, RESET);
 	wire [31:0] ID_RD_32;
 	wire [4:0] ID_RD;
 	wire [1:0] RegDst;
-	wire [1:0] WB;
+	wire [1:0] WB, M_WB;
 	wire [2:0] MEM;
 	wire [5:0] EX;
 	wire [31:0] WB_MEM_EX_32;
@@ -181,7 +181,7 @@ module Top_pipe(CLK, RESET);
 
 
 	ADD ADD2(
-		.a{ID_PC_4}),	//IN
+		.a(ID_PC_4),	//IN
 		.b(Branch_WO_PC),	//IN
 		.out(BTB_Addr)		//OUT
 	);
@@ -436,7 +436,7 @@ module Top_pipe(CLK, RESET);
 		.MEM_RD_DATA(MEM_RD_DATA),			//IN
 		.MEM_RD(MEM_RD),				//IN
 		.MEM_PC_4(MEM_PC_4),				//IN
-		.WB(WB),					//OUT
+		.WB(M_WB),					//OUT
 		.WB_Opcode(WB_Opcode),				//OUT
 		.WB_ALU_RESULT(WB_ALU_RESULT),			//OUT
 		.WB_RD_Data(WB_RD_Data),			//OUT
@@ -449,7 +449,7 @@ module Top_pipe(CLK, RESET);
 		.MUX_b(WB_ALU_RESULT),		//IN
 		.MUX_c(WB_PC_4),		//IN
 		.MUX_d(32'b0),			//IN
-		.MUX_sig(WB[2:1]),		//IN
+		.MUX_sig(M_WB),			//IN
 		.MUX_out(WB_RD_DATA)		//OUT	
 	);
 
