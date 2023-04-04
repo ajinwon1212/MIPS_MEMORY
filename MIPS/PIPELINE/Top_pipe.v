@@ -436,7 +436,7 @@ module Top_pipe(CLK, RESET);
 		.MEM_RD_DATA(MEM_RD_DATA),			//IN
 		.MEM_RD(MEM_RD),				//IN
 		.MEM_PC_4(MEM_PC_4),				//IN
-		.WB(M_WB),					//OUT
+		.M_WB(M_WB),					//OUT
 		.WB_Opcode(WB_Opcode),				//OUT
 		.WB_ALU_RESULT(WB_ALU_RESULT),			//OUT
 		.WB_RD_Data(WB_RD_Data),			//OUT
