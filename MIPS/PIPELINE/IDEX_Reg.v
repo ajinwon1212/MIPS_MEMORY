@@ -37,7 +37,7 @@ begin
 	end
 	else
 	begin
-		WB_MEM_EX <= WB_MEM_EX_32[10:0];
+		WB_MEM_EX <= WB_MEM_EX_32[31:21];
 		EX_Opcode <= ID_Opcode;
 		EX_RS_Data <= ID_RS_Data;
 		EX_RT_Data <= ID_RT_Data;
