@@ -24,7 +24,7 @@ always @(posedge CLK or posedge RESET) begin
         MEM_RD <= 5'b0;
         MEM_PC_4 <= 32'b0;
     end else begin
-        WB_MEM <= WB_MEM_EX[2:0];
+        WB_MEM <= WB_MEM_EX[10:8];
         MEM_Opcode <= EX_Opcode;
         MEM_ALU_RESULT <= EX_ALU_RESULT;
         MEM_RT_DATA <= EX_RT_DATA;
