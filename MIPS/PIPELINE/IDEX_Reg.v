@@ -27,7 +27,7 @@ begin
 	begin
 		WB_MEM_EX <= 11'b0;
 		EX_Opcode <= 6'b0;
-		EZ_RS_Data <= 32'b0;
+		EX_RS_Data <= 32'b0;
 		EX_RT_Data <= 32'b0;
 		EX_Sign_extend <= 32b'0;
 		EX_Shmpt <= 5'b0;
@@ -39,7 +39,7 @@ begin
 	begin
 		WB_MEM_EX <= WB_MEM_EX_32[10:0];
 		EX_Opcode <= ID_Opcode;
-		EZ_RS_Data <= ID_RS_Data;
+		EX_RS_Data <= ID_RS_Data;
 		EX_RT_Data <= ID_RT_Data;
 		EX_Sign_extend <= ID_Sign_extend;
 		EX_Shmpt <= ID_Shmpt;
