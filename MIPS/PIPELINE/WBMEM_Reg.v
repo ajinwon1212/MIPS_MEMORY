@@ -7,7 +7,7 @@ module WBMEM_Reg (
     input signed [31:0] MEM_RD_DATA,
     input [4:0] MEM_RD,
     input [31:0] MEM_PC_4,
-    output reg [1:0] M_WB,
+    output reg [2:0] M_WB,
     output reg [5:0] WB_Opcode,
     output reg signed [31:0] WB_ALU_RESULT,
     output reg signed [31:0] WB_RD_Data,
@@ -26,7 +26,7 @@ always @(posedge CLK or posedge RESET) begin
         WB_PC_4 <= 32'd0;
     end else begin
         // Transfer values from input to output registers
-        M_WB <= WB_MEM[4:3];
+        M_WB <= WB_MEM[4:2];
         WB_Opcode <= MEM_Opcode;
         WB_ALU_RESULT <= MEM_ALU_RESULT;
         WB_RD_Data <= MEM_RD_DATA;
