@@ -475,7 +475,7 @@ module Top_pipe(CLK, RESET);
 		.MUX_b(WB_ALU_RESULT),		//IN
 		.MUX_c(WB_PC_4),		//IN
 		.MUX_d(32'b0),			//IN
-		.MUX_sig(M_WB),			//IN
+		.MUX_sig(M_WB[2:1]),			//IN
 		.MUX_out(WB_RD_DATA)		//OUT	
 	);
 
