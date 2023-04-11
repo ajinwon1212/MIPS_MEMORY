@@ -27,6 +27,32 @@
 20. EX/MEM_Reg
 */
 
+/*
+IF ID EX MEM WB
+
+ID
+RegDst	2bit 
+Jump		2bit
+Branch	1bit
+
+EX		6bit
+
+ALUOp		3bit
+ALUSrc	1bit
+HiLo		2bit
+
+MEM		2bit
+
+MemRead	1bit
+MemWrite	1bit
+
+WB		3bit
+
+MemtoReg	2bit
+RegWrite	1bit
+*/
+
+
 module Top_pipe(CLK, RESET);
 
 	input CLK, RESET;
@@ -36,7 +62,7 @@ module Top_pipe(CLK, RESET);
 	wire [31:0] BTB_Addr;		//Branch Address
 	wire [31:0] PC;
 	wire Branch;			// Beq, Bne Result
-	wire Jump;			//Select next PC address, 0:PC+4, 1:Jump
+	wire [1:0] Jump;		//Select next PC address, 0:PC+4, 1:Jump
 	wire [31:0] IF_Instruction;	//IF/ID_Reg input Instruction
 	wire [31:0] ID_Instruction;	//IF/ID_Reg output Instruction
 	wire IF_Flush;
@@ -51,8 +77,8 @@ module Top_pipe(CLK, RESET);
 	wire [31:0] ID_RD_32;
 	wire [4:0] ID_RD;
 	wire [1:0] RegDst;
-	wire [1:0] WB, M_WB;
-	wire [2:0] MEM;
+	wire [2:0] WB, M_WB;
+	wire [1:0] MEM;
 	wire [5:0] EX;
 	wire [31:0] WB_MEM_EX_32;
 	wire [10:0] WB_MEM_EX;
@@ -98,7 +124,7 @@ module Top_pipe(CLK, RESET);
 		.b(Jump_Addr),		//IN (01)
 		.c(BTB_Addr),		//IN (10)
 		.d(32'd0),
-		.sig({Branch, Jump}),	//IN
+		.sig({Branch, Jump}),	//IN @@@@@@@@@@@@@@@@@@@@@@
 		.out(PC_next)		//OUT
 	);
 
@@ -223,8 +249,8 @@ module Top_pipe(CLK, RESET);
 		.RegDst(RegDst),		//OUT
 		.Jump(Jump),			//OUT @@TIming Issue
 		//.Branch(Branch),		//OUT
-		.WB(WB),			//OUT 2bit
-		.MEM(MEM),			//OUT 3bit
+		.WB(WB),			//OUT 3bit
+		.MEM(MEM),			//OUT 2bit
 		.EX(EX)				//OUT 6bit
 		//.MemWrite(MemWrite),		//OUT @MEM 1bit
 		//.MemRead(MemRead),		//OUT @MEM 1bit
