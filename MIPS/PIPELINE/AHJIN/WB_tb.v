@@ -1,6 +1,9 @@
 module WB_tb;
 
 	reg CLK, RESET;
+	
+	reg [3:0] CASE, CYCLE;
+
 	reg [4:0] WB_MEM;
 	reg [31:0] MEM_ALU_RESULT;
 	reg [31:0] MEM_RD_DATA;
@@ -26,13 +29,11 @@ module WB_tb;
 		.CLK(CLK),					//IN
 		.RESET(RESET),					//IN
 		.WB_MEM(WB_MEM),				//IN
-		.MEM_Opcode(MEM_Opcode),			//IN
 		.MEM_ALU_RESULT(MEM_ALU_RESULT),		//IN
 		.MEM_RD_DATA(MEM_RD_DATA),			//IN
 		.MEM_RD(MEM_RD),				//IN
 		.MEM_PC_4(MEM_PC_4),				//IN
 		.WB(WB),					//OUT
-		.WB_Opcode(WB_Opcode),				//OUT
 		.WB_ALU_RESULT(WB_ALU_RESULT),			//OUT
 		.WB_RD_Data(WB_RD_Data),			//OUT
 		.WB_RD(WB_RD),					//OUT
@@ -40,12 +41,12 @@ module WB_tb;
 	);
 
 	MUX4to1 MUX9(
-		.MUX_a(WB_RD_Data),		//IN
-		.MUX_b(WB_ALU_RESULT),		//IN
-		.MUX_c(WB_PC_4),		//IN
-		.MUX_d(32'b0),			//IN
-		.MUX_sig(WB[2:1]),		//IN
-		.MUX_out(WB_RD_DATA)		//OUT	
+		.a(WB_RD_Data),		//IN
+		.b(WB_ALU_RESULT),	//IN
+		.c(WB_PC_4),		//IN
+		.d(32'b0),		//IN
+		.sig(WB[2:1]),		//IN
+		.out(WB_RD_DATA)	//OUT	
 	);
 
 	initial
@@ -61,6 +62,65 @@ module WB_tb;
 	begin
 		RESET = 1'b1; 
 		#10 RESET = 1'b0; 
+		/*
+		[WB_tb]
+		
+		1. WB Data from MEM READ (LW)
+		2. WB Data from ALU (R ...)
+		3. WB data from PC+4 (jal)
+
+		*/
+
+		//----------------
+		#20
+		CASE = 4'd1; CYCLE=4'd1;
+		WB_MEM = 5'b01110;
+		MEM_ALU_RESULT = 32'd1;
+		MEM_RD_DATA = 32'd2;
+		MEM_RD = 5'd10;
+		MEM_PC_4 = 32'd0;
+
+		#20
+		CASE = 4'd1; CYCLE=4'd2;
+		WB_MEM = 5'd0;
+		MEM_ALU_RESULT = 32'd0;
+		MEM_RD_DATA = 32'd0;
+		MEM_RD = 5'd0;
+		MEM_PC_4 = 32'd4;
+
+		//----------------
+		#40
+		CASE = 4'd2; CYCLE=4'd1;
+		WB_MEM = 5'b00100;
+		MEM_ALU_RESULT = 32'd1;
+		MEM_RD_DATA = 32'd2;
+		MEM_RD = 5'd10;
+		MEM_PC_4 = 32'd0;
+
+		#20
+		CASE = 4'd1; CYCLE=4'd2;
+		WB_MEM = 5'd0;
+		MEM_ALU_RESULT = 32'd0;
+		MEM_RD_DATA = 32'd0;
+		MEM_RD = 5'd0;
+		MEM_PC_4 = 32'd4;	
+
+		//----------------
+		#40 
+		CASE = 4'd3; CYCLE=4'd1;
+		WB_MEM = 5'b10100;
+		MEM_ALU_RESULT = 32'd1;
+		MEM_RD_DATA = 32'd2;
+		MEM_RD = 5'd10;
+		MEM_PC_4 = 32'd0;
+
+		#20
+		CASE = 4'd1; CYCLE=4'd2;
+		WB_MEM = 5'd0;
+		MEM_ALU_RESULT = 32'd0;
+		MEM_RD_DATA = 32'd0;
+		MEM_RD = 5'd0;
+		MEM_PC_4 = 32'd4;
 
 	end
 
