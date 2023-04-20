@@ -20,10 +20,12 @@ module Registers( CLK, RESET, RegWrite, Read_register_1, Read_register_2, Write_
 
 	reg signed [31:0] Register[31:0];
 	
+	//assign	Read_data_1 = (RegWrite == 1'b1) ? ((Write_register == Read_register_1 ) ? Write_Data: Register[Read_register_1]) : Register[Read_register_1];
+	//assign	Read_data_2 = (RegWrite == 1'b1) ? ((Write_register == Read_register_2 ) ? Write_Data: Register[Read_register_2]) : Register[Read_register_2];
 	assign	Read_data_1 = Register[Read_register_1];
 	assign	Read_data_2 = Register[Read_register_2];
 	
-	always @(posedge RESET or posedge CLK or RegWrite) //exclude RegWrite?
+	always @(posedge RESET or posedge CLK) //exclude RegWrite?
 	begin
 		if (RESET)
 		begin

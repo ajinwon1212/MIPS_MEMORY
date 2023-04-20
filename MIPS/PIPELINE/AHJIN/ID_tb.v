@@ -1,4 +1,4 @@
-`timescale 10ps / 10ps
+`timescale 1ns / 1ns
 module ID_tb;
 
 	reg [3:0] CASE, CYCLE;
@@ -15,7 +15,7 @@ module ID_tb;
 	wire PCWrite;
 	wire Hazard_Ctrl;
 	//
-	wire CONT_1, CONT_2a, CONT_2b, DATA_1, DATA_2, DATA_3;
+	wire CONT_1, CONT_2a, CONT_2b, DATA_1a, DATA_1b, DATA_2a, DATA_2b;
 
 	wire [31:0] ID_Sign_extend;
 	wire [31:0] Branch_WO_PC;
@@ -24,9 +24,10 @@ module ID_tb;
 	wire [31:0] Jump_Addr;
 	wire [31:0] ID_RD_32;
 
+	reg [4:0] WB_MEM; //[2]
 	reg [4:0] WB_RD;
 	reg [31:0] WB_RD_DATA;
-	reg [2:0] WB_EX;
+	reg [2:0] WB_EX; //[0]
 	wire [31:0] ID_RS_data, ID_RT_data;
 
 	wire [1:0] RegDst;
@@ -72,6 +73,8 @@ module ID_tb;
 		.opcode_ID(ID_Instruction[31:26]),	//IN
 		.opcode_EX(EX_Opcode),			//IN
 		.opcode_MEM(MEM_Opcode),		//IN
+		.EX_RegWrite(WB_MEM_EX[8]),		//IN
+		.MEM_RegWrite(WB_MEM[2]),		//IN
 		.ID_RS(ID_Instruction[25:21]), 		//IN
 		.ID_RT(ID_Instruction[20:16]),		//IN
 		.EX_RS(EX_RS),				//IN
@@ -86,9 +89,10 @@ module ID_tb;
 		.CONT_1(CONT_1), 
 		.CONT_2a(CONT_2a), 
 		.CONT_2b(CONT_2b), 
-		.DATA_1(DATA_1), 
-		.DATA_2(DATA_2), 
-		.DATA_3(DATA_3)
+		.DATA_1a(DATA_1a), 
+		.DATA_1b(DATA_1b), 
+		.DATA_2a(DATA_2a),
+		.DATA_2b(DATA_2b)
 	);
 	
 	Sign_extend Sign_extend_top(
@@ -198,6 +202,8 @@ module ID_tb;
 		.ID_RT(ID_Instruction[20:16]),		//IN
 		.MEM_RD(MEM_RD),			//IN
 		.WB_RD(WB_RD),				//IN
+		.MEM_FW(WB_MEM[2]),			//IN
+		.WB_FW(WB_EX[0]),			//IN
 		.FW_sig1(FW_sig_ID_1),			//OUT
 		.FW_sig2(FW_sig_ID_2)			//OUT
 	);
@@ -241,175 +247,235 @@ module ID_tb;
 		RESET = 1'b1; IF_PC_4 = 32'd0; IF_Instruction  = 32'b00000000000000000000000000000000;
 		#10 RESET = 1'b0; 
 		//--------------------
-//--------------------
-#20 CASE = 4'd0; CYCLE = 4'd1;
-IF_Instruction  = 32'b10001111101010000000000000000000;
-IF_PC_4 = 32'd0;
-WB_RD = 5'd0;
-WB_RD_DATA = 32'd0;
-WB_EX = 3'd0;
-MEM_RD = 5'd0;
-MEM_ALU_RESULT = 32'd0;
-MEM_Opcode = 6'b000000;
+		/*
+		[ID_tb]
+		0. Normal operate
+		1. Data Hazard (lw-R, i)
+		2. Data Hazard* (lw-lw,sw-R)
+		XXX 3. Data Hazard (sw-lw) XXX
+		4. Control Hazard (R-Branch)
+		5. Control Hazard (lw-Branch)
+		6. Branch taken
+		7. Jump
+		8. Forwarding (MEM)
+		9. Forwarding (WB)
+		10. Double Data Hazard(MEM, WB)
+		XXX 11. Register Saving Test (ID & WB) >> Solved using Foewarding ID
+		12. Branch taken with Forwarding (MEM)
+		*/
+		//--------------------
+		#20 CASE = 4'd0; CYCLE = 4'd1;
+		IF_Instruction  = 32'b10001111101010000000000000000000;
+		IF_PC_4 = 32'd0;
+		WB_RD = 5'd0; WB_RD_DATA = 32'd0; WB_EX = 3'd0;
+		MEM_RD = 5'd0; MEM_ALU_RESULT = 32'd0; MEM_Opcode = 6'b000000;
+		WB_MEM = 6'd0; MEM_RD = 5'b0; WB_MEM = 5'd0;
 
-#20 CYCLE = 4'd2;
-IF_Instruction  = 32'b00000000101001100011100000100000;
-IF_PC_4 = 32'd4;
+		#20 CYCLE = 4'd2;
+		IF_Instruction  = 32'b00000000101001100011100000100000;
+		IF_PC_4 = 32'd4;
 
-#20 CYCLE = 4'd3;
-IF_Instruction  = 32'b00000000000000000000000000000000;
-IF_PC_4 = 32'd8;
+		#20 CYCLE = 4'd3;
+		IF_Instruction  = 32'b00000000000000000000000000000000;
+		IF_PC_4 = 32'd8;
 
-//--------------------
-#20 CASE = 4'd1; CYCLE = 4'd1;
-IF_Instruction  = 32'b10001111101010000000000000000000;
-IF_PC_4 = 32'd0;
+		//--------------------
+		#20 CASE = 4'd1; CYCLE = 4'd1;
+		IF_Instruction  = 32'b10001111101010000000000000000000;
+		IF_PC_4 = 32'd0;
 
-#20 CYCLE = 4'd2;
-IF_Instruction  = 32'b00000001000001100011100000100000;
-IF_PC_4 = 32'd4;
+		#20 CYCLE = 4'd2;
+		IF_Instruction  = 32'b00000001000001100011100000100000;
+		IF_PC_4 = 32'd4;
 
-#20 CYCLE = 4'd3;
-IF_Instruction  = 32'b00000000000000000000000000000000;
-IF_PC_4 = 32'd8;
+		#20 CYCLE = 4'd3;
+		IF_PC_4 = 32'd8; MEM_Opcode = 6'b100011; MEM_RD=5'b01000;
 
-#20 CYCLE = 4'd4; IF_PC_4 = 32'd12;
-#20 CYCLE = 4'd5; IF_PC_4 = 32'd16;
+		#20 CYCLE = 4'd4; IF_PC_4 = 32'd12;
+		MEM_Opcode = 6'b000000; MEM_RD=5'b00111;
 
-//--------------------
-#20 CASE = 4'd3; CYCLE = 4'd1;
-IF_Instruction  = 32'b10101101000010100000000000000000;
-IF_PC_4 = 32'd0;
+		#20 CYCLE = 4'd5; IF_PC_4 = 32'd16; 
+		IF_Instruction  = 32'b00000000000000000000000000000000;
+		//--------------------
+		#20 CASE = 4'd2; CYCLE = 4'd1;
+		IF_Instruction  = 32'b10001100000010000000000000000000;
+		IF_PC_4 = 32'd0; MEM_RD=5'd0;
 
-#20 CYCLE = 4'd2;
-IF_Instruction  = 32'b10001101000010100000000000000000;
-IF_PC_4 = 32'd4;
+		#20 CYCLE = 4'd2;
+		IF_Instruction  = 32'b10001101000010100000000000000000;
+		IF_PC_4 = 32'd4;
 
-#20 CYCLE = 4'd3;
-IF_Instruction  = 32'b00000000000000000000000000000000;
-IF_PC_4 = 32'd8;
+		#20 CYCLE = 4'd3;
+		IF_PC_4 = 32'd8; MEM_Opcode = 6'b100011; MEM_RD=5'b01000; WB_MEM = 5'b00100;
 
-#20 CYCLE = 4'd4; IF_PC_4 = 32'd12;
-#20 CYCLE = 4'd5; IF_PC_4 = 32'd16;
-//--------------------
-#20 CASE = 4'd4; CYCLE = 4'd1;
-IF_Instruction  = 32'b00000001000010100100100000100000;
-IF_PC_4 = 32'd0;
+		#20 CYCLE = 4'd4; IF_PC_4 = 32'd12; 
+		WB_MEM = 5'b00000;
+		
+		#20 CYCLE = 4'd5; IF_PC_4 = 32'd16;
+		IF_Instruction  = 32'b00000000000000000000000000000000;
 
-#20 CYCLE = 4'd2;
-IF_Instruction  = 32'b00010001001111000000000000000000;
-IF_PC_4 = 32'd4;
+		#20 CYCLE = 4'd6; IF_PC_4 = 32'd20; 
 
-#20 CYCLE = 4'd3;
-IF_Instruction  = 32'b00000000000000000000000000000000;
-IF_PC_4 = 32'd8;
+		#20 CYCLE = 4'd7; IF_PC_4 = 32'd24; MEM_Opcode = 6'b000000; MEM_RD=5'd0; 
 
-#20 CYCLE = 4'd4; IF_PC_4 = 32'd12;
-#20 CYCLE = 4'd5; IF_PC_4 = 32'd16;
-//--------------------
-#20 CASE = 4'd5; CYCLE = 4'd1;
-IF_Instruction  = 32'b10001101000010100000000000000000;
-IF_PC_4 = 32'd0;
+		//--------------------
+/*
+		#20 CASE = 4'd3; CYCLE = 4'd1;
+		IF_Instruction  = 32'b10101101000010100000000000000000;
+		IF_PC_4 = 32'd0;
 
-#20 CYCLE = 4'd2;
-IF_Instruction  = 32'b00010101001010100000000000000000;
-IF_PC_4 = 32'd4;
+		#20 CYCLE = 4'd2;
+		IF_Instruction  = 32'b10001101000010100000000000000000;
+		IF_PC_4 = 32'd4;
 
+		#20 CYCLE = 4'd3;
+		IF_Instruction  = 32'b00000000000000000000000000000000;
+		IF_PC_4 = 32'd8;
 
+		#20 CYCLE = 4'd4; IF_PC_4 = 32'd12;
+		#20 CYCLE = 4'd5; IF_PC_4 = 32'd16;
+*/
+		//--------------------
+		#20 CASE = 4'd4; CYCLE = 4'd1;
+		IF_Instruction  = 32'b00000001000010100100100000100000;
+		IF_PC_4 = 32'd0;
 
-#20 CYCLE = 4'd3;
-IF_Instruction  = 32'b00010101001010100000000000000000;
-IF_PC_4 = 32'd8;  //4
-MEM_RD = 5'b01010;
-MEM_Opcode = 6'b100011;
-MEM_ALU_RESULT = 32'd0;
+		#20 CYCLE = 4'd2;
+		IF_Instruction  = 32'b00010001001111000000000000000000;
+		IF_PC_4 = 32'd4;
 
-#20 CYCLE = 4'd4; IF_Instruction  = 32'b00000000000000000000000000000000; IF_PC_4 = 32'd12; MEM_RD = 5'd0;
-#20 CYCLE = 4'd5; IF_PC_4 = 32'd16;
-#20 CYCLE = 4'd5; IF_PC_4 = 32'd20;
+		#20 CYCLE = 4'd3;
+		IF_Instruction  = 32'b00000000000000000000000000000000;
+		IF_PC_4 = 32'd8;
 
-//--------------------
-#20 CASE = 4'd6; CYCLE = 4'd1;
-IF_Instruction  = 32'b00010001001010100000000000000000;
-IF_PC_4 = 32'd0;
+		#20 CYCLE = 4'd4; IF_PC_4 = 32'd12;
+		#20 CYCLE = 4'd5; IF_PC_4 = 32'd16;
+		//--------------------
+		#20 CASE = 4'd5; CYCLE = 4'd1;
+		IF_Instruction  = 32'b10001101000010100000000000000000;
+		IF_PC_4 = 32'd0;
 
-#20 CYCLE = 4'd2;
-IF_Instruction  = 32'b00000001000010100100100000100000;
-IF_PC_4 = 32'd4;
+		#20 CYCLE = 4'd2;
+		IF_Instruction  = 32'b00010101001010100000000000000000;
+		IF_PC_4 = 32'd4;
 
-#20 CYCLE = 4'd3;
-IF_Instruction  = 32'b00000000000000000000000000000000;
-IF_PC_4 = 32'd8;
+		#20 CYCLE = 4'd3;
+		//IF_Instruction  = 32'b00010101001010100000000000000000;
+		IF_PC_4 = 32'd8;  //4
+		MEM_RD = 5'b01010;
+		MEM_Opcode = 6'b100011;
+		MEM_ALU_RESULT = 32'd0;
 
-//--------------------
-#20 CASE = 4'd7; CYCLE = 4'd1;
-IF_Instruction  = 32'b00001000000000000000000000000001;
-IF_PC_4 = 32'd0;
+		#20 CYCLE = 4'd4;  
+		IF_PC_4 = 32'd12; MEM_RD = 5'd0; MEM_Opcode = 6'b000101;
+		#20 CYCLE = 4'd5; IF_PC_4 = 32'd16; IF_Instruction  = 32'b00000000000000000000000000000000;
+		#20 CYCLE = 4'd5; IF_PC_4 = 32'd20;
 
+		//--------------------
+		#20 CASE = 4'd6; CYCLE = 4'd1;
+		IF_Instruction  = 32'b00010001001010100000000000000000;
+		IF_PC_4 = 32'd0; MEM_Opcode = 6'b000000;
 
-#20 CYCLE = 4'd2;
-IF_Instruction  = 32'b00000001000010100100100000100000;
-IF_PC_4 = 32'd4;
+		#20 CYCLE = 4'd2;
+		IF_Instruction  = 32'b00000001000010100100100000100000;
+		IF_PC_4 = 32'd4;
 
-#20 CYCLE = 4'd3;
-IF_Instruction  = 32'b00000000000000000000000000000000;
-IF_PC_4 = 32'd8;
+		#20 CYCLE = 4'd3;
+		IF_Instruction  = 32'b00000000000000000000000000000000;
+		IF_PC_4 = 32'd8;
 
-//--------------------
-#20 CASE = 4'd8; CYCLE = 4'd1;
-IF_Instruction  = 32'b00010001000010100000000000000000;
-IF_PC_4 = 32'd0;
-WB_RD = 5'd2;
-WB_RD_DATA = 32'd2;
-WB_EX = 3'd1;
-MEM_RD = 5'd8;
-MEM_ALU_RESULT = 32'd8;
+		//--------------------
+		#20 CASE = 4'd7; CYCLE = 4'd1;
+		IF_Instruction  = 32'b00001000000000000000000000000001;
+		IF_PC_4 = 32'd0;
 
-#20 CYCLE = 4'd2;
-IF_Instruction  = 32'b00000000000000000000000000000000;
-IF_PC_4 = 32'd4;
-WB_RD = 5'd0;
-WB_RD_DATA = 32'd0;
-WB_EX = 3'd0;
-MEM_RD = 5'd0;
-MEM_ALU_RESULT = 32'd0;
-//--------------------
-#20 CASE = 4'd9; CYCLE = 4'd1;
-IF_Instruction  = 32'b00010001000010100000000000000000;
-IF_PC_4 = 32'd0;
-WB_RD = 5'd8;
-WB_RD_DATA = 32'd8;
-WB_EX = 3'd1;
-MEM_RD = 5'd2;
-MEM_ALU_RESULT = 32'd2;
+		#20 CYCLE = 4'd2;
+		IF_Instruction  = 32'b00000001000010100100100000100000;
+		IF_PC_4 = 32'd4;
 
-#20 CYCLE = 4'd2;
-IF_Instruction  = 32'b00000000000000000000000000000000;
-IF_PC_4 = 32'd4;
-WB_RD = 5'd0;
-WB_RD_DATA = 32'd0;
-WB_EX = 3'd0;
-MEM_RD = 5'd0;
-MEM_ALU_RESULT = 32'd0;
+		#20 CYCLE = 4'd3;
+		IF_Instruction  = 32'b00000000000000000000000000000000;
+		IF_PC_4 = 32'd8;
 
-//--------------------
-#20 CASE = 4'd10; CYCLE = 4'd1;
-IF_Instruction  = 32'b00010001000010100000000000000000;
-IF_PC_4 = 32'd0;
-WB_RD = 5'd8;
-WB_RD_DATA = 32'd8;
-WB_EX = 3'd1;
-MEM_RD = 5'd8;
-MEM_ALU_RESULT = 32'd2;
+		//--------------------
+		#20 CASE = 4'd8; CYCLE = 4'd1;
+		IF_Instruction  = 32'b00010001000010100000000000000000;
+		IF_PC_4 = 32'd0;
+		WB_RD = 5'd2;
+		WB_RD_DATA = 32'd2;
+		WB_EX = 3'd1;
+		MEM_RD = 5'd8;
+		MEM_ALU_RESULT = 32'd8;
+		WB_MEM = 6'b000100;
 
-#20 CYCLE = 4'd2;
-IF_Instruction  = 32'b00000000000000000000000000000000;
-IF_PC_4 = 32'd4;
-WB_RD = 5'd0;
-WB_RD_DATA = 32'd0;
-WB_EX = 3'd0;
-MEM_RD = 5'd0;
-MEM_ALU_RESULT = 32'd0;
+		#20 CYCLE = 4'd2;
+		IF_Instruction  = 32'b00000000000000000000000000000000;
+		IF_PC_4 = 32'd4;
+		WB_RD = 5'd0;
+		WB_RD_DATA = 32'd0;
+		WB_EX = 3'd0;
+		MEM_RD = 5'd0;
+		MEM_ALU_RESULT = 32'd0;
+		WB_MEM = 6'b000000;
+
+		//--------------------
+		#20 CASE = 4'd9; CYCLE = 4'd1;
+		IF_Instruction  = 32'b00010001000010100000000000000000;
+		IF_PC_4 = 32'd0;
+		WB_RD = 5'd8;
+		WB_RD_DATA = 32'd8;
+		WB_EX = 3'd1;
+		MEM_RD = 5'd2;
+		MEM_ALU_RESULT = 32'd2;
+		
+		#20 CYCLE = 4'd2;
+		IF_Instruction  = 32'b00000000000000000000000000000000;
+		IF_PC_4 = 32'd4;
+		WB_RD = 5'd0;
+		WB_RD_DATA = 32'd0;
+		WB_EX = 3'd0;
+		MEM_RD = 5'd0;
+		MEM_ALU_RESULT = 32'd0;
+	
+		//--------------------
+		#20 CASE = 4'd10; CYCLE = 4'd1;
+		IF_Instruction  = 32'b00010001000010100000000000000000;
+		IF_PC_4 = 32'd0;
+		WB_RD = 5'd8;
+		WB_RD_DATA = 32'd8;
+		WB_EX = 3'd1;
+		MEM_RD = 5'd8;
+		MEM_ALU_RESULT = 32'd2;
+		WB_MEM = 6'b000100;
+
+		#20 CYCLE = 4'd2;
+		IF_Instruction  = 32'b00000000000000000000000000000000;
+		IF_PC_4 = 32'd4;
+		WB_RD = 5'd0;
+		WB_RD_DATA = 32'd0;
+		WB_EX = 3'd0;
+		MEM_RD = 5'd0;
+		MEM_ALU_RESULT = 32'd0;
+		//--------------------
+		#20 CASE = 4'd12; CYCLE = 4'd1;
+		IF_Instruction  = 32'b00010001000010000000000000000000;
+		IF_PC_4 = 32'd0;
+		WB_RD = 5'd0;
+		WB_RD_DATA = 32'd0;
+		WB_EX = 3'd1;
+		MEM_RD = 5'd8;
+		MEM_ALU_RESULT = 32'd12;
+		WB_MEM = 6'b000100;
+
+		#20 CYCLE = 4'd2;
+		IF_Instruction  = 32'b00000000000000000000000000000000;
+		IF_PC_4 = 32'd4;
+		WB_RD = 5'd0;
+		WB_RD_DATA = 32'd0;
+		WB_EX = 3'd0;
+		MEM_RD = 5'd0;
+		MEM_ALU_RESULT = 32'd0;
+		WB_MEM = 6'b000000;
 		//
 	end
 

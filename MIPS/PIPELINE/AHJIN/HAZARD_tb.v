@@ -4,6 +4,7 @@ module HAZARD_tb;
 	reg CLK, RESET;
 	reg [31:0] IF_PC_4;
 	reg [31:0] ID_Instruction;
+	reg EX_RegWrite; //@@@@@@@@@@@@@@@@@
 	reg [5:0] EX_Opcode;
 	reg [4:0] EX_RS, EX_RD;
 	reg [5:0] MEM_Opcode;
@@ -23,6 +24,7 @@ module HAZARD_tb;
 		.opcode_ID(ID_Instruction[31:26]),	//IN
 		.opcode_EX(EX_Opcode),			//IN
 		.opcode_MEM(MEM_Opcode),
+		.EX_RegWrite(EX_RegWrite),		//IN
 		.ID_RS(ID_Instruction[25:21]), 		//IN
 		.ID_RT(ID_Instruction[20:16]),		//IN
 		.EX_RS(EX_RS),				//IN
