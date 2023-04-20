@@ -20,8 +20,8 @@ always @(posedge CLK or posedge RESET) begin
         // Reset all registers
         M_WB <= 2'b0;
         WB_Opcode <= 6'b0;
-        WB_ALU_RESULT <= 32'sd0;
-        WB_RD_Data <= 32'sd0;
+        WB_ALU_RESULT <= 32'd0;
+        WB_RD_Data <= 32'd0;
         WB_RD <= 5'b0;
         WB_PC_4 <= 32'd0;
     end else begin
