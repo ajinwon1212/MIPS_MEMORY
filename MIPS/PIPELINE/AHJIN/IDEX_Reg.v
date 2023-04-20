@@ -10,7 +10,7 @@ module IDEX_Reg (
 	input [4:0] ID_Shmpt,				//IN
 	input [5:0] ID_Funct,				//IN
 	input [4:0] ID_RD,				//IN
-	//input [31:0] ID_PC_4,				//IN
+	input [31:0] ID_PC_4,				//IN
 	output reg [10:0] WB_MEM_EX,			//OUT
 	output reg [5:0] EX_Opcode,			//OUT
 	output reg [4:0] EX_RS,				//OUT
@@ -19,8 +19,8 @@ module IDEX_Reg (
 	output reg [31:0] EX_Sign_extend,		//OUT
 	output reg [4:0] EX_Shmpt,			//OUT
 	output reg [5:0] EX_Funct,			//OUT
-	output reg [4:0] EX_RD				//OUT
-	//output reg [31:0] EX_PC_4			//OUT
+	output reg [4:0] EX_RD,				//OUT
+	output reg [31:0] EX_PC_4			//OUT
 );
 
 	always @(posedge CLK or posedge RESET)
@@ -36,7 +36,7 @@ module IDEX_Reg (
 		EX_Shmpt <= 5'b0;
 		EX_Funct <= 6'b0;
 		EX_RD <= 5'b0;
-		//EX_PC_4 <= 32'b0;
+		EX_PC_4 <= 32'b0;
 		end
 	else
 	begin
@@ -49,7 +49,7 @@ module IDEX_Reg (
 		EX_Shmpt <= ID_Shmpt;
 		EX_Funct <= ID_Funct;
 		EX_RD <= ID_RD;
-		//EX_PC_4 <= ID_PC_4;
+		EX_PC_4 <= ID_PC_4;
 	end
 	end
 

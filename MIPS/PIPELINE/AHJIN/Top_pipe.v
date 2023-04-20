@@ -458,17 +458,17 @@ module Top_pipe(CLK, RESET);
 	//MemtoReg/RegWrite/
 
 
-	WBMEM_Reg WBMEM(
+	MEMWB_Reg MEMWB(
 		.CLK(CLK),					//IN
 		.RESET(RESET),					//IN
 		.WB_MEM(WB_MEM),				//IN
-		.MEM_Opcode(MEM_Opcode),			//IN
+		//.MEM_Opcode(MEM_Opcode),			//IN
 		.MEM_ALU_RESULT(MEM_ALU_RESULT),		//IN
 		.MEM_RD_DATA(MEM_RD_DATA),			//IN
 		.MEM_RD(MEM_RD),				//IN
 		.MEM_PC_4(MEM_PC_4),				//IN
 		.WB_EX(WB_EX),					//OUT
-		.WB_Opcode(WB_Opcode),				//OUT
+		//.WB_Opcode(WB_Opcode),				//OUT
 		.WB_ALU_RESULT(WB_ALU_RESULT),			//OUT
 		.WB_RD_Data(WB_RD_Data),			//OUT
 		.WB_RD(WB_RD),					//OUT

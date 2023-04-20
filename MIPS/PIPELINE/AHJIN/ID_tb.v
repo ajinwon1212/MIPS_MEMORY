@@ -27,13 +27,13 @@ module ID_tb;
 	reg [4:0] WB_MEM; //[2]
 	reg [4:0] WB_RD;
 	reg [31:0] WB_RD_DATA;
-	reg [2:0] WB_EX; //[0]
+	reg [2:0] WB; //[0]
 	wire [31:0] ID_RS_data, ID_RT_data;
 
 	wire [1:0] RegDst;
-	wire [2:0] WB;
-	wire [1:0] MEM;
-	wire [5:0] EX;
+	wire [2:0] WB_CONT;
+	wire [1:0] MEM_CONT;
+	wire [5:0] EX_CONT;
 
 	wire [31:0] WB_MEM_EX_32;
 
@@ -53,7 +53,7 @@ module ID_tb;
 	wire [4:0] EX_Shmpt;
 	wire [5:0] EX_Funct;
 	//wire [4:0] EX_RD;
-	//wire [31:0] EX_PC_4;
+	wire [31:0] EX_PC_4;
 
 	IFID_Reg IFID(
 		.CLK(CLK),				//IN
@@ -134,7 +134,7 @@ module ID_tb;
 	Registers Registers_top(
 		.CLK(CLK),					//IN
 		.RESET(RESET),					//IN
-		.RegWrite(WB_EX[0]),				//IN
+		.RegWrite(WB[0]),				//IN
 		.Read_register_1(ID_Instruction[25:21]),	//IN
 		.Read_register_2(ID_Instruction[20:16]),	//IN
 		.Write_register(WB_RD),				//IN
@@ -150,9 +150,9 @@ module ID_tb;
 		.funct(ID_Instruction[5:0]),	//IN
 		.RegDst(RegDst),		//OUT
 		.Jump(Jump),			//OUT @@TIming Issue
-		.WB(WB),			//OUT 3bit
-		.MEM(MEM),			//OUT 2bit
-		.EX(EX)				//OUT 6bit
+		.WB_CONT(WB_CONT),		//OUT 3bit
+		.MEM_CONT(MEM_CONT),		//OUT 2bit
+		.EX_CONT(EX_CONT)		//OUT 6bit
 	);
 
 
@@ -160,10 +160,10 @@ module ID_tb;
 	//	0	/MemtoReg/RegWrite/MemRead/MemWrite/ALUOP/ALUSrc/HiLo/
 
 	MUX2to1 MUX3(
-		.a({21'd0,WB,MEM,EX}),	//IN
-		.b(32'd0),		//IN 
-		.sig(Hazard_Ctrl),	//IN
-		.out(WB_MEM_EX_32)	//OUT
+		.a({21'd0,WB_CONT,MEM_CONT,EX_CONT}),	//IN
+		.b(32'd0),				//IN 
+		.sig(Hazard_Ctrl),			//IN
+		.out(WB_MEM_EX_32)			//OUT
 	);
 
 	MUX4to1 MUX4(
@@ -203,7 +203,7 @@ module ID_tb;
 		.MEM_RD(MEM_RD),			//IN
 		.WB_RD(WB_RD),				//IN
 		.MEM_FW(WB_MEM[2]),			//IN
-		.WB_FW(WB_EX[0]),			//IN
+		.WB_FW(WB[0]),				//IN
 		.FW_sig1(FW_sig_ID_1),			//OUT
 		.FW_sig2(FW_sig_ID_2)			//OUT
 	);
@@ -220,17 +220,17 @@ module ID_tb;
 		.ID_Shmpt(ID_Instruction[10:6]),	//IN
 		.ID_Funct(ID_Instruction[5:0]),		//IN
 		.ID_RD(ID_RD_32[4:0]),			//IN
-		//.ID_PC_4(ID_PC_4),			//IN
+		.ID_PC_4(ID_PC_4),			//IN
 		.WB_MEM_EX(WB_MEM_EX),			//OUT
 		.EX_Opcode(EX_Opcode),			//OUT @@@
-		.EX_RS(EX_RS),
+		.EX_RS(EX_RS),				//OUT
 		.EX_RS_Data(EX_RS_Data),		//OUT
 		.EX_RT_Data(EX_RT_Data),		//OUT
 		.EX_Sign_extend(EX_Sign_extend),	//OUT
 		.EX_Shmpt(EX_Shmpt),			//OUT
 		.EX_Funct(EX_Funct),			//OUT
-		.EX_RD(EX_RD)				//OUT
-		//.EX_PC_4(EX_PC_4)			//OUT
+		.EX_RD(EX_RD),				//OUT
+		.EX_PC_4(EX_PC_4)			//OUT
 	);
 
 	initial
@@ -267,7 +267,7 @@ module ID_tb;
 		#20 CASE = 4'd0; CYCLE = 4'd1;
 		IF_Instruction  = 32'b10001111101010000000000000000000;
 		IF_PC_4 = 32'd0;
-		WB_RD = 5'd0; WB_RD_DATA = 32'd0; WB_EX = 3'd0;
+		WB_RD = 5'd0; WB_RD_DATA = 32'd0; WB = 3'd0;
 		MEM_RD = 5'd0; MEM_ALU_RESULT = 32'd0; MEM_Opcode = 6'b000000;
 		WB_MEM = 6'd0; MEM_RD = 5'b0; WB_MEM = 5'd0;
 
@@ -403,7 +403,7 @@ module ID_tb;
 		IF_PC_4 = 32'd0;
 		WB_RD = 5'd2;
 		WB_RD_DATA = 32'd2;
-		WB_EX = 3'd1;
+		WB = 3'd1;
 		MEM_RD = 5'd8;
 		MEM_ALU_RESULT = 32'd8;
 		WB_MEM = 6'b000100;
@@ -413,7 +413,7 @@ module ID_tb;
 		IF_PC_4 = 32'd4;
 		WB_RD = 5'd0;
 		WB_RD_DATA = 32'd0;
-		WB_EX = 3'd0;
+		WB = 3'd0;
 		MEM_RD = 5'd0;
 		MEM_ALU_RESULT = 32'd0;
 		WB_MEM = 6'b000000;
@@ -424,7 +424,7 @@ module ID_tb;
 		IF_PC_4 = 32'd0;
 		WB_RD = 5'd8;
 		WB_RD_DATA = 32'd8;
-		WB_EX = 3'd1;
+		WB = 3'd1;
 		MEM_RD = 5'd2;
 		MEM_ALU_RESULT = 32'd2;
 		
@@ -433,7 +433,7 @@ module ID_tb;
 		IF_PC_4 = 32'd4;
 		WB_RD = 5'd0;
 		WB_RD_DATA = 32'd0;
-		WB_EX = 3'd0;
+		WB = 3'd0;
 		MEM_RD = 5'd0;
 		MEM_ALU_RESULT = 32'd0;
 	
@@ -443,7 +443,7 @@ module ID_tb;
 		IF_PC_4 = 32'd0;
 		WB_RD = 5'd8;
 		WB_RD_DATA = 32'd8;
-		WB_EX = 3'd1;
+		WB = 3'd1;
 		MEM_RD = 5'd8;
 		MEM_ALU_RESULT = 32'd2;
 		WB_MEM = 6'b000100;
@@ -453,7 +453,7 @@ module ID_tb;
 		IF_PC_4 = 32'd4;
 		WB_RD = 5'd0;
 		WB_RD_DATA = 32'd0;
-		WB_EX = 3'd0;
+		WB = 3'd0;
 		MEM_RD = 5'd0;
 		MEM_ALU_RESULT = 32'd0;
 		//--------------------
@@ -462,7 +462,7 @@ module ID_tb;
 		IF_PC_4 = 32'd0;
 		WB_RD = 5'd0;
 		WB_RD_DATA = 32'd0;
-		WB_EX = 3'd1;
+		WB = 3'd1;
 		MEM_RD = 5'd8;
 		MEM_ALU_RESULT = 32'd12;
 		WB_MEM = 6'b000100;
@@ -472,7 +472,7 @@ module ID_tb;
 		IF_PC_4 = 32'd4;
 		WB_RD = 5'd0;
 		WB_RD_DATA = 32'd0;
-		WB_EX = 3'd0;
+		WB = 3'd0;
 		MEM_RD = 5'd0;
 		MEM_ALU_RESULT = 32'd0;
 		WB_MEM = 6'b000000;
