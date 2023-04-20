@@ -1,5 +1,4 @@
 [IF_tb]
-
 1. Jump 테스트
 2. Branch 테스트
 3. PC+4 테스트
@@ -7,34 +6,24 @@
 5. IFIDWrite 테스트
 6. IF_Flush 테스트
 
-Jump_Addr = 31'd4;
-BTB_Addr = 31'd16;
-Branch = 1'b1;
-Jump = 1'b1;
-PCWrite = 1'b1;
-IFIDWrite = 1'b1;
-IF_Flush = 1'b1;
-
 [ID_tb]
 0. Normal operate
-1. Data Hazard (lw-R, i)
-2. Data Hazard* (lw-lw,sw)
-3. Data Hazard (sw-lw)
-4. Control Hazard (R-Branch)
-5. Control Hazard (lw-Branch)
+1. Data Hazard 1 (lw-R)
+2. Data Hazard 2 (lw-lw)
+XXX 3. Data Hazard 3 (sw-lw) XXX
+4. Control Hazard 1 (R-Branch)
+5. Control Hazard 2 (lw-Branch)
 6. Branch taken
 7. Jump
 8. Forwarding (MEM)
 9. Forwarding (WB)
 10. Double Data Hazard(MEM, WB)
-11. Register Saving Test (ID & WB)
-=동시에 일어나면 어떻게 되는지?
+XXX 11. Register Saving Test (ID & WB) >> Solved using Foewarding ID
+12. Branch taken with Forwarding (MEM)
 
+[WB_tb]
 
-IF_Instruction = 32'b;
-IF_PC_4 = 32'b;
-WB_RD = 5'b;
-WB_RD_DATA = 32'b;
-WB_EX = 3'b; //0bit중요
-MEM_RD = 5'b;
-MEM_ALU_RESULT = 32'b;
+1. WB Data from MEM READ (LW)
+2. WB Data from ALU (R ...)
+3. WB data from PC+4 (jal)
+

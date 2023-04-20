@@ -1,9 +1,8 @@
 module WB_tb;
 
-	reg CLK, RESET;
-	
 	reg [3:0] CASE, CYCLE;
 
+	reg CLK, RESET;
 	reg [4:0] WB_MEM;
 	reg [31:0] MEM_ALU_RESULT;
 	reg [31:0] MEM_RD_DATA;
@@ -98,12 +97,12 @@ module WB_tb;
 		MEM_PC_4 = 32'd0;
 
 		#20
-		CASE = 4'd1; CYCLE=4'd2;
+		CASE = 4'd2; CYCLE=4'd2;
 		WB_MEM = 5'd0;
 		MEM_ALU_RESULT = 32'd0;
 		MEM_RD_DATA = 32'd0;
 		MEM_RD = 5'd0;
-		MEM_PC_4 = 32'd4;	
+		MEM_PC_4 = 32'd0;	
 
 		//----------------
 		#40 
@@ -112,15 +111,15 @@ module WB_tb;
 		MEM_ALU_RESULT = 32'd1;
 		MEM_RD_DATA = 32'd2;
 		MEM_RD = 5'd10;
-		MEM_PC_4 = 32'd0;
+		MEM_PC_4 = 32'd4;
 
 		#20
-		CASE = 4'd1; CYCLE=4'd2;
+		CASE = 4'd3; CYCLE=4'd2;
 		WB_MEM = 5'd0;
 		MEM_ALU_RESULT = 32'd0;
 		MEM_RD_DATA = 32'd0;
 		MEM_RD = 5'd0;
-		MEM_PC_4 = 32'd4;
+		MEM_PC_4 = 32'd0;
 
 	end
 

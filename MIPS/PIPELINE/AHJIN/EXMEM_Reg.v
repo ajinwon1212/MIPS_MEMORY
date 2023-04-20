@@ -18,14 +18,14 @@ module EXMEM_Reg (
 always @(posedge CLK or posedge RESET) begin
     if (RESET) begin
         WB_MEM <= 5'b0;
-	MEM_Opcode <= 6'b0;
+        MEM_Opcode <= 6'b0;
         MEM_ALU_RESULT <= 32'd0;
         MEM_RT_DATA <= 32'd0;
         MEM_RD <= 5'b0;
         MEM_PC_4 <= 32'b0;
     end else begin
         WB_MEM <= WB_MEM_EX[10:6];
-	MEM_Opcode <= EX_Opcode;
+        MEM_Opcode <= EX_Opcode;
         MEM_ALU_RESULT <= EX_ALU_RESULT;
         MEM_RT_DATA <= EX_RT_DATA;
         MEM_RD <= EX_RD;

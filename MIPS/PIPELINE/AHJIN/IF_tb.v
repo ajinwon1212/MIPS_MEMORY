@@ -2,6 +2,7 @@
 
 module IF_tb;
 
+	reg [3:0] CASE, CYCLE;
 	reg [31:0] Jump_Addr, BTB_Addr;
 	reg Branch, Jump;
 	wire [31:0] PC_next;
@@ -73,7 +74,7 @@ module IF_tb;
 		RESET = 1'b1;
 		#10 RESET = 1'b0; 
 
-		#20
+		#20 CASE=4'd1; CYCLE=4'd1;
 	//0. PC+4 Test 00100011101111011111111111110000
 		Jump_Addr = 31'd4;
 		BTB_Addr = 31'd16;
@@ -82,8 +83,11 @@ module IF_tb;
 		PCWrite = 1'b1;
 		IFIDWrite = 1'b1;
 		IF_Flush = 1'b0;
+		#20 CASE=4'd1; CYCLE=4'd2;
+		#20 CASE=4'd1; CYCLE=4'd3;
 
-		#60
+
+		#20 CASE=4'd2; CYCLE=4'd1;
 	//1.Jump Test
 		Jump_Addr = 31'd4; //00100000000100000000000000001000
 		BTB_Addr = 31'd16; //00000000000000000000000000000000
@@ -93,7 +97,7 @@ module IF_tb;
 		IFIDWrite = 1'b1;
 		IF_Flush = 1'b0;
 
-		#20
+		#20 CASE=4'd3; CYCLE=4'd1;
 	//2. Branch Test
 		Jump_Addr = 31'd4;
 		BTB_Addr = 31'd16;
@@ -103,7 +107,7 @@ module IF_tb;
 		IFIDWrite = 1'b1;
 		IF_Flush = 1'b0;
 
-		#20
+		#20 CASE=4'd4; CYCLE=4'd1;
 	//3. PCWrite, IFIDWrite Test
 		Jump_Addr = 31'd4;
 		BTB_Addr = 31'd16;
@@ -113,7 +117,7 @@ module IF_tb;
 		IFIDWrite = 1'b0;
 		IF_Flush = 1'b0;
 
-		#20
+		#20 CASE=4'd5; CYCLE=4'd1;
 	//4. IF_Flush Test
 		Jump_Addr = 31'd4;
 		BTB_Addr = 31'd16;
