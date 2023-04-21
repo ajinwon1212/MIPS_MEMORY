@@ -11,8 +11,9 @@
 1. Data Hazard 1 (lw-R)
 2. Data Hazard 2 (lw-lw)
 XXX 3. Data Hazard 3 (sw-lw) XXX
+XXX n. Data Hazard 3 (lw-sw) XXX
 4. Control Hazard 1 (R-Branch)
-5. Control Hazard 2 (lw-Branch)
+5. Control Hazard 2 (lw-Branch) 오호..!
 6. Branch taken
 7. Jump
 8. Forwarding (MEM)
@@ -21,9 +22,26 @@ XXX 3. Data Hazard 3 (sw-lw) XXX
 XXX 11. Register Saving Test (ID & WB) >> Solved using Foewarding ID
 12. Branch taken with Forwarding (MEM)
 
-[WB_tb]
+[EX_tb]
+Arithmetic operations (add, sub, etc.)
+Logical operations (and, or, etc.)
+Shift operations (sll, srl, etc.)
+Set on less than (slt)
+Immediate operations (addi, andi, ori, etc.)
 
+[WB_tb]
 1. WB Data from MEM READ (LW)
 2. WB Data from ALU (R ...)
 3. WB data from PC+4 (jal)
+4. WB data from MEM (sw)
 
+[MEM_tb]
+3. Data Hazard 3 (sw-lw) XXX
+n. Data Hazard 3 (lw-sw) XXX
+
+[WB_tb]
+
+
+WB data from ALU (Immediate operations)
+WB data from ALU (Shift operations)
+WB data from ALU (Set on less than)
