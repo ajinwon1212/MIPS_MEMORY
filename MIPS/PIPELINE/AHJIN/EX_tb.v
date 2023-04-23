@@ -288,235 +288,280 @@ module EX_tb;
 		#10 RESET = 1'b0; 
 		//--------------------
 		/*
-		[ID_tb]
-		0. Normal operate
-		1. Data Hazard (lw-R, i)
-		2. Data Hazard* (lw-lw,sw-R)
-		XXX 3. Data Hazard (sw-lw) XXX
-		4. Control Hazard (R-Branch)
-		5. Control Hazard (lw-Branch)
-		6. Branch taken
-		7. Jump
-		8. Forwarding (MEM)
-		9. Forwarding (WB)
-		10. Double Data Hazard(MEM, WB)
-		XXX 11. Register Saving Test (ID & WB) >> Solved using Foewarding ID
-		12. Branch taken with Forwarding (MEM)
+        1. Forwarding_case_RT:
+        add $t0, $t1, $t2    # -> 0x012A4020
+        lw $t2, 0($t3)       # -> 0x8D6A0000
+        # FW_sig_EX_1: 00 (No Forwarding RS)
+        # FW_sig_EX_2: 11 (Forwarding RT from MEM)
+
+        2. Forwarding_case_RS:
+        add $t0, $t1, $t2   # -> 0x012A4020
+        lw $t1, 0($t3)      # -> 0x8D690000
+        # FW_sig_EX_1: 01 (Forwarding RS from MEM)
+        # FW_sig_EX_2: 00 (No Forwarding RT)
+
+        Forwarding_case_RS_RT:
+        3. # a_series_of_instructions
+        add $t1, $t2, $t3 # -> 0x014B4820
+        add $t4, $t1, $t3 # -> 0x012C6020
+        add $t0, $t1, $t4 # -> 0x012C8020
+        # FW_sig_EX_1: 10 (Forwarding RS from WB)
+        # FW_sig_EX_2: 10 (Forwarding RT from WB)
+
+        4. # Verify a single instruction
+        add $t1, $t2, $t3 # -> 0x014B4820
+        add $t4, $t1, $t1 # -> 0x01298820
+        # FW_sig_EX_1: 10 (Forwarding RS from WB)
+        # FW_sig_EX_2: 00 (No Forwarding RT)
+
+        5. Double_data_hazard_RS:
+        add $t1, $t2, $t3 # -> 0x014B4820
+        lw $t2, 0($t4) # -> 0x8D8A0000
+        lw $t3, 4($t4) # -> 0x8D8B0004
+        add $t0, $t2, $t3 #-> 0x014A4020
+        # FW_sig_EX_1: 01 (Forwarding RS from MEM)
+        # FW_sig_EX_2: 00 or 01 (No Forwarding RT or Forwarding RT from MEM)
+
+        6. mflo_mfhi_test:
+        mult $t0, $t1     #   -> 0x01090018
+        mfhi $t2          #   -> 0x00005010
+        mflo $t3          #   -> 0x00005812
+        # No forwarding is involved in these instructions.
+
+        7. Double_data_hazard_RT:
+        add $t1, $t2, $t3 # -> 0x014B4820
+        lw $t3, 0($t4) # -> 0x8D8B0000
+        lw $t3, 4($t4) # -> 0x8D8B0004
+        add $t0, $t1, $t3 # -> 0x012B4020
+
+        Check_lw_sw_commands:
+        8.
+        lw $t1, 0($t2)      #  -> 0x8D490000
+        sw $t1, 4($t2)      #  -> 0xAD490004
+
+        9.
+        sw $t1, 0($t2)      #  -> 0xAD290000
+        lw $t3, 0($t2)      # -> 0x8D430000
+        
+        10.
+        lw $t1, 0($t2)     #  -> 0x8D290000
+        sw $t3, 4($t2)     #  -> 0xAD630004
+
+        11.
+        sw $t1, 0($t2)     #  -> 0xAD290000
+        lw $t3, 4($t2)     #  -> 0x8D430004
 		*/
 		//--------------------
-		#20 CASE = 4'd0; CYCLE = 4'd1;
-		IF_Instruction  = 32'b10001111101010000000000000000000;
-		IF_PC_4 = 32'd0;
-		WB_RD = 5'd0; WB_RD_DATA = 32'd0; WB = 3'd0;
-		MEM_RD = 5'd0; MEM_ALU_RESULT = 32'd0; MEM_Opcode = 6'b000000;
-		WB_MEM = 6'd0; MEM_RD = 5'b0; WB_MEM = 5'd0;
+// Test case 1: Forwarding case RT
+#20 CASE = 4'd1;
+CYCLE = 4'd1;
+IF_Instruction = 32'b00000001010010000101000000100000; // add $t0, $t1, $t2
+IF_PC_4 = 32'd0;
+// Initialize other control signals as needed
 
-		#20 CYCLE = 4'd2;
-		IF_Instruction  = 32'b00000000101001100011100000100000;
-		IF_PC_4 = 32'd4;
+#20 CYCLE = 4'd2;
+IF_Instruction = 32'b10001101101001000000000000000000; // lw $t2, 0($t3)
+IF_PC_4 = 32'd4;
+// Expected FW_sig_EX_1: 00 (No Forwarding RS)
+// Expected FW_sig_EX_2: 11 (Forwarding RT from MEM)
 
-		#20 CYCLE = 4'd3;
-		IF_Instruction  = 32'b00000000000000000000000000000000;
-		IF_PC_4 = 32'd8;
+// Test case 2: Forwarding case RS
+#20 CASE = 4'd2;
+CYCLE = 4'd1;
+IF_Instruction = 32'b00000001010010000101000000100000; // add $t0, $t1, $t2
+IF_PC_4 = 32'd0;
+// Initialize other control signals as needed
 
-		//--------------------
-		#20 CASE = 4'd1; CYCLE = 4'd1;
-		IF_Instruction  = 32'b10001111101010000000000000000000;
-		IF_PC_4 = 32'd0;
+#20 CYCLE = 4'd2;
+IF_Instruction = 32'b10001101101000100000000000000000; // lw $t1, 0($t3)
+IF_PC_4 = 32'd4;
+// Expected FW_sig_EX_1: 01 (Forwarding RS from MEM)
+// Expected FW_sig_EX_2: 00 (No Forwarding RT)
 
-		#20 CYCLE = 4'd2;
-		IF_Instruction  = 32'b00000001000001100011100000100000;
-		IF_PC_4 = 32'd4;
+// Test case 3: Forwarding_case_RS_RT
+#20 CASE = 4'd3;
+CYCLE = 4'd1;
+IF_Instruction = 32'b00000001001010100100000000100000; // add $t1, $t2, $t3
+IF_PC_4 = 32'd0;
 
-		#20 CYCLE = 4'd3;
-		IF_PC_4 = 32'd8; MEM_Opcode = 6'b100011; MEM_RD=5'b01000;
+#20 CYCLE = 4'd2;
+IF_Instruction = 32'b00000001001010110110000000100000; // add $t4, $t1, $t3
+IF_PC_4 = 32'd4;
 
-		#20 CYCLE = 4'd4; IF_PC_4 = 32'd12;
-		MEM_Opcode = 6'b000000; MEM_RD=5'b00111;
+#20 CYCLE = 4'd3;
+IF_Instruction = 32'b00000001001011000100000000100000; // add $t0, $t1, $t4
+IF_PC_4 = 32'd8;
+// FW_sig_EX_1: 10 (Forwarding RS from WB)
+// FW_sig_EX_2: 10 (Forwarding RT from WB)
 
-		#20 CYCLE = 4'd5; IF_PC_4 = 32'd16; 
-		IF_Instruction  = 32'b00000000000000000000000000000000;
-		//--------------------
-		#20 CASE = 4'd2; CYCLE = 4'd1;
-		IF_Instruction  = 32'b10001100000010000000000000000000;
-		IF_PC_4 = 32'd0; MEM_RD=5'd0;
+// Test case 4: Verify_a_single_instruction
+#20 CASE = 4'd4;
+CYCLE = 4'd1;
+IF_Instruction = 32'b00000001010010110100100000100000; // add $t1, $t2, $t3
+IF_PC_4 = 32'd0;
 
-		#20 CYCLE = 4'd2;
-		IF_Instruction  = 32'b10001101000010100000000000000000;
-		IF_PC_4 = 32'd4;
+#20 CYCLE = 4'd2;
+IF_Instruction = 32'b00000001001010010110000000100000; // add $t4, $t1, $t1
+IF_PC_4 = 32'd4;
+// FW_sig_EX_1: 10 (Forwarding RS from WB)
+// FW_sig_EX_2: 00 (No Forwarding RT)
 
-		#20 CYCLE = 4'd3;
-		IF_PC_4 = 32'd8; MEM_Opcode = 6'b100011; MEM_RD=5'b01000; WB_MEM = 5'b00100;
+// Test case 5: Double_data_hazard_RS
+#20 CASE = 4'd5;
+CYCLE = 4'd1;
+IF_Instruction = 32'b00000001010010110100100000100000; // add $t1, $t2, $t3
+IF_PC_4 = 32'd0;
 
-		#20 CYCLE = 4'd4; IF_PC_4 = 32'd12; 
-		WB_MEM = 5'b00000;
-		
-		#20 CYCLE = 4'd5; IF_PC_4 = 32'd16;
-		IF_Instruction  = 32'b00000000000000000000000000000000;
+#20 CYCLE = 4'd2;
+IF_Instruction = 32'b10001101100010100000000000000000; // lw $t2, 0($t4)
+IF_PC_4 = 32'd4;
 
-		#20 CYCLE = 4'd6; IF_PC_4 = 32'd20; 
+#20 CYCLE = 4'd3;
+IF_Instruction = 32'b10001101100010110000000000000100; // lw $t3, 4($t4)
+IF_PC_4 = 32'd8;
 
-		#20 CYCLE = 4'd7; IF_PC_4 = 32'd24; MEM_Opcode = 6'b000000; MEM_RD=5'd0; 
+#20 CYCLE = 4'd4;
+IF_Instruction = 32'b00000001010010110100000000100000; // add $t0, $t2, $t3
+IF_PC_4 = 32'd12;
+// FW_sig_EX_1: 01 (Forwarding RS from MEM)
+// FW_sig_EX_2: 00 or 01 (No Forwarding RT or Forwarding RT from MEM)
 
-		//--------------------
-/*
-		#20 CASE = 4'd3; CYCLE = 4'd1;
-		IF_Instruction  = 32'b10101101000010100000000000000000;
-		IF_PC_4 = 32'd0;
+// Test case 6: mflo_mfhi_test
+#20 CASE = 4'd6;
+CYCLE = 4'd1;
+IF_Instruction = 32'b00000001000010010000000000011000; // mult $t0, $t1
+IF_PC_4 = 32'd0;
 
-		#20 CYCLE = 4'd2;
-		IF_Instruction  = 32'b10001101000010100000000000000000;
-		IF_PC_4 = 32'd4;
+#20 CYCLE = 4'd2;
+IF_Instruction = 32'b00000000000000000101000000010000; // mfhi $t2
+IF_PC_4 = 32'd4;
 
-		#20 CYCLE = 4'd3;
-		IF_Instruction  = 32'b00000000000000000000000000000000;
-		IF_PC_4 = 32'd8;
+#20 CYCLE = 4'd3;
+IF_Instruction = 32'b00000000000000000101100000010010; // mflo $t3
+IF_PC_4 = 32'd8;
+// No forwarding is involved in these instructions.
 
-		#20 CYCLE = 4'd4; IF_PC_4 = 32'd12;
-		#20 CYCLE = 4'd5; IF_PC_4 = 32'd16;
-*/
-		//--------------------
-		#20 CASE = 4'd4; CYCLE = 4'd1;
-		IF_Instruction  = 32'b00000001000010100100100000100000;
-		IF_PC_4 = 32'd0;
+// Test case 7: Double_data_hazard_RT
+#20 CASE = 4'd7;
+CYCLE = 4'd1;
+IF_Instruction = 32'b00000001010010110100100000100000; // add $t1, $t2, $t3
+IF_PC_4 = 32'd0;
 
-		#20 CYCLE = 4'd2;
-		IF_Instruction  = 32'b00010001001111000000000000000000;
-		IF_PC_4 = 32'd4;
+#20 CYCLE = 4'd2;
+IF_Instruction = 32'b10001101100010110000000000000000; // lw $t3, 0($t4)
+IF_PC_4 = 32'd4;
 
-		#20 CYCLE = 4'd3;
-		IF_Instruction  = 32'b00000000000000000000000000000000;
-		IF_PC_4 = 32'd8;
+#20 CYCLE = 4'd3;
+IF_Instruction = 32'b10001101100010110000000000000100; // lw $t3, 4($t4)
+IF_PC_4 = 32'd8;
 
-		#20 CYCLE = 4'd4; IF_PC_4 = 32'd12;
-		#20 CYCLE = 4'd5; IF_PC_4 = 32'd16;
-		//--------------------
-		#20 CASE = 4'd5; CYCLE = 4'd1;
-		IF_Instruction  = 32'b10001101000010100000000000000000;
-		IF_PC_4 = 32'd0;
+#20 CYCLE = 4'd4;
+IF_Instruction = 32'b00000001001010110100000000100000; // add $t0, $t1, $t3
+IF_PC_4 = 32'd12;
 
-		#20 CYCLE = 4'd2;
-		IF_Instruction  = 32'b00010101001010100000000000000000;
-		IF_PC_4 = 32'd4;
+// Test case 8: Check_lw_sw_commands
+#20 CASE = 4'd8;
+CYCLE = 4'd1;
+IF_Instruction = 32'b10001101010010010000000000000000; // lw $t1, 0($t2)
+IF_PC_4 = 32'd0;
 
-		#20 CYCLE = 4'd3;
-		//IF_Instruction  = 32'b00010101001010100000000000000000;
-		IF_PC_4 = 32'd8;  //4
-		MEM_RD = 5'b01010;
-		MEM_Opcode = 6'b100011;
-		MEM_ALU_RESULT = 32'd0;
+#20 CYCLE = 4'd2;
+IF_Instruction = 32'b10101101010010010000000000000100; // sw $t1, 4($t2)
+IF_PC_4 = 32'd4;
 
-		#20 CYCLE = 4'd4;  
-		IF_PC_4 = 32'd12; MEM_RD = 5'd0; MEM_Opcode = 6'b000101;
-		#20 CYCLE = 4'd5; IF_PC_4 = 32'd16; IF_Instruction  = 32'b00000000000000000000000000000000;
-		#20 CYCLE = 4'd5; IF_PC_4 = 32'd20;
+// Test case 9
+#20 CASE = 4'd9;
+CYCLE = 4'd1;
+IF_Instruction = 32'b10101101010010010000000000000000; // sw $t1, 0($t2)
+IF_PC_4 = 32'd0;
 
-		//--------------------
-		#20 CASE = 4'd6; CYCLE = 4'd1;
-		IF_Instruction  = 32'b00010001001010100000000000000000;
-		IF_PC_4 = 32'd0; MEM_Opcode = 6'b000000;
+#20 CYCLE = 4'd2;
+IF_Instruction = 32'b10001101010010110000000000000000; // lw $t3, 0($t2)
+IF_PC_4 = 32'd4;
 
-		#20 CYCLE = 4'd2;
-		IF_Instruction  = 32'b00000001000010100100100000100000;
-		IF_PC_4 = 32'd4;
+// Test case 10
+#20 CASE = 4'd10;
+CYCLE = 4'd1;
+IF_Instruction = 32'b10001101010010010000000000000000; // lw $t1, 0($t2)
+IF_PC_4 = 32'd0;
 
-		#20 CYCLE = 4'd3;
-		IF_Instruction  = 32'b00000000000000000000000000000000;
-		IF_PC_4 = 32'd8;
+#20 CYCLE = 4'd2;
+IF_Instruction = 32'b10101101010010110000000000000100; // sw $t3, 4($t2)
+IF_PC_4 = 32'd4;
 
-		//--------------------
-		#20 CASE = 4'd7; CYCLE = 4'd1;
-		IF_Instruction  = 32'b00001000000000000000000000000001;
-		IF_PC_4 = 32'd0;
+// Test case 11
+#20 CASE = 4'd11;
+CYCLE = 4'd1;
+IF_Instruction = 32'b10101101010010010000000000000000; // sw $t1, 0($t2)
+IF_PC_4 = 32'd0;
 
-		#20 CYCLE = 4'd2;
-		IF_Instruction  = 32'b00000001000010100100100000100000;
-		IF_PC_4 = 32'd4;
+#20 CYCLE = 4'd2;
+IF_Instruction = 32'b00000000000000000101000000010000; // mfhi $t2
+IF_PC_4 = 32'd4;
 
-		#20 CYCLE = 4'd3;
-		IF_Instruction  = 32'b00000000000000000000000000000000;
-		IF_PC_4 = 32'd8;
+#20 CYCLE = 4'd3;
+IF_Instruction = 32'b00000000000000000101100000010010; // mflo $t3
+IF_PC_4 = 32'd8;
+// No forwarding is involved in these instructions.
 
-		//--------------------
-		#20 CASE = 4'd8; CYCLE = 4'd1;
-		IF_Instruction  = 32'b00010001000010100000000000000000;
-		IF_PC_4 = 32'd0;
-		WB_RD = 5'd2;
-		WB_RD_DATA = 32'd2;
-		WB = 3'd1;
-		MEM_RD = 5'd8;
-		MEM_ALU_RESULT = 32'd8;
-		WB_MEM = 6'b000100;
+// Test case 7: Double_data_hazard_RT
+#20 CASE = 4'd7;
+CYCLE = 4'd1;
+IF_Instruction = 32'b00000001010010110100100000100000; // add $t1, $t2, $t3
+IF_PC_4 = 32'd0;
 
-		#20 CYCLE = 4'd2;
-		IF_Instruction  = 32'b00000000000000000000000000000000;
-		IF_PC_4 = 32'd4;
-		WB_RD = 5'd0;
-		WB_RD_DATA = 32'd0;
-		WB = 3'd0;
-		MEM_RD = 5'd0;
-		MEM_ALU_RESULT = 32'd0;
-		WB_MEM = 6'b000000;
+#20 CYCLE = 4'd2;
+IF_Instruction = 32'b10001101100010110000000000000000; // lw $t3, 0($t4)
+IF_PC_4 = 32'd4;
 
-		//--------------------
-		#20 CASE = 4'd9; CYCLE = 4'd1;
-		IF_Instruction  = 32'b00010001000010100000000000000000;
-		IF_PC_4 = 32'd0;
-		WB_RD = 5'd8;
-		WB_RD_DATA = 32'd8;
-		WB = 3'd1;
-		MEM_RD = 5'd2;
-		MEM_ALU_RESULT = 32'd2;
-		
-		#20 CYCLE = 4'd2;
-		IF_Instruction  = 32'b00000000000000000000000000000000;
-		IF_PC_4 = 32'd4;
-		WB_RD = 5'd0;
-		WB_RD_DATA = 32'd0;
-		WB = 3'd0;
-		MEM_RD = 5'd0;
-		MEM_ALU_RESULT = 32'd0;
-	
-		//--------------------
-		#20 CASE = 4'd10; CYCLE = 4'd1;
-		IF_Instruction  = 32'b00010001000010100000000000000000;
-		IF_PC_4 = 32'd0;
-		WB_RD = 5'd8;
-		WB_RD_DATA = 32'd8;
-		WB = 3'd1;
-		MEM_RD = 5'd8;
-		MEM_ALU_RESULT = 32'd2;
-		WB_MEM = 6'b000100;
+#20 CYCLE = 4'd3;
+IF_Instruction = 32'b10001101100010110000000000000100; // lw $t3, 4($t4)
+IF_PC_4 = 32'd8;
 
-		#20 CYCLE = 4'd2;
-		IF_Instruction  = 32'b00000000000000000000000000000000;
-		IF_PC_4 = 32'd4;
-		WB_RD = 5'd0;
-		WB_RD_DATA = 32'd0;
-		WB = 3'd0;
-		MEM_RD = 5'd0;
-		MEM_ALU_RESULT = 32'd0;
-		//--------------------
-		#20 CASE = 4'd12; CYCLE = 4'd1;
-		IF_Instruction  = 32'b00010001000010000000000000000000;
-		IF_PC_4 = 32'd0;
-		WB_RD = 5'd0;
-		WB_RD_DATA = 32'd0;
-		WB = 3'd1;
-		MEM_RD = 5'd8;
-		MEM_ALU_RESULT = 32'd12;
-		WB_MEM = 6'b000100;
+#20 CYCLE = 4'd4;
+IF_Instruction = 32'b00000001001010110100000000100000; // add $t0, $t1, $t3
+IF_PC_4 = 32'd12;
 
-		#20 CYCLE = 4'd2;
-		IF_Instruction  = 32'b00000000000000000000000000000000;
-		IF_PC_4 = 32'd4;
-		WB_RD = 5'd0;
-		WB_RD_DATA = 32'd0;
-		WB = 3'd0;
-		MEM_RD = 5'd0;
-		MEM_ALU_RESULT = 32'd0;
-		WB_MEM = 6'b000000;
-		//
-	end
+// Test case 8: Check_lw_sw_commands
+#20 CASE = 4'd8;
+CYCLE = 4'd1;
+IF_Instruction = 32'b10001101010010010000000000000000; // lw $t1, 0($t2)
+IF_PC_4 = 32'd0;
+
+#20 CYCLE = 4'd2;
+IF_Instruction = 32'b10101101010010010000000000000100; // sw $t1, 4($t2)
+IF_PC_4 = 32'd4;
+
+// Test case 9
+#20 CASE = 4'd9;
+CYCLE = 4'd1;
+IF_Instruction = 32'b10101101010010010000000000000000; // sw $t1, 0($t2)
+IF_PC_4 = 32'd0;
+
+#20 CYCLE = 4'd2;
+IF_Instruction = 32'b10001101010010110000000000000000; // lw $t3, 0($t2)
+IF_PC_4 = 32'd4;
+
+// Test case 10
+#20 CASE = 4'd10;
+CYCLE = 4'd1;
+IF_Instruction = 32'b10001101010010010000000000000000; // lw $t1, 0($t2)
+IF_PC_4 = 32'd0;
+
+#20 CYCLE = 4'd2;
+IF_Instruction = 32'b10101101010010110000000000000100; // sw $t3, 4($t2)
+IF_PC_4 = 32'd4;
+
+// Test case 11
+#20 CASE = 4'd11;
+CYCLE = 4'd1;
+IF_Instruction = 32'b10101101010010010000000000000000; // sw $t1, 0($t2)
+IF_PC_4 = 32'd0;
+
+#20 CYCLE = 4'd2;
+IF_Instruction = 32'b10001101010010110000000000000100; // lw $t3, 4($t2)
+IF_PC_4 = 32'd4;
+
+end
 
 endmodule
