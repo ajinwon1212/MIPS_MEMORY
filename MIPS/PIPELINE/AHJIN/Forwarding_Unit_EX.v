@@ -7,15 +7,11 @@ module Forwarding_Unit_EX (
     output [1:0] FW_sig2
 );
 
-wire MEM_Read_EX = (opcode_EX == 6'b100011); // LW instruction
-wire MEM_RegWrite_EX = (opcode_EX != 6'b000100) && (opcode_EX != 6'b101011) && (opcode_EX != 6'b000000 || EX_RT != 5'b00000);
-wire WB_RegWrite = (opcode_EX != 6'b000100) && (opcode_EX != 6'b101011) && (opcode_EX != 6'b000000 || EX_RT != 5'b00000);
+assign FW_sig1 = ((EX_RS == MEM_RD) && !(opcode_EX == 6'b100011) && MEM_FW && MEM_FW) ? 2'b10 : 
+                ((EX_RS == WB_RD) && WB_FW && WB_FW) ? 2'b01 : 2'b00;
 
-assign FW_sig1 = ((EX_RS == MEM_RD) && (EX_RS != 5'b0) && !MEM_Read_EX && MEM_RegWrite_EX && MEM_FW) ? 2'b10 : 
-                ((EX_RS == WB_RD) && (EX_RS != 5'b0) && WB_RegWrite && WB_FW) ? 2'b01 : 2'b00;
-
-assign FW_sig2 = ((EX_RT == MEM_RD) && (EX_RT != 5'b0) && !MEM_Read_EX && MEM_RegWrite_EX && MEM_FW) ? 2'b10 : 
-                ((EX_RT == WB_RD) && (EX_RT != 5'b0) && WB_RegWrite && WB_FW) ? 2'b01 : 2'b00;
+assign FW_sig2 = ((EX_RT == MEM_RD) && !(opcode_EX == 6'b100011) && MEM_FW && MEM_FW) ? 2'b10 : 
+                ((EX_RT == WB_RD) && WB_FW && WB_FW) ? 2'b01 : 2'b00;
 
 endmodule
 
