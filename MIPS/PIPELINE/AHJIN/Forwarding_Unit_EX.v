@@ -12,10 +12,10 @@ wire MEM_RegWrite_EX = (opcode_EX != 6'b000100) && (opcode_EX != 6'b101011) && (
 wire WB_RegWrite = (opcode_EX != 6'b000100) && (opcode_EX != 6'b101011) && (opcode_EX != 6'b000000 || EX_RT != 5'b00000);
 
 assign FW_sig1 = ((EX_RS == MEM_RD) && (EX_RS != 5'b0) && !MEM_Read_EX && MEM_RegWrite_EX && MEM_FW) ? 2'b10 : 
-                ((EX_RS == WB_RD) && (EX_RS != 5'b0) && WB_RegWrite && WB_FW && !((EX_RS == MEM_RD) && MEM_RegWrite_EX && MEM_FW)) ? 2'b01 : 2'b00;
+                ((EX_RS == WB_RD) && (EX_RS != 5'b0) && WB_RegWrite && WB_FW) ? 2'b01 : 2'b00;
 
 assign FW_sig2 = ((EX_RT == MEM_RD) && (EX_RT != 5'b0) && !MEM_Read_EX && MEM_RegWrite_EX && MEM_FW) ? 2'b10 : 
-                ((EX_RT == WB_RD) && (EX_RT != 5'b0) && WB_RegWrite && WB_FW && !((EX_RT == MEM_RD) && MEM_RegWrite_EX && MEM_FW)) ? 2'b01 : 2'b00;
+                ((EX_RT == WB_RD) && (EX_RT != 5'b0) && WB_RegWrite && WB_FW) ? 2'b01 : 2'b00;
 
 endmodule
 
