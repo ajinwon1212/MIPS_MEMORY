@@ -52,7 +52,7 @@ module ID_tb;
 	wire [31:0] EX_RS_Data, EX_RT_Data, EX_Sign_extend;
 	wire [4:0] EX_Shmpt;
 	wire [5:0] EX_Funct;
-	//wire [4:0] EX_RD;
+	wire [4:0] EX_RT;
 	wire [31:0] EX_PC_4;
 
 	IFID_Reg IFID(
@@ -214,6 +214,7 @@ module ID_tb;
 		.WB_MEM_EX_32(WB_MEM_EX_32),		//IN
 		.ID_Opcode(ID_Instruction[31:26]),	//IN
 		.ID_RS(ID_Instruction[25:21]),	
+		.ID_RT(ID_Instruction[20:16]),
 		.ID_RS_Data(ID_RS_DATA),		//IN
 		.ID_RT_Data(ID_RT_DATA),		//IN
 		.ID_Sign_extend(ID_Sign_extend),	//IN
@@ -224,6 +225,7 @@ module ID_tb;
 		.WB_MEM_EX(WB_MEM_EX),			//OUT
 		.EX_Opcode(EX_Opcode),			//OUT @@@
 		.EX_RS(EX_RS),				//OUT
+		.EX_RT(EX_RT),
 		.EX_RS_Data(EX_RS_Data),		//OUT
 		.EX_RT_Data(EX_RT_Data),		//OUT
 		.EX_Sign_extend(EX_Sign_extend),	//OUT
