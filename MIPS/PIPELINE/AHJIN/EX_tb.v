@@ -200,42 +200,42 @@ module EX_tb;
 		.opcode_EX(ID_Instruction[31:26]),	//IN
 		.EX_RS(ID_Instruction[25:21]),		//IN
 		.EX_RT(ID_Instruction[20:16]),		//IN
-		.MEM_RD(MEM_RD),			//IN
-		.WB_RD(WB_RD),				//IN
-        .ALUSrc(ALUSrc)
-		.MEM_FW(WB_MEM[2]),			//IN
-		.WB_FW(WB[0]),				//IN
-		.FW_sig1(FW_sig_EX_1),			//OUT
-		.FW_sig2(FW_sig_EX_2)			//OUT
+		.MEM_RD(MEM_RD),		        	//IN
+		.WB_RD(WB_RD),			        	//IN
+        .ALUSrc(ALUSrc),		        	//IN
+		.MEM_FW(WB_MEM[2]),		        	//IN
+		.WB_FW(WB[0]),			        	//IN
+		.FW_sig1(FW_sig_EX_1),		    	//OUT
+		.FW_sig2(FW_sig_EX_2)		    	//OUT
 	);
 
     
 
 	IDEX_Reg IDEX(
-		.CLK(CLK),				//IN
-		.RESET(RESET),				//IN
+		.CLK(CLK),		            		//IN
+		.RESET(RESET),		        		//IN
 		.WB_MEM_EX_32(WB_MEM_EX_32),		//IN
 		.ID_Opcode(ID_Instruction[31:26]),	//IN
-		.EX_RS(ID_Instruction[25:21]),	
-		.EX_RT(ID_Instruction[20:16]),
-		.EX_RS_Data(EX_RS_DATA),		//IN
-		.EX_RT_Data(EX_RT_DATA),		//IN
+		.EX_RS(ID_Instruction[25:21]),		//IN
+		.EX_RT(ID_Instruction[20:16]),	    //IN
+		.EX_RS_Data(EX_RS_DATA),	    	//IN
+		.EX_RT_Data(EX_RT_DATA),	    	//IN
 		.ID_Sign_extend(ID_Sign_extend),	//IN
 		.ID_Shmpt(ID_Instruction[10:6]),	//IN
 		.ID_Funct(ID_Instruction[5:0]),		//IN
-		.ID_RD(ID_RD_32[4:0]),			//IN
-		.ID_PC_4(ID_PC_4),			//IN
-		.WB_MEM_EX(WB_MEM_EX),			//OUT
-		.EX_Opcode(EX_Opcode),			//OUT @@@
-		.EX_RS(EX_RS),				//OUT
+		.ID_RD(ID_RD_32[4:0]),		    	//IN
+		.ID_PC_4(ID_PC_4),		        	//IN
+		.WB_MEM_EX(WB_MEM_EX),	    		//OUT
+		.EX_Opcode(EX_Opcode),		    	//OUT @@@
+		.EX_RS(EX_RS),				        //OUT
 		.EX_RT(EX_RT),
-		.EX_RS_Data(EX_RS_Data),		//OUT
-		.EX_RT_Data(EX_RT_Data),		//OUT
+		.EX_RS_Data(EX_RS_Data),      		//OUT
+		.EX_RT_Data(EX_RT_Data),		    //OUT
 		.EX_Sign_extend(EX_Sign_extend),	//OUT
-		.EX_Shmpt(EX_Shmpt),			//OUT
-		.EX_Funct(EX_Funct),			//OUT
-		.EX_RD(EX_RD),				//OUT
-		.EX_PC_4(EX_PC_4)			//OUT
+		.EX_Shmpt(EX_Shmpt),		    	//OUT
+		.EX_Funct(EX_Funct),		    	//OUT
+		.EX_RD(EX_RD),				        //OUT
+		.EX_PC_4(EX_PC_4)		        	//OUT
 	);
 
 
