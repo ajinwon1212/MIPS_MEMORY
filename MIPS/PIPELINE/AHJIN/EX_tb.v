@@ -75,7 +75,7 @@ module EX_tb;
 		.opcode_MEM(MEM_Opcode),		//IN
 		.EX_RegWrite(WB_MEM_EX[8]),		//IN
 		.MEM_RegWrite(WB_MEM[2]),		//IN
-		.EX_RS(ID_Instruction[25:21]), 		//IN
+		.ID_RS(ID_Instruction[25:21]), 		//IN
 		.EX_RT(ID_Instruction[20:16]),		//IN
 		.EX_RS(EX_RS),				//IN
 		.EX_RD(EX_RD),				//IN
@@ -216,10 +216,10 @@ module EX_tb;
 		.RESET(RESET),		        		//IN
 		.WB_MEM_EX_32(WB_MEM_EX_32),		//IN
 		.ID_Opcode(ID_Instruction[31:26]),	//IN
-		.EX_RS(ID_Instruction[25:21]),		//IN
-		.EX_RT(ID_Instruction[20:16]),	    //IN
-		.EX_RS_Data(EX_RS_DATA),	    	//IN
-		.EX_RT_Data(EX_RT_DATA),	    	//IN
+		.ID_RS(ID_Instruction[25:21]),		//IN
+		.ID_RT(ID_Instruction[20:16]),	    //IN
+		.ID_RS_Data(EX_RS_DATA),	    	//IN
+		.ID_RT_Data(EX_RT_DATA),	    	//IN
 		.ID_Sign_extend(ID_Sign_extend),	//IN
 		.ID_Shmpt(ID_Instruction[10:6]),	//IN
 		.ID_Funct(ID_Instruction[5:0]),		//IN
@@ -264,7 +264,7 @@ module EX_tb;
         .MEM_ALU_RESULT(MEM_ALU_RESULT),        //IN
         .MEM_RD_DATA(MEM_RD_DATA),              //IN
         .MEM_RD(MEM_RD),                        //IN
-        .MEM_PC_4(MEM_PC_4)                     //IN
+        .MEM_PC_4(MEM_PC_4),                     //IN
         .WB(WB),                                //IN
 
         .WB_ALU_RESULT(WB_ALU_RESULT),          //OUT
