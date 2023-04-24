@@ -95,13 +95,13 @@ Branch,Jump,PCWrite, IFIDWrite, IF_Flush, Hazard_Ctrl
 
 	assign FLUS = Branch || Jump[0] || Jump[1];
 
-	assign PCWrite = (IF_PC_4 == 31'd0) ? 1'b1 : ( 
+	assign PCWrite = (IF_PC_4 == 32'd0) ? 1'b1 : ( 
 	(CONT_1 || CONT_2a|| CONT_2b || DATA_1a || DATA_1b || DATA_2a || DATA_2b) ? 1'b0 : 1'b1 );
-	assign IFIDWrite= (IF_PC_4 == 31'd0) ? 1'b1 : ( 
+	assign IFIDWrite= (IF_PC_4 == 32'd0) ? 1'b1 : ( 
 	(CONT_1 || CONT_2a|| CONT_2b || DATA_1a || DATA_1b || DATA_2a || DATA_2b) ? 1'b0 : 1'b1 );
-	assign IF_Flush = (IF_PC_4 == 31'd0) ? 1'b0 : (
+	assign IF_Flush = (IF_PC_4 == 32'd0) ? 1'b0 : (
 	FLUS ? 1'b1 : 1'b0 );  //because of lw-lw
-	assign Hazard_Ctrl= (IF_PC_4 == 31'd0) ? 1'b0 : (
+	assign Hazard_Ctrl= (IF_PC_4 == 32'd0) ? 1'b0 : (
 	(CONT_1 || CONT_2a || CONT_2b || DATA_1a || DATA_1b || DATA_2a || DATA_2b) ? 1'b1 : 1'b0 );
 
 
