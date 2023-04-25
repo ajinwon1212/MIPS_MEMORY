@@ -32,7 +32,7 @@ module IDEX_Reg (
 		WB_MEM_EX <= 11'b0;
 		EX_Opcode <= 6'b0;
 		EX_RS <= 5'b0;
-		EX_RT <= 5'b0;	
+		EX_RT <= 5'b0;
 		EX_RS_Data <= 32'b0;
 		EX_RT_Data <= 32'b0;
 		EX_Sign_extend <= 32'b0;

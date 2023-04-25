@@ -1,567 +1,363 @@
-`timescale 1ns / 1ns
-module EX_tb;
+module EX_tb();
+
+	reg CLK;            
+	reg RESET;    
 
 	reg [3:0] CASE, CYCLE;
-	reg CLK, RESET;
-	reg [31:0] IF_Instruction, IF_PC_4;
-	wire IFIDWrite;
-	wire IF_Flush;
-	wire [31:0] ID_Instruction, ID_PC_4;
-	
-	reg [5:0] MEM_Opcode;
-	wire [4:0] EX_RS, EX_RD;
-	wire Branch;
-	wire [1:0] Jump;
-	wire PCWrite;
-	wire Hazard_Ctrl;
-	//
-	wire CONT_1, CONT_2a, CONT_2b, DATA_1a, DATA_1b, DATA_2a, DATA_2b;
+     
+	reg [31:0] WB_MEM_EX_32;      
+	reg [31:0] ID_Instruction;
+	reg [31:0] ID_RS_DATA, ID_RT_DATA, ID_Sign_extend;
+	reg [31:0] ID_RD_32;
+	reg [31:0] ID_PC_4; 
 
-	wire [31:0] ID_Sign_extend;
-	wire [31:0] Branch_WO_PC;
-	wire [31:0] Jump_WO_PC;
-	wire [31:0] BTB_Addr;
-	wire [31:0] Jump_Addr;
-	wire [31:0] ID_RD_32;
+	wire [31:0] ALU_result;
+	wire [1:0] FW_sig_EX_1, FW_sig_EX_2;
 
-	reg [4:0] WB_MEM; //[2]
+   	wire [4:0] EX_RS;         
+	wire [4:0] EX_RT;        
+	wire [31:0] EX_RS_Data;      
+	wire [31:0] EX_RT_Data;   
+	wire [31:0] EX_RS_DATA, EX_RT_DATA;  
+
+	wire [31:0] Hi, Lo, HI, LO;
+
+	wire [4:0] MEM_RD;
+	wire [31:0] MEM_ALU_RESULT;
+
 	reg [4:0] WB_RD;
-	reg [31:0] WB_RD_DATA;
-	reg [2:0] WB; //[0]
-	wire [31:0] EX_RS_data, EX_RT_data;
-
-	wire [1:0] RegDst;
-	wire [2:0] WB_CONT;
-	wire [1:0] MEM_CONT;
-	wire [5:0] EX_CONT;
-
-	wire [31:0] WB_MEM_EX_32;
-
-	reg [31:0] MEM_ALU_RESULT;
-	wire [31:0] EX_RS_DATA;
-
-	wire [31:0] EX_RT_DATA;
-
-	wire [31:0] Zero;
-
-	reg [4:0] MEM_RD;
-	wire [1:0] FW_sig_ID_1, FW_sig_ID_2;
+	reg [31:0] WB_RD_DATA; //WB_RD_Data X
+	reg [2:0] WB; //[0] == RegWrite
 
 	wire [10:0] WB_MEM_EX;
-	wire [5:0] EX_Opcode;
-	wire [31:0] EX_RS_Data, EX_RT_Data, EX_Sign_extend;
-	wire [4:0] EX_Shmpt;
-	wire [5:0] EX_Funct;
-	//wire [4:0] EX_RD;
-	wire [31:0] EX_PC_4;
-
-	IFID_Reg IFID(
-		.CLK(CLK),				//IN
-		.RESET(RESET),				//IN
-		.IFIDWrite(IFIDWrite),			//IN @@
-		.IF_Instruction(IF_Instruction),	//IN
-		.IF_Flush(IF_Flush),			//IN
-		.IF_PC_4(IF_PC_4),			//IN
-		.ID_Instruction(ID_Instruction),	//OUT
-		.ID_PC_4(ID_PC_4)			//OUT
-	);
-
-	Hazard_detection_unit Hazard(
-		.CLK(CLK),				//IN
-		.RESET(RESET),				//IN
-		.IF_PC_4(IF_PC_4),			//IN
-		.opcode_ID(ID_Instruction[31:26]),	//IN
-		.opcode_EX(EX_Opcode),			//IN
-		.opcode_MEM(MEM_Opcode),		//IN
-		.EX_RegWrite(WB_MEM_EX[8]),		//IN
-		.MEM_RegWrite(WB_MEM[2]),		//IN
-		.ID_RS(ID_Instruction[25:21]), 		//IN
-		.EX_RT(ID_Instruction[20:16]),		//IN
-		.EX_RS(EX_RS),				//IN
-		.EX_RD(EX_RD),				//IN
-		.MEM_RD(MEM_RD),			//IN
-		.Branch(Branch),			//IN
-		.Jump(Jump),				//IN
-		.PCWrite(PCWrite),			//OUT
-		.IFIDWrite(IFIDWrite),			//OUT
-		.IF_Flush(IF_Flush),			//OUT
-		.Hazard_Ctrl(Hazard_Ctrl),		//OUT
-		.CONT_1(CONT_1), 
-		.CONT_2a(CONT_2a), 
-		.CONT_2b(CONT_2b), 
-		.DATA_1a(DATA_1a), 
-		.DATA_1b(DATA_1b), 
-		.DATA_2a(DATA_2a),
-		.DATA_2b(DATA_2b)
-	);
-	
-	Sign_extend Sign_extend_top(
-		.Sign_extend_in(ID_Instruction[15:0]),	//IN
-		.Sign_extend(ID_Sign_extend)		//OUT
-	);
-
-	Shift_left_2 Shift_left_2_Branch(
-		.Shift_left_2_IN(ID_Sign_extend),	//IN
-		.Shift_left_2_OUT(Branch_WO_PC)		//OUT
-	);
-
-	Shift_left_2 Shift_left_2_Jump(
-		.Shift_left_2_IN({6'd0, ID_Instruction[25:0]}),	//IN
-		.Shift_left_2_OUT(Jump_WO_PC)			//OUT
-	);
-
-	ADD ADD2(
-		.a(ID_PC_4),		//IN
-		.b(Branch_WO_PC),	//IN
-		.out(BTB_Addr)		//OUT
-	);
-
-	ADD ADD3(
-		.a({ID_PC_4[31:28],28'd0}),	//IN
-		.b(Jump_WO_PC),			//IN
-		.out(Jump_Addr)			//OUT
-	);
-
-	MUX4to1 MUX2(
-		.a({27'd0, ID_Instruction[20:16]}),	//IN
-		.b({27'd0, ID_Instruction[15:11]}),	//IN
-		.c(32'd31),				//IN
-		.d(32'd0),				
-		.sig(RegDst),				//IN
-		.out(ID_RD_32)				//OUT
-	);
-
-	Registers Registers_top(
-		.CLK(CLK),					//IN
-		.RESET(RESET),					//IN
-		.RegWrite(WB[0]),				//IN
-		.Read_register_1(ID_Instruction[25:21]),	//IN
-		.Read_register_2(ID_Instruction[20:16]),	//IN
-		.Write_register(WB_RD),				//IN
-		.Write_Data(WB_RD_DATA),			//IN
-		.Read_data_1(EX_RS_data),			//OUT
-		.Read_data_2(EX_RT_data)			//OUT
-	);
-
-	Control Control_top(
-		.CLK(CLK),			//IN
-		.RESET(RESET),			//IN
-		.opcode(ID_Instruction[31:26]), //IN
-		.funct(ID_Instruction[5:0]),	//IN
-		.RegDst(RegDst),		//OUT
-		.Jump(Jump),			//OUT @@TIming Issue
-		.WB_CONT(WB_CONT),		//OUT 3bit
-		.MEM_CONT(MEM_CONT),		//OUT 2bit
-		.EX_CONT(EX_CONT)		//OUT 6bit
-	);
-
-
-	//	21	/   2    /   1    /   1   /   1    /  3  /  1   /  2 /
-	//	0	/MemtoReg/RegWrite/MemRead/MemWrite/ALUOP/ALUSrc/HiLo/
-
-	MUX2to1 MUX3(
-		.a({21'd0,WB_CONT,MEM_CONT,EX_CONT}),	//IN
-		.b(32'd0),				//IN 
-		.sig(Hazard_Ctrl),			//IN
-		.out(WB_MEM_EX_32)			//OUT
-	);
-
-	MUX4to1 MUX4(
-		.a(EX_RS_data),		//IN 00
-		.b(MEM_ALU_RESULT),	//IN 01
-		.c(WB_RD_DATA),		//IN 10 @@@@
-		.d(32'd0),
-		.sig(FW_sig_ID_1),	//IN
-		.out(EX_RS_DATA)	//OUT
-	);
-
-	MUX4to1 MUX5(
-		.a(EX_RT_data),		//IN 00
-		.b(MEM_ALU_RESULT),	//IN 01
-		.c(WB_RD_DATA),		//IN 10
-		.d(32'd0),
-		.sig(FW_sig_ID_2),	//IN
-		.out(EX_RT_DATA)	//OUT
-	);
-
-	XNOR XNOR_ID(
-		.a(EX_RS_DATA),		//IN
-		.b(EX_RT_DATA),		//IN
-		.out(Zero)		//OUT
-	);
-	
-	Branch_calc Branch_top(
-		.opcode(ID_Instruction[31:26]),	//IN
-		.Zero(Zero),			//IN
-		.Branch(Branch)			//OUT
-	);
-
-	Forwarding_Unit_EX FWU_EX(
-		.opcode_EX(ID_Instruction[31:26]),	//IN
-		.EX_RS(ID_Instruction[25:21]),		//IN
-		.EX_RT(ID_Instruction[20:16]),		//IN
-		.MEM_RD(MEM_RD),		        	//IN
-		.WB_RD(WB_RD),			        	//IN
-        .ALUSrc(ALUSrc),		        	//IN
-		.MEM_FW(WB_MEM[2]),		        	//IN
-		.WB_FW(WB[0]),			        	//IN
-		.FW_sig1(FW_sig_EX_1),		    	//OUT
-		.FW_sig2(FW_sig_EX_2)		    	//OUT
-	);
-
+	wire [5:0] EX_Opcode;        
     
+	wire [31:0] EX_Sign_extend;     
+	wire [4:0] EX_Shmpt;        
+	wire [5:0] EX_Funct;      
+	wire [4:0] EX_RD;          
+	wire [31:0] EX_PC_4;       
+
+	wire [3:0] ALU_control;
+	wire [31:0] EX_ALU_RESULT;
+
+	wire [4:0] WB_MEM; //[2] == RegWrite
+	wire [31:0] MEM_PC_4;
+	wire [31:0] MEM_RT_DATA;
+	wire [5:0] MEM_Opcode;
 
 	IDEX_Reg IDEX(
-		.CLK(CLK),		            		//IN
-		.RESET(RESET),		        		//IN
+		.CLK(CLK),				//IN
+		.RESET(RESET),				//IN
 		.WB_MEM_EX_32(WB_MEM_EX_32),		//IN
 		.ID_Opcode(ID_Instruction[31:26]),	//IN
-		.ID_RS(ID_Instruction[25:21]),		//IN
-		.ID_RT(ID_Instruction[20:16]),	    //IN
-		.ID_RS_Data(EX_RS_DATA),	    	//IN
-		.ID_RT_Data(EX_RT_DATA),	    	//IN
+		.ID_RS(ID_Instruction[25:21]),	
+		.ID_RT(ID_Instruction[20:16]),
+		.ID_RS_Data(ID_RS_DATA),		//IN
+		.ID_RT_Data(ID_RT_DATA),		//IN
 		.ID_Sign_extend(ID_Sign_extend),	//IN
 		.ID_Shmpt(ID_Instruction[10:6]),	//IN
 		.ID_Funct(ID_Instruction[5:0]),		//IN
-		.ID_RD(ID_RD_32[4:0]),		    	//IN
-		.ID_PC_4(ID_PC_4),		        	//IN
-		.WB_MEM_EX(WB_MEM_EX),	    		//OUT
-		.EX_Opcode(EX_Opcode),		    	//OUT @@@
-		.EX_RS(EX_RS),				        //OUT
+		.ID_RD(ID_RD_32[4:0]),			//IN
+		.ID_PC_4(ID_PC_4),			//IN
+		.WB_MEM_EX(WB_MEM_EX),			//OUT
+		.EX_Opcode(EX_Opcode),			//OUT @@@
+		.EX_RS(EX_RS),				//OUT
 		.EX_RT(EX_RT),
-		.EX_RS_Data(EX_RS_Data),      		//OUT
-		.EX_RT_Data(EX_RT_Data),		    //OUT
+		.EX_RS_Data(EX_RS_Data),		//OUT
+		.EX_RT_Data(EX_RT_Data),		//OUT
 		.EX_Sign_extend(EX_Sign_extend),	//OUT
-		.EX_Shmpt(EX_Shmpt),		    	//OUT
-		.EX_Funct(EX_Funct),		    	//OUT
-		.EX_RD(EX_RD),				        //OUT
-		.EX_PC_4(EX_PC_4)		        	//OUT
+		.EX_Shmpt(EX_Shmpt),			//OUT
+		.EX_Funct(EX_Funct),			//OUT
+		.EX_RD(EX_RD),				//OUT
+		.EX_PC_4(EX_PC_4)			//OUT
+	);
+
+	MUX4to1 MUX6(
+		.a(EX_RS_Data),
+		.b(MEM_ALU_RESULT),
+		.c(WB_RD_DATA),
+		.d(32'd0),
+		.sig(FW_sig_EX_1),
+		.out(EX_RS_DATA)
+	);
+
+	MUX4to1 MUX7(
+		.a(EX_RT_Data),
+		.b(EX_Sign_extend),
+		.c(MEM_ALU_RESULT),
+		.d(WB_RD_DATA),
+		.sig(FW_sig_EX_2),
+		.out(EX_RT_DATA)
+	);
+
+	ALU_control ALU_control_top(
+		.ALU_control_IN(EX_Funct),
+		.ALUOp(WB_MEM_EX[5:3]),
+		.ALU_control(ALU_control)
+	);
+
+	ALU ALU_top(
+		.CLK(CLK),
+		.ALU_IN_1(EX_RS_DATA),
+		.ALU_IN_2(EX_RT_DATA),
+		.ALU_control(ALU_control),
+		.Shampt(EX_Shmpt),
+		.ALU_result(ALU_result),
+		.Hi(Hi),
+		.Lo(Lo)
+	);
+
+	Special_Registers SR(
+		.CLK(CLK),
+		.RESET(RESET),
+		.Hi(Hi),
+		.Lo(Lo),
+		.ALU_control(ALU_control),
+		.HI(HI),
+		.LO(LO)
+	);
+
+	MUX4to1 MUX8(
+		.a(ALU_result),
+		.b(LO),
+		.c(HI),
+		.d(32'b0),
+		.sig(WB_MEM_EX[1:0]),
+		.out(EX_ALU_RESULT)
 	);
 
 
-    EXMEM_Reg EXMEM(
-        .CLK(CLK),                              //IN
-        .RESET(RESET),                          //IN
-        .WB_MEM_EX(WB_MEM_EX),                  //IN
-        .EX_Opcode(EX_Opcode),                  //IN
-        .EX_ALU_RESULT(EX_ALU_RESULT),          //IN
-        .EX_RT_DATA(EX_RT_DATA),                //IN
-        .EX_RD(EX_RD),                          //IN
-        .EX_PC_4(EX_PC_4),                      //IN
-        .WB_MEM(WB_MEM),                        //OUT
-        .MEM_Opcode(MEM_Opcode),                //OUT
-        .MEM_ALU_RESULT(MEM_ALU_RESULT),        //OUT
-        .MEM_RT_DATA(MEM_RT_DATA),              //OUT
-        .MEM_RD(MEM_RD),                        //OUT
-        .MEM_PC_4(MEM_PC_4)                     //OUT
-    );
+	Forwarding_Unit_EX FWU_EX(
+		.opcode_EX(EX_Opcode),
+		.EX_RS(EX_RS),
+		.EX_RT(EX_RT),
+		.MEM_RD(MEM_RD),
+		.WB_RD(WB_RD),
+		.ALUSrc(WB_MEM_EX[2]),
+		.MEM_FW(WB_MEM[2]),
+		.WB_FW(WB[0]),
+		.FW_sig1(FW_sig_EX_1),
+		.FW_sig2(FW_sig_EX_2)
+	);
+
+	EXMEM_Reg EXMEM(
+		.CLK(CLK),
+		.RESET(RESET),
+		.WB_MEM_EX(WB_MEM_EX),
+		.EX_Opcode(EX_Opcode),
+		.EX_ALU_RESULT(EX_ALU_RESULT),
+		.EX_RT_DATA(EX_RT_DATA),
+		.EX_RD(EX_RD),
+		.EX_PC_4(EX_PC_4),
+		.WB_MEM(WB_MEM),
+		.MEM_Opcode(MEM_Opcode),
+		.MEM_ALU_RESULT(MEM_ALU_RESULT),
+		.MEM_RT_DATA(MEM_RT_DATA),
+		.MEM_RD(MEM_RD),
+		.MEM_PC_4(MEM_PC_4)
+	);
 
 
-    MEMWB_Reg MEMWB(
-        .CLK(CLK),                              //IN
-        .RESET(RESET),                          //IN
-        .WB_MEM(WB_MEM),                        //IN
-        .MEM_ALU_RESULT(MEM_ALU_RESULT),        //IN
-        .MEM_RD_DATA(MEM_RD_DATA),              //IN
-        .MEM_RD(MEM_RD),                        //IN
-        .MEM_PC_4(MEM_PC_4),                     //IN
-        .WB(WB),                                //IN
-
-        .WB_ALU_RESULT(WB_ALU_RESULT),          //OUT
-        .WB_RD_Data(WB_RD_Data),                //OUT
-        .WB_RD(WB_RD),                          //OUT
-        .WB_PC_4(WB_PC_4)                       //OUT
-    );
-
-    initial
-	begin
-		CLK = 1'b0;
-		forever
+	initial
 		begin
-			#10 CLK = !CLK;
-		end
+  		CLK = 1'b1;
+   			forever
+   			begin
+     			#10 CLK = !CLK;
+   			end
 	end
 
 	initial
 	begin
-		RESET = 1'b1; IF_PC_4 = 32'd0; IF_Instruction  = 32'b00000000000000000000000000000000;
+		#10 RESET = 1'b1; 
 		#10 RESET = 1'b0; 
-		//--------------------
-		/*
-        1. Forwarding_case_RT:
-        add $t0, $t1, $t2    # -> 0x012A4020
-        lw $t2, 0($t3)       # -> 0x8D6A0000
-        # FW_sig_EX_1: 00 (No Forwarding RS)
-        # FW_sig_EX_2: 11 (Forwarding RT from MEM)
+/*
+		0. normal operation
+		 :No Forwarding RS, RT
+		1. Fowarding case RT
+		 :No Forwarding RS, Forwarding RT(MEM)
+		2. Fowarding case RS
+		 :Forwarding RS(MEM), No Forwarding RT
+		3. Fowarding case RS, RT
+		 :Forwarding RS(WB), Forwarding RT(WB)
+		4. Double data hazard RS
+		 :Forwarding RS(MEM, WB), No forwarding RT
+		5. mflo, mfhi test
+*/
+		
+		//--------------
+		CASE = 4'd0; CYCLE = 4'd1;
+		WB_MEM_EX_32 = 32'b00000000000000000000000100001000;
+		ID_Instruction = 32'b00000000111001100011100000100000;
+		ID_RD_32 = 32'd7;
+		ID_PC_4 = 32'd0;
+		ID_RS_DATA = 32'd1; 
+		ID_RT_DATA = 32'd2; 
+		ID_Sign_extend =32'd0;
+		WB_RD = 5'd0;
+		WB_RD_DATA = 32'd0;
+		WB = 3'b0; //[0]
+		
+		#20 CASE = 4'd0; CYCLE = 4'd2;
+		WB_MEM_EX_32 = 32'b00000000000000000000000100001000;
+		ID_Instruction = 32'b00000000101001100011100000100000;
+		ID_RS_DATA = 32'd5; 
+		ID_RT_DATA = 32'd8; 
+		ID_RD_32 = 32'd7;
+		ID_PC_4 = 32'd4;
 
-        2. Forwarding_case_RS:
-        add $t0, $t1, $t2   # -> 0x012A4020
-        lw $t1, 0($t3)      # -> 0x8D690000
-        # FW_sig_EX_1: 01 (Forwarding RS from MEM)
-        # FW_sig_EX_2: 00 (No Forwarding RT)
+		#20 CASE = 4'd0; CYCLE = 4'd3;
+		WB_MEM_EX_32 = 32'b0;
+		ID_Instruction = 32'b0;
+		ID_RS_DATA = 32'd0; 
+		ID_RT_DATA = 32'd0; 
+		ID_RD_32 = 32'd0;
+		ID_PC_4 = 32'd8;
 
-        Forwarding_case_RS_RT:
-        3. # a_series_of_instructions
-        add $t1, $t2, $t3 # -> 0x014B4820
-        add $t4, $t1, $t3 # -> 0x012C6020
-        add $t0, $t1, $t4 # -> 0x012C8020
-        # FW_sig_EX_1: 10 (Forwarding RS from WB)
-        # FW_sig_EX_2: 10 (Forwarding RT from WB)
+		//--------------
+		#20 CASE = 4'd1; CYCLE = 4'd1;
+		WB_MEM_EX_32 = 32'b00000000000000000000000100001000;
+		ID_Instruction = 32'b00000000101001100011100000100000;
+		ID_RS_DATA = 32'd1; 
+		ID_RT_DATA = 32'd2; 
+		ID_RD_32 = 32'd7;
+		ID_PC_4 = 32'd0;
 
-        4. # Verify a single instruction
-        add $t1, $t2, $t3 # -> 0x014B4820
-        add $t4, $t1, $t1 # -> 0x01298820
-        # FW_sig_EX_1: 10 (Forwarding RS from WB)
-        # FW_sig_EX_2: 00 (No Forwarding RT)
+		#20 CASE = 4'd1; CYCLE = 4'd2;
+		WB_MEM_EX_32 = 32'b00000000000000000000000100001000;
+		ID_Instruction = 32'b00000000110001110100000000100000;
+		ID_RS_DATA = 32'd5; 
+		ID_RT_DATA = 32'd8; 
+		ID_RD_32 = 32'd8;
+		ID_PC_4 = 32'd4;
 
-        5. Double_data_hazard_RS:
-        add $t1, $t2, $t3 # -> 0x014B4820
-        lw $t2, 0($t4) # -> 0x8D8A0000
-        lw $t3, 4($t4) # -> 0x8D8B0004
-        add $t0, $t2, $t3 #-> 0x014A4020
-        # FW_sig_EX_1: 01 (Forwarding RS from MEM)
-        # FW_sig_EX_2: 00 or 01 (No Forwarding RT or Forwarding RT from MEM)
+		#20 CASE = 4'd1; CYCLE = 4'd3;
+		WB_MEM_EX_32 = 32'b0;
+		ID_Instruction = 32'b0;
+		ID_RS_DATA = 32'd0; 
+		ID_RT_DATA = 32'd0; 
+		ID_RD_32 = 32'd0;
+		ID_PC_4 = 32'd8;
 
-        6. mflo_mfhi_test:
-        mult $t0, $t1     #   -> 0x01090018
-        mfhi $t2          #   -> 0x00005010
-        mflo $t3          #   -> 0x00005812
-        # No forwarding is involved in these instructions.
 
-        7. Double_data_hazard_RT:
-        add $t1, $t2, $t3 # -> 0x014B4820
-        lw $t3, 0($t4) # -> 0x8D8B0000
-        lw $t3, 4($t4) # -> 0x8D8B0004
-        add $t0, $t1, $t3 # -> 0x012B4020
+		//--------------
+		#20 CASE = 4'd2; CYCLE = 4'd1;
+		WB_MEM_EX_32 = 32'b00000000000000000000000100001000;
+		ID_Instruction = 32'b00000000101001100011100000100000;
+		ID_RS_DATA = 32'd1; 
+		ID_RT_DATA = 32'd2; 
+		ID_RD_32 = 32'd7;
+		ID_PC_4 = 32'd0;
 
-        Check_lw_sw_commands:
-        8.
-        lw $t1, 0($t2)      #  -> 0x8D490000
-        sw $t1, 4($t2)      #  -> 0xAD490004
+		#20 CASE = 4'd2; CYCLE = 4'd2;
+		WB_MEM_EX_32 = 32'b00000000000000000000000100001000;
+		ID_Instruction = 32'b00000000111001100100000000100000;
+		ID_RS_DATA = 32'd5; 
+		ID_RT_DATA = 32'd8; 
+		ID_RD_32 = 32'd8;
+		ID_PC_4 = 32'd4;
 
-        9.
-        sw $t1, 0($t2)      #  -> 0xAD290000
-        lw $t3, 0($t2)      # -> 0x8D430000
-        
-        10.
-        lw $t1, 0($t2)     #  -> 0x8D290000
-        sw $t3, 4($t2)     #  -> 0xAD630004
+		#20 CASE = 4'd2; CYCLE = 4'd3;
+		WB_MEM_EX_32 = 32'b0;
+		ID_Instruction = 32'b0;
+		ID_RS_DATA = 32'd0; 
+		ID_RT_DATA = 32'd0; 
+		ID_RD_32 = 32'd0;
+		ID_PC_4 = 32'd8;
 
-        11.
-        sw $t1, 0($t2)     #  -> 0xAD290000
-        lw $t3, 4($t2)     #  -> 0x8D430004
-		*/
-		//--------------------
-// Test case 1: Forwarding case RT
-#20 CASE = 4'd1;
-CYCLE = 4'd1;
-IF_Instruction = 32'b00000001010010000101000000100000; // add $t0, $t1, $t2
-IF_PC_4 = 32'd0;
-// Initialize other control signals as needed
+		//--------------
+		#20 CASE = 4'd3; CYCLE = 4'd1;
+		WB_MEM_EX_32 = 32'b00000000000000000000000100001000;
+		ID_Instruction = 32'b00000000101001010011100000100000;
+		ID_RS_DATA = 32'd1; 
+		ID_RT_DATA = 32'd2; 
+		ID_RD_32 = 32'd7;
+		ID_PC_4 = 32'd0;
+		WB_RD = 5'd5;
+		WB_RD_DATA = 32'd99;
+		WB = 3'b001; //[0]
 
-#20 CYCLE = 4'd2;
-IF_Instruction = 32'b10001101101001000000000000000000; // lw $t2, 0($t3)
-IF_PC_4 = 32'd4;
-// Expected FW_sig_EX_1: 00 (No Forwarding RS)
-// Expected FW_sig_EX_2: 11 (Forwarding RT from MEM)
+		#20 CASE = 4'd3; CYCLE = 4'd2;
+		WB_MEM_EX_32 = 32'b0;
+		ID_Instruction = 32'b0;
+		ID_RS_DATA = 32'd0; 
+		ID_RT_DATA = 32'd0; 
+		ID_RD_32 = 32'd0;
+		ID_PC_4 = 32'd4;
+		WB_RD = 5'd0;
+		WB_RD_DATA = 32'd0;
+		WB = 3'b0; //[0]
 
-// Test case 2: Forwarding case RS
-#20 CASE = 4'd2;
-CYCLE = 4'd1;
-IF_Instruction = 32'b00000001010010000101000000100000; // add $t0, $t1, $t2
-IF_PC_4 = 32'd0;
-// Initialize other control signals as needed
 
-#20 CYCLE = 4'd2;
-IF_Instruction = 32'b10001101101000100000000000000000; // lw $t1, 0($t3)
-IF_PC_4 = 32'd4;
-// Expected FW_sig_EX_1: 01 (Forwarding RS from MEM)
-// Expected FW_sig_EX_2: 00 (No Forwarding RT)
+		//--------------
+		#20 CASE = 4'd4; CYCLE = 4'd1;
+		WB_MEM_EX_32 = 32'b00000000000000000000000100001000;
+		ID_Instruction = 32'b00000000101001100010100000100000;
+		ID_RS_DATA = 32'd1; 
+		ID_RT_DATA = 32'd2; 
+		ID_RD_32 = 32'd5;
+		ID_PC_4 = 32'd0;
+		WB_RD = 5'd0;
+		WB_RD_DATA = 32'd0;
+		WB = 3'b0; //[0]
 
-// Test case 3: Forwarding_case_RS_RT
-#20 CASE = 4'd3;
-CYCLE = 4'd1;
-IF_Instruction = 32'b00000001001010100100000000100000; // add $t1, $t2, $t3
-IF_PC_4 = 32'd0;
+		#20 CASE = 4'd4; CYCLE = 4'd2;
+		WB_MEM_EX_32 = 32'b00000000000000000000000100001000;
+		ID_Instruction = 32'b00000000101001100011100000100000;
+		ID_RS_DATA = 32'd5; 
+		ID_RT_DATA = 32'd8; 
+		ID_RD_32 = 32'd7;
+		ID_PC_4 = 32'd4;
+		WB_RD = 5'd5;
+		WB_RD_DATA = 32'd99;
+		WB = 3'b001; //[0]
 
-#20 CYCLE = 4'd2;
-IF_Instruction = 32'b00000001001010110110000000100000; // add $t4, $t1, $t3
-IF_PC_4 = 32'd4;
+		#20 CASE = 4'd4; CYCLE = 4'd3;
+		WB_MEM_EX_32 = 32'b0;
+		ID_Instruction = 32'b0;
+		ID_RS_DATA = 32'd0; 
+		ID_RT_DATA = 32'd0; 
+		ID_RD_32 = 32'd0;
+		ID_PC_4 = 32'd8;
+		WB_RD = 5'd0;
+		WB_RD_DATA = 32'd0;
+		WB = 3'b0; //[0]
 
-#20 CYCLE = 4'd3;
-IF_Instruction = 32'b00000001001011000100000000100000; // add $t0, $t1, $t4
-IF_PC_4 = 32'd8;
-// FW_sig_EX_1: 10 (Forwarding RS from WB)
-// FW_sig_EX_2: 10 (Forwarding RT from WB)
+		//--------------
+		#20 CASE = 4'd5; CYCLE = 4'd1;
+		WB_MEM_EX_32 = 32'b00000000000000000000000000001000;
+		ID_Instruction = 32'b00000000101001100000000000011000;
+		ID_RS_DATA = 32'hffffffff; 
+		ID_RT_DATA = 32'd3; //2 FFFF FFFD
+		ID_RD_32 = 32'd0;
+		ID_PC_4 = 32'd0;
 
-// Test case 4: Verify_a_single_instruction
-#20 CASE = 4'd4;
-CYCLE = 4'd1;
-IF_Instruction = 32'b00000001010010110100100000100000; // add $t1, $t2, $t3
-IF_PC_4 = 32'd0;
+		#20 CASE = 4'd5; CYCLE = 4'd2;
+		WB_MEM_EX_32 = 32'b00000000000000000000000100001010;
+		ID_Instruction = 32'b00000000000000000001100000010000;
+		ID_RS_DATA = 32'd0; 
+		ID_RT_DATA = 32'd0; 
+		ID_RD_32 = 32'd3;
+		ID_PC_4 = 32'd4;
 
-#20 CYCLE = 4'd2;
-IF_Instruction = 32'b00000001001010010110000000100000; // add $t4, $t1, $t1
-IF_PC_4 = 32'd4;
-// FW_sig_EX_1: 10 (Forwarding RS from WB)
-// FW_sig_EX_2: 00 (No Forwarding RT)
+		#20 CASE = 4'd5; CYCLE = 4'd3;
+		WB_MEM_EX_32 = 32'b00000000000000000000000100001001;
+		ID_Instruction = 32'b00000000000000000010000000010010;
+		ID_RS_DATA = 32'd0; 
+		ID_RT_DATA = 32'd0; 
+		ID_RD_32 = 32'd4;
+		ID_PC_4 = 32'd8;
 
-// Test case 5: Double_data_hazard_RS
-#20 CASE = 4'd5;
-CYCLE = 4'd1;
-IF_Instruction = 32'b00000001010010110100100000100000; // add $t1, $t2, $t3
-IF_PC_4 = 32'd0;
+		#20 CASE = 4'd5; CYCLE = 4'd4;
+		WB_MEM_EX_32 = 32'b0;
+		ID_Instruction = 32'b0;
+		ID_RS_DATA = 32'd0; 
+		ID_RT_DATA = 32'd0; 
+		ID_RD_32 = 32'd0;
+		ID_PC_4 = 32'd12;
 
-#20 CYCLE = 4'd2;
-IF_Instruction = 32'b10001101100010100000000000000000; // lw $t2, 0($t4)
-IF_PC_4 = 32'd4;
 
-#20 CYCLE = 4'd3;
-IF_Instruction = 32'b10001101100010110000000000000100; // lw $t3, 4($t4)
-IF_PC_4 = 32'd8;
-
-#20 CYCLE = 4'd4;
-IF_Instruction = 32'b00000001010010110100000000100000; // add $t0, $t2, $t3
-IF_PC_4 = 32'd12;
-// FW_sig_EX_1: 01 (Forwarding RS from MEM)
-// FW_sig_EX_2: 00 or 01 (No Forwarding RT or Forwarding RT from MEM)
-
-// Test case 6: mflo_mfhi_test
-#20 CASE = 4'd6;
-CYCLE = 4'd1;
-IF_Instruction = 32'b00000001000010010000000000011000; // mult $t0, $t1
-IF_PC_4 = 32'd0;
-
-#20 CYCLE = 4'd2;
-IF_Instruction = 32'b00000000000000000101000000010000; // mfhi $t2
-IF_PC_4 = 32'd4;
-
-#20 CYCLE = 4'd3;
-IF_Instruction = 32'b00000000000000000101100000010010; // mflo $t3
-IF_PC_4 = 32'd8;
-// No forwarding is involved in these instructions.
-
-// Test case 7: Double_data_hazard_RT
-#20 CASE = 4'd7;
-CYCLE = 4'd1;
-IF_Instruction = 32'b00000001010010110100100000100000; // add $t1, $t2, $t3
-IF_PC_4 = 32'd0;
-
-#20 CYCLE = 4'd2;
-IF_Instruction = 32'b10001101100010110000000000000000; // lw $t3, 0($t4)
-IF_PC_4 = 32'd4;
-
-#20 CYCLE = 4'd3;
-IF_Instruction = 32'b10001101100010110000000000000100; // lw $t3, 4($t4)
-IF_PC_4 = 32'd8;
-
-#20 CYCLE = 4'd4;
-IF_Instruction = 32'b00000001001010110100000000100000; // add $t0, $t1, $t3
-IF_PC_4 = 32'd12;
-
-// Test case 8: Check_lw_sw_commands
-#20 CASE = 4'd8;
-CYCLE = 4'd1;
-IF_Instruction = 32'b10001101010010010000000000000000; // lw $t1, 0($t2)
-IF_PC_4 = 32'd0;
-
-#20 CYCLE = 4'd2;
-IF_Instruction = 32'b10101101010010010000000000000100; // sw $t1, 4($t2)
-IF_PC_4 = 32'd4;
-
-// Test case 9
-#20 CASE = 4'd9;
-CYCLE = 4'd1;
-IF_Instruction = 32'b10101101010010010000000000000000; // sw $t1, 0($t2)
-IF_PC_4 = 32'd0;
-
-#20 CYCLE = 4'd2;
-IF_Instruction = 32'b10001101010010110000000000000000; // lw $t3, 0($t2)
-IF_PC_4 = 32'd4;
-
-// Test case 10
-#20 CASE = 4'd10;
-CYCLE = 4'd1;
-IF_Instruction = 32'b10001101010010010000000000000000; // lw $t1, 0($t2)
-IF_PC_4 = 32'd0;
-
-#20 CYCLE = 4'd2;
-IF_Instruction = 32'b10101101010010110000000000000100; // sw $t3, 4($t2)
-IF_PC_4 = 32'd4;
-
-// Test case 11
-#20 CASE = 4'd11;
-CYCLE = 4'd1;
-IF_Instruction = 32'b10101101010010010000000000000000; // sw $t1, 0($t2)
-IF_PC_4 = 32'd0;
-
-#20 CYCLE = 4'd2;
-IF_Instruction = 32'b00000000000000000101000000010000; // mfhi $t2
-IF_PC_4 = 32'd4;
-
-#20 CYCLE = 4'd3;
-IF_Instruction = 32'b00000000000000000101100000010010; // mflo $t3
-IF_PC_4 = 32'd8;
-// No forwarding is involved in these instructions.
-
-// Test case 7: Double_data_hazard_RT
-#20 CASE = 4'd7;
-CYCLE = 4'd1;
-IF_Instruction = 32'b00000001010010110100100000100000; // add $t1, $t2, $t3
-IF_PC_4 = 32'd0;
-
-#20 CYCLE = 4'd2;
-IF_Instruction = 32'b10001101100010110000000000000000; // lw $t3, 0($t4)
-IF_PC_4 = 32'd4;
-
-#20 CYCLE = 4'd3;
-IF_Instruction = 32'b10001101100010110000000000000100; // lw $t3, 4($t4)
-IF_PC_4 = 32'd8;
-
-#20 CYCLE = 4'd4;
-IF_Instruction = 32'b00000001001010110100000000100000; // add $t0, $t1, $t3
-IF_PC_4 = 32'd12;
-
-// Test case 8: Check_lw_sw_commands
-#20 CASE = 4'd8;
-CYCLE = 4'd1;
-IF_Instruction = 32'b10001101010010010000000000000000; // lw $t1, 0($t2)
-IF_PC_4 = 32'd0;
-
-#20 CYCLE = 4'd2;
-IF_Instruction = 32'b10101101010010010000000000000100; // sw $t1, 4($t2)
-IF_PC_4 = 32'd4;
-
-// Test case 9
-#20 CASE = 4'd9;
-CYCLE = 4'd1;
-IF_Instruction = 32'b10101101010010010000000000000000; // sw $t1, 0($t2)
-IF_PC_4 = 32'd0;
-
-#20 CYCLE = 4'd2;
-IF_Instruction = 32'b10001101010010110000000000000000; // lw $t3, 0($t2)
-IF_PC_4 = 32'd4;
-
-// Test case 10
-#20 CASE = 4'd10;
-CYCLE = 4'd1;
-IF_Instruction = 32'b10001101010010010000000000000000; // lw $t1, 0($t2)
-IF_PC_4 = 32'd0;
-
-#20 CYCLE = 4'd2;
-IF_Instruction = 32'b10101101010010110000000000000100; // sw $t3, 4($t2)
-IF_PC_4 = 32'd4;
-
-// Test case 11
-#20 CASE = 4'd11;
-CYCLE = 4'd1;
-IF_Instruction = 32'b10101101010010010000000000000000; // sw $t1, 0($t2)
-IF_PC_4 = 32'd0;
-
-#20 CYCLE = 4'd2;
-IF_Instruction = 32'b10001101010010110000000000000100; // lw $t3, 4($t2)
-IF_PC_4 = 32'd4;
-
-end
+	end
 
 endmodule

@@ -197,7 +197,7 @@ module ID_tb;
 	);
 
 	Forwarding_Unit_ID FWU_ID(			//Use only Branch INST
-		.opcode_ID(ID_Instruction[31:26]),	//IN
+		//.opcode_ID(ID_Instruction[31:26]),	//IN
 		.ID_RS(ID_Instruction[25:21]),		//IN
 		.ID_RT(ID_Instruction[20:16]),		//IN
 		.MEM_RD(MEM_RD),			//IN
