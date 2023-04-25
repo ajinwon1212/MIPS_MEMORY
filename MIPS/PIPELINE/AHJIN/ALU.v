@@ -4,7 +4,7 @@ module ALU(
 	ALU_IN_2,
 	ALU_control,
 	Shampt,
-	ALU_zero,
+	//ALU_zero,
 	ALU_result,
 	Hi,
 	Lo
@@ -15,14 +15,14 @@ module ALU(
 	input [3:0] ALU_control; //4bit input
 	input [4:0] Shampt; //5bit input, shift size
 	
-	output ALU_zero; 
+	//output ALU_zero; 
 	output signed [31:0] ALU_result;
 
 	output reg signed [31:0] Hi, Lo;
 
 	reg signed [31:0] ALU_Result;
 
-	assign ALU_zero = (ALU_Result == 0) ? ((ALU_control[0] == 1) ? 0 : 1 ) : ((ALU_control[0] == 1) ? 1 : 0 ); 
+	//assign ALU_zero = (ALU_Result == 0) ? ((ALU_control[0] == 1) ? 0 : 1 ) : ((ALU_control[0] == 1) ? 1 : 0 ); 
 	//assign ALU_result = (ALU_control==4'b0111) ? Lo : ((ALU_control==4'b1110)? Hi : ALU_Result);
 	assign ALU_result = ALU_Result;
 
