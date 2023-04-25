@@ -21,7 +21,9 @@ module ALU(
 	output reg signed [31:0] Hi, Lo;
 
 	reg signed [31:0] ALU_Result;
-
+	reg [30:0] Lo_w;
+	reg [63:0] Hi_w;
+	reg [31:0] n_to_p, n_to_p1;
 	//assign ALU_zero = (ALU_Result == 0) ? ((ALU_control[0] == 1) ? 0 : 1 ) : ((ALU_control[0] == 1) ? 1 : 0 ); 
 	//assign ALU_result = (ALU_control==4'b0111) ? Lo : ((ALU_control==4'b1110)? Hi : ALU_Result);
 	assign ALU_result = ALU_Result;
@@ -45,11 +47,40 @@ module ALU(
 					//$display("Hi: %d, Lo: %d", Hi, Lo);
 				end
 		else if (ALU_control==4'b1101)// MULT
-				begin 
-					Lo <= ALU_IN_1 * ALU_IN_2; // MULT
-					Hi <= (ALU_IN_1 * ALU_IN_2) >> 32;
-					//$display("Hi: %d, Lo: %d", Hi, Lo);
+			begin 
+				if (ALU_IN_1[31] == 0 && ALU_IN_2[31] == 0)
+				begin
+					Lo_w <= ALU_IN_1 * ALU_IN_2;
+					Lo <= {1'b0, Lo_w}; // MULT
+					Hi_w <= ALU_IN_1 * ALU_IN_2;
+					Hi <= Hi_w >> 31;
 				end
+				else if (ALU_IN_1[31] == 0 && ALU_IN_2[31] == 1)
+				begin
+					n_to_p <= 33'h100000000 - ALU_IN_2;
+					Lo_w <= ALU_IN_1 * n_to_p;
+					Lo <= 33'h100000000 - Lo_w; // MULT
+					Hi_w <= ALU_IN_1 * n_to_p;
+					Hi <= 33'h100000000 - (Hi_w >> 31);
+				end
+				else if (ALU_IN_1[31] == 1 && ALU_IN_2[31] == 0)
+				begin
+					n_to_p <= 33'h100000000 - ALU_IN_1;
+					Lo_w <= ALU_IN_2 * n_to_p;
+					Lo <= 33'h100000000 - Lo_w; // MULT
+					Hi_w <= ALU_IN_2 * n_to_p;
+					Hi <= 33'h100000000 - (Hi_w >> 31);
+				end
+				else if (ALU_IN_1[31] == 1 && ALU_IN_2[31] == 1)
+				begin
+					n_to_p <= ALU_IN_1;
+					n_to_p1 <= ALU_IN_2;
+					Lo_w <= n_to_p * n_to_p1;
+					Lo <= {1'b0, Lo_w}; // MULT
+					Hi_w <= n_to_p * n_to_p1;
+					Hi <= Hi_w >> 31;
+				end
+			end
 		else if (ALU_control==4'b1001) ALU_Result <= ALU_IN_1 * ALU_IN_2; //MUL	
 		//else if (ALU_control==4'b0111) ALU_result <= Lo; //mflo
 		//else if (ALU_control==4'b1110) ALU_result <= Hi; //mfhi
