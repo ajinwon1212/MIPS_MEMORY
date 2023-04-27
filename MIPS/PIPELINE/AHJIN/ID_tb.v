@@ -10,7 +10,7 @@ module ID_tb;
 	
 	reg [5:0] MEM_Opcode;
 	wire [4:0] EX_RS, EX_RD;
-	wire Branch;
+	wire Branch, JUMP;
 	wire [1:0] Jump;
 	wire PCWrite;
 	wire Hazard_Ctrl;
@@ -21,7 +21,7 @@ module ID_tb;
 	wire [31:0] Branch_WO_PC;
 	wire [31:0] Jump_WO_PC;
 	wire [31:0] BTB_Addr;
-	wire [31:0] Jump_Addr;
+	wire [31:0] Jump_Addr, JUMP_Addr;
 	wire [31:0] ID_RD_32;
 
 	reg [4:0] WB_MEM; //[2]
@@ -119,7 +119,7 @@ module ID_tb;
 	ADD ADD3(
 		.a({ID_PC_4[31:28],28'd0}),	//IN
 		.b(Jump_WO_PC),			//IN
-		.out(Jump_Addr)			//OUT
+		.out(Jump_Addr)			//OUT **************
 	);
 
 	MUX4to1 MUX2(
@@ -141,6 +141,19 @@ module ID_tb;
 		.Write_Data(WB_RD_DATA),			//IN
 		.Read_data_1(ID_RS_data),			//OUT
 		.Read_data_2(ID_RT_data)			//OUT
+	);
+
+	MUX2to1 MUX10(
+		.a(Jump_Addr), //j, jal
+		.b(ID_RS_data), //jr
+		.sig(Jump[1]),
+		.out(JUMP_Addr)
+	);
+
+	or_gate OR1(
+		.a(Jump[0]),
+		.b(Jump[1]),
+		.out(JUMP)
 	);
 
 	Control Control_top(
