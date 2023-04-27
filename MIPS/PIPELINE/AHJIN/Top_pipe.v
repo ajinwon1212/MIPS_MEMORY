@@ -98,7 +98,7 @@ WB_PC_4, WB_RD, WB, WB_ALU_RESULT, WB_RD_Data, WB_RD_DATA
 
 	MUX4to1 MUX1(
 		.a(IF_PC_4),		//IN (00)
-		.b(Jump_Addr),		//IN (01)
+		.b(JUMP_Addr),		//IN (01)
 		.c(BTB_Addr),		//IN (10)
 		.d(32'd0),
 		.sig({Branch, JUMP}),	//IN @@@@@@@@@@@@@@@@@@@@@@

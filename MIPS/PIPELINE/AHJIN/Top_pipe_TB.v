@@ -1,3 +1,5 @@
+`timescale 10ns/10ns
+
 module Top_pipe_TB();
 
 	reg CLK, RESET;
@@ -91,15 +93,15 @@ module Top_pipe_TB();
 		CLK = 1'b0;
 		forever
 		begin
-			#10 CLK = !CLK;
+			#1 CLK = !CLK;
 		end
 	end
 
 	initial
 	begin
-		#10 RESET = 1'b1; 
+		#1 RESET = 1'b1; 
 
-		#10 RESET = 1'b0; 
+		#1 RESET = 1'b0; 
 
 
 	end
