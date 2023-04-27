@@ -14,10 +14,11 @@
 	//	21	/   2    /   1    /   1   /   1    /  3  /  1   /  2 /
 	//	0	/MemtoReg/RegWrite/MemRead/MemWrite/ALUOP/ALUSrc/HiLo/
 
-module Control( CLK, RESET, opcode, funct, RegDst, Jump, WB_CONT, MEM_CONT, EX_CONT);
+module Control( CLK, RESET, opcode, funct, FLUSH, RegDst, Jump, WB_CONT, MEM_CONT, EX_CONT);
 	input CLK, RESET;
 	input [5:0] opcode;
 	input [5:0] funct;
+	input FLUSH;
 
 	output reg [1:0] RegDst; // Write register select // 00: rd[25:21], 01: rd[15:11] , 10: ra
 	output reg [1:0] Jump;
@@ -25,7 +26,7 @@ module Control( CLK, RESET, opcode, funct, RegDst, Jump, WB_CONT, MEM_CONT, EX_C
 	output reg [1:0] MEM_CONT;
 	output reg [5:0] EX_CONT;
 
-	always @(opcode, funct) 
+	always @(opcode, funct, FLUSH) 
 	begin //R formmat 000000  is default
 		RegDst		<= 2'b01;
 		Jump		<= 2'b00;
@@ -38,7 +39,15 @@ module Control( CLK, RESET, opcode, funct, RegDst, Jump, WB_CONT, MEM_CONT, EX_C
 			/* R format */
 			6'b000000: //R 
 			begin	
-				if (funct == 6'b001000) //jr
+				if (FLUSH == 1'b1)
+				begin
+					RegDst		<= 2'b00;
+					Jump		<= 2'b00;
+					EX_CONT 	<= 6'b000000;
+					MEM_CONT	<= 2'b00;
+					WB_CONT		<= 3'b000;
+				end
+				else if (funct == 6'b001000) //jr
 				begin 
 					Jump <= 2'b10;  
 					//$display("jr: %b", opcode); 

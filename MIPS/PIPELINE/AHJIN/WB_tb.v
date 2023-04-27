@@ -7,13 +7,13 @@ module WB_tb;
 	reg [31:0] MEM_ALU_RESULT;
 	reg [31:0] MEM_RD_DATA;
 	reg [4:0] MEM_RD;
-	//reg [31:0] MEM_PC_4;
+	reg [31:0] MEM_PC_4;
 
 	wire [2:0] WB;
 	wire [31:0] WB_ALU_RESULT;
 	wire [31:0] WB_RD_Data;
 	wire [4:0] WB_RD;
-	//wire [31:0] WB_PC_4;
+	wire [31:0] WB_PC_4;
 
 	wire [31:0] WB_RD_DATA;
 
@@ -31,17 +31,17 @@ module WB_tb;
 		.MEM_ALU_RESULT(MEM_ALU_RESULT),		//IN
 		.MEM_RD_DATA(MEM_RD_DATA),			//IN
 		.MEM_RD(MEM_RD),				//IN
-		//.MEM_PC_4(MEM_PC_4),				//IN
+		.MEM_PC_4(MEM_PC_4),				//IN
 		.WB(WB),					//OUT
 		.WB_ALU_RESULT(WB_ALU_RESULT),			//OUT
 		.WB_RD_Data(WB_RD_Data),			//OUT
-		.WB_RD(WB_RD)					//OUT
-		//.WB_PC_4(WB_PC_4)				//OUT
+		.WB_RD(WB_RD),					//OUT
+		.WB_PC_4(WB_PC_4)				//OUT
 	);
 
 	MUX4to1 MUX9(
-		.a(WB_RD_Data),		//IN
-		.b(WB_ALU_RESULT),	//IN
+		.a(WB_ALU_RESULT),	//IN
+		.b(WB_RD_Data),		//IN
 		.c(WB_PC_4),		//IN
 		.d(32'b0),		//IN
 		.sig(WB[2:1]),		//IN
@@ -77,7 +77,7 @@ module WB_tb;
 		MEM_ALU_RESULT = 32'd1;
 		MEM_RD_DATA = 32'd2;
 		MEM_RD = 5'd10;
-		//MEM_PC_4 = 32'd0;
+		MEM_PC_4 = 32'd0;
 
 		#20
 		CASE = 4'd1; CYCLE=4'd2;
@@ -85,7 +85,7 @@ module WB_tb;
 		MEM_ALU_RESULT = 32'd0;
 		MEM_RD_DATA = 32'd0;
 		MEM_RD = 5'd0;
-		//MEM_PC_4 = 32'd4;
+		MEM_PC_4 = 32'd4;
 
 		//----------------
 		#40
@@ -94,7 +94,7 @@ module WB_tb;
 		MEM_ALU_RESULT = 32'd1;
 		MEM_RD_DATA = 32'd2;
 		MEM_RD = 5'd10;
-		//MEM_PC_4 = 32'd0;
+		MEM_PC_4 = 32'd0;
 
 		#20
 		CASE = 4'd2; CYCLE=4'd2;
@@ -102,7 +102,7 @@ module WB_tb;
 		MEM_ALU_RESULT = 32'd0;
 		MEM_RD_DATA = 32'd0;
 		MEM_RD = 5'd0;
-		//MEM_PC_4 = 32'd0;	
+		MEM_PC_4 = 32'd0;	
 
 		//----------------
 		#40 
@@ -111,7 +111,7 @@ module WB_tb;
 		MEM_ALU_RESULT = 32'd1;
 		MEM_RD_DATA = 32'd2;
 		MEM_RD = 5'd10;
-		//MEM_PC_4 = 32'd4;
+		MEM_PC_4 = 32'd4;
 
 		#20
 		CASE = 4'd3; CYCLE=4'd2;
@@ -119,7 +119,7 @@ module WB_tb;
 		MEM_ALU_RESULT = 32'd0;
 		MEM_RD_DATA = 32'd0;
 		MEM_RD = 5'd0;
-		//MEM_PC_4 = 32'd0;
+		MEM_PC_4 = 32'd0;
 
 	end
 

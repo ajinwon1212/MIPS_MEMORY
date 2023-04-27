@@ -36,13 +36,13 @@ module EX_tb();
 	wire [4:0] EX_Shmpt;        
 	wire [5:0] EX_Funct;      
 	wire [4:0] EX_RD;          
-	//wire [31:0] EX_PC_4;       
+	wire [31:0] EX_PC_4;       
 
 	wire [3:0] ALU_control;
 	wire [31:0] EX_ALU_RESULT;
 
 	wire [4:0] WB_MEM; //[2] == RegWrite
-	//wire [31:0] MEM_PC_4;
+	wire [31:0] MEM_PC_4;
 	wire [31:0] MEM_RT_DATA;
 	wire [5:0] MEM_Opcode;
 
@@ -149,13 +149,13 @@ module EX_tb();
 		.EX_ALU_RESULT(EX_ALU_RESULT),
 		.EX_RT_DATA(EX_RT_DATA),
 		.EX_RD(EX_RD),
-		//.EX_PC_4(EX_PC_4),
+		.EX_PC_4(EX_PC_4),
 		.WB_MEM(WB_MEM),
 		.MEM_Opcode(MEM_Opcode),
 		.MEM_ALU_RESULT(MEM_ALU_RESULT),
 		.MEM_RT_DATA(MEM_RT_DATA),
-		.MEM_RD(MEM_RD)
-		//.MEM_PC_4(MEM_PC_4)
+		.MEM_RD(MEM_RD),
+		.MEM_PC_4(MEM_PC_4)
 	);
 
 

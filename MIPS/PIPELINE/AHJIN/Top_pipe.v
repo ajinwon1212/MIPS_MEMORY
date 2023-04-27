@@ -1,11 +1,12 @@
 module Top_pipe(CLK, RESET,
 PC, PCWrite, PC_next, IF_Instruction, IFIDWrite, IF_Flush, IF_PC_4,
-ID_Instruction, ID_PC_4, ID_RS_data, ID_RT_data, FW_sig_ID_1, FW_sig_ID_2, ID_RS_DATA, ID_RT_DATA, 
+ID_PC_4, ID_Instruction, ID_RS_data, ID_RT_data, FW_sig_ID_1, FW_sig_ID_2, ID_RS_DATA, ID_RT_DATA, 
 Hazard_Ctrl, Branch, Jump, RegDst,
-WB_MEM_EX, EX_Opcode, EX_RS_Data, EX_RT_Data, EX_Sign_extend, FW_sig_EX_1, FW_sig_EX_2, EX_RS_DATA, EX_RT_DATA,
+CONT_1, CONT_2a, CONT_2b, DATA_1a, DATA_1b, DATA_2a, DATA_2b,
+EX_PC_4, WB_MEM_EX, EX_Opcode, EX_RS_Data, EX_RT_Data, EX_Sign_extend, FW_sig_EX_1, FW_sig_EX_2, EX_RS_DATA, EX_RT_DATA,
 ALU_result, HI, LO, EX_ALU_RESULT,
-MEM_RD, WB_MEM, MEM_Opcode, MEM_ALU_RESULT, 
-WB_RD, WB, WB_ALU_RESULT, WB_RD_Data, WB_RD_DATA 
+MEM_PC_4, MEM_RD, WB_MEM, MEM_Opcode, MEM_ALU_RESULT, 
+WB_PC_4, WB_RD, WB, WB_ALU_RESULT, WB_RD_Data, WB_RD_DATA 
 );
  
 
@@ -25,6 +26,7 @@ WB_RD, WB, WB_ALU_RESULT, WB_RD_Data, WB_RD_DATA
 	output wire IFIDWrite, IF_Flush;
 	output wire [31:0] ID_Instruction;
 	output wire [31:0] ID_PC_4;
+	wire FLUSH;
 	
 	output wire [5:0] MEM_Opcode;
 	wire [4:0] EX_RS, EX_RD;
@@ -32,7 +34,7 @@ WB_RD, WB, WB_ALU_RESULT, WB_RD_Data, WB_RD_DATA
 	output wire Hazard_Ctrl;
 	
 	//This signal should be deleted after test
-	wire CONT_1, CONT_2a, CONT_2b, DATA_1a, DATA_1b, DATA_2a, DATA_2b;
+	output wire CONT_1, CONT_2a, CONT_2b, DATA_1a, DATA_1b, DATA_2a, DATA_2b;
 
 	wire [31:0] ID_Sign_extend;
 	wire [31:0] Branch_WO_PC;
@@ -69,7 +71,7 @@ WB_RD, WB, WB_ALU_RESULT, WB_RD_Data, WB_RD_DATA
 	wire [4:0] EX_Shmpt;
 	wire [5:0] EX_Funct;
 	wire [4:0] EX_RT;
-	//output wire [31:0] EX_PC_4;
+	output wire [31:0] EX_PC_4;
 
 	output wire [31:0] ALU_result;
 	output wire [1:0] FW_sig_EX_1, FW_sig_EX_2;
@@ -77,19 +79,19 @@ WB_RD, WB, WB_ALU_RESULT, WB_RD_Data, WB_RD_DATA
 	output wire [31:0] EX_RS_DATA, EX_RT_DATA;  
 
 	wire [31:0] Hi, Lo;
-	output wire HI, LO;               
+	output wire [31:0] HI, LO;               
 
 	wire [3:0] ALU_control;
 	output wire [31:0] EX_ALU_RESULT;
 
-	//wire [31:0] MEM_PC_4;
+	output wire [31:0] MEM_PC_4;
 
-	wire [31:0] MEM_RT_DATA;
+	wire [31:0] MEM_RT_DATA, MEM_RD_DATA;
 	wire [31:0] Read_data;
 
 	output wire [31:0] WB_ALU_RESULT;
 	output wire [31:0] WB_RD_Data;
-	//wire [31:0] WB_PC_4;
+	output wire [31:0] WB_PC_4;
 
 
 	//IF__________________________________________________
@@ -138,7 +140,8 @@ WB_RD, WB, WB_ALU_RESULT, WB_RD_Data, WB_RD_DATA
 		.IF_Flush(IF_Flush),			//IN
 		.IF_PC_4(IF_PC_4),			//IN
 		.ID_Instruction(ID_Instruction),	//OUT
-		.ID_PC_4(ID_PC_4)			//OUT
+		.ID_PC_4(ID_PC_4),			//OUT
+		.FLUSH(FLUSH)
 	);
 
 	//ID__________________________________________________
@@ -238,6 +241,7 @@ WB_RD, WB, WB_ALU_RESULT, WB_RD_Data, WB_RD_DATA
 		.RESET(RESET),			//IN
 		.opcode(ID_Instruction[31:26]), //IN
 		.funct(ID_Instruction[5:0]),	//IN
+		.FLUSH(FLUSH),
 		.RegDst(RegDst),		//OUT
 		.Jump(Jump),			//OUT @@TIming Issue
 		.WB_CONT(WB_CONT),		//OUT 3bit
@@ -311,7 +315,7 @@ WB_RD, WB, WB_ALU_RESULT, WB_RD_Data, WB_RD_DATA
 		.ID_Shmpt(ID_Instruction[10:6]),	//IN
 		.ID_Funct(ID_Instruction[5:0]),		//IN
 		.ID_RD(ID_RD_32[4:0]),			//IN
-		//.ID_PC_4(ID_PC_4),			//IN
+		.ID_PC_4(ID_PC_4),			//IN
 		.WB_MEM_EX(WB_MEM_EX),			//OUT
 		.EX_Opcode(EX_Opcode),			//OUT @@@
 		.EX_RS(EX_RS),				//OUT
@@ -321,8 +325,8 @@ WB_RD, WB, WB_ALU_RESULT, WB_RD_Data, WB_RD_DATA
 		.EX_Sign_extend(EX_Sign_extend),	//OUT
 		.EX_Shmpt(EX_Shmpt),			//OUT
 		.EX_Funct(EX_Funct),			//OUT
-		.EX_RD(EX_RD)				//OUT
-		//.EX_PC_4(EX_PC_4)			//OUT
+		.EX_RD(EX_RD),				//OUT
+		.EX_PC_4(EX_PC_4)			//OUT
 	);
 	//EX__________________________________________________
 
@@ -402,13 +406,13 @@ WB_RD, WB, WB_ALU_RESULT, WB_RD_Data, WB_RD_DATA
 		.EX_ALU_RESULT(EX_ALU_RESULT),
 		.EX_RT_DATA(EX_RT_DATA),
 		.EX_RD(EX_RD),
-		//.EX_PC_4(EX_PC_4),
+		.EX_PC_4(EX_PC_4),
 		.WB_MEM(WB_MEM),
 		.MEM_Opcode(MEM_Opcode),
 		.MEM_ALU_RESULT(MEM_ALU_RESULT),
 		.MEM_RT_DATA(MEM_RT_DATA),
-		.MEM_RD(MEM_RD)
-		//.MEM_PC_4(MEM_PC_4)
+		.MEM_RD(MEM_RD),
+		.MEM_PC_4(MEM_PC_4)
 	);
 
 	//MEM_________________________________________________
@@ -420,7 +424,7 @@ WB_RD, WB, WB_ALU_RESULT, WB_RD_Data, WB_RD_DATA
 		.Write_Data(MEM_RT_DATA),
 		.MemWrite(WB_MEM[0]),
 		.MemRead(WB_MEM[1]),
-		.Read_data(Read_data)
+		.Read_data(MEM_RD_DATA)
 	);
 
 	MEMWB_Reg MEMWB(
@@ -430,12 +434,12 @@ WB_RD, WB, WB_ALU_RESULT, WB_RD_Data, WB_RD_DATA
 		.MEM_ALU_RESULT(MEM_ALU_RESULT),		//IN
 		.MEM_RD_DATA(MEM_RD_DATA),			//IN
 		.MEM_RD(MEM_RD),				//IN
-		//.MEM_PC_4(MEM_PC_4),				//IN
+		.MEM_PC_4(MEM_PC_4),				//IN
 		.WB(WB),					//OUT
 		.WB_ALU_RESULT(WB_ALU_RESULT),			//OUT
 		.WB_RD_Data(WB_RD_Data),			//OUT
-		.WB_RD(WB_RD)					//OUT
-		//.WB_PC_4(WB_PC_4)				//OUT
+		.WB_RD(WB_RD),					//OUT
+		.WB_PC_4(WB_PC_4)				//OUT
 	);
 
 	//WB_________________________________________________
@@ -445,8 +449,8 @@ WB_RD, WB, WB_ALU_RESULT, WB_RD_Data, WB_RD_DATA
 	//MemtoReg/RegWrite/
 
 	MUX4to1 MUX9(
-		.a(WB_RD_Data),		//IN
-		.b(WB_ALU_RESULT),	//IN
+		.a(WB_ALU_RESULT),	//IN
+		.b(WB_RD_Data),		//IN
 		.c(WB_PC_4),		//IN
 		.d(32'b0),		//IN
 		.sig(WB[2:1]),		//IN

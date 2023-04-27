@@ -6,13 +6,13 @@ module EXMEM_Reg (
     input [31:0] EX_ALU_RESULT,
     input [31:0] EX_RT_DATA,
     input [4:0] EX_RD,
-    //input [31:0] EX_PC_4,
+    input [31:0] EX_PC_4,
     output reg [4:0] WB_MEM,
     output reg [5:0] MEM_Opcode,
     output reg [31:0] MEM_ALU_RESULT,
     output reg [31:0] MEM_RT_DATA,
-    output reg [4:0] MEM_RD
-    //output reg [31:0] MEM_PC_4
+    output reg [4:0] MEM_RD,
+    output reg [31:0] MEM_PC_4
 );
 
 always @(posedge CLK or posedge RESET) begin
@@ -22,14 +22,14 @@ always @(posedge CLK or posedge RESET) begin
         MEM_ALU_RESULT <= 32'd0;
         MEM_RT_DATA <= 32'd0;
         MEM_RD <= 5'b0;
-        //MEM_PC_4 <= 32'b0;
+        MEM_PC_4 <= 32'b0;
     end else begin
         WB_MEM <= WB_MEM_EX[10:6];
         MEM_Opcode <= EX_Opcode;
         MEM_ALU_RESULT <= EX_ALU_RESULT;
         MEM_RT_DATA <= EX_RT_DATA;
         MEM_RD <= EX_RD;
-        //MEM_PC_4 <= EX_PC_4;
+        MEM_PC_4 <= EX_PC_4;
     end
 end
 

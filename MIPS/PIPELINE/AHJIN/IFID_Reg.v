@@ -5,7 +5,8 @@ module IFID_Reg(
 	input IF_Flush,
 	input [31:0] IF_PC_4,
 	output reg [31:0] ID_Instruction,
-	output reg [31:0] ID_PC_4
+	output reg [31:0] ID_PC_4,
+	output reg FLUSH
 	);
 
 always @(posedge CLK or posedge RESET)
@@ -14,6 +15,7 @@ begin
 	begin
 		ID_Instruction <= 32'b0;
 		ID_PC_4 <= 32'b0;
+		FLUSH <= 1'b0;
 	end
 	else
 	begin
@@ -21,6 +23,7 @@ begin
 		begin
 			ID_Instruction <= 32'b0;
 			ID_PC_4 <= 32'b0;
+			FLUSH <= 1'b1;
 		end
 		else
 		begin
@@ -28,11 +31,13 @@ begin
 			begin
 				ID_Instruction <= IF_Instruction;
 				ID_PC_4 <= IF_PC_4;
+				FLUSH <= 1'b0;
 			end
 			else
 			begin
 				ID_Instruction <= ID_Instruction;
 				ID_PC_4 <= ID_PC_4;
+				FLUSH <= 1'b0;
 			end
 		end
 	end

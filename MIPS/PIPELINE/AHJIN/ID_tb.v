@@ -7,6 +7,7 @@ module ID_tb;
 	wire IFIDWrite;
 	wire IF_Flush;
 	wire [31:0] ID_Instruction, ID_PC_4;
+	wire FLUSH;
 	
 	reg [5:0] MEM_Opcode;
 	wire [4:0] EX_RS, EX_RD;
@@ -63,7 +64,8 @@ module ID_tb;
 		.IF_Flush(IF_Flush),			//IN
 		.IF_PC_4(IF_PC_4),			//IN
 		.ID_Instruction(ID_Instruction),	//OUT
-		.ID_PC_4(ID_PC_4)			//OUT
+		.ID_PC_4(ID_PC_4),			//OUT
+		.FLUSH(FLUSH)
 	);
 
 	Hazard_detection_unit Hazard(
@@ -161,6 +163,7 @@ module ID_tb;
 		.RESET(RESET),			//IN
 		.opcode(ID_Instruction[31:26]), //IN
 		.funct(ID_Instruction[5:0]),	//IN
+		.FLUSH(FLUSH),
 		.RegDst(RegDst),		//OUT
 		.Jump(Jump),			//OUT @@TIming Issue
 		.WB_CONT(WB_CONT),		//OUT 3bit
@@ -234,7 +237,7 @@ module ID_tb;
 		.ID_Shmpt(ID_Instruction[10:6]),	//IN
 		.ID_Funct(ID_Instruction[5:0]),		//IN
 		.ID_RD(ID_RD_32[4:0]),			//IN
-		//.ID_PC_4(ID_PC_4),			//IN
+		.ID_PC_4(ID_PC_4),			//IN
 		.WB_MEM_EX(WB_MEM_EX),			//OUT
 		.EX_Opcode(EX_Opcode),			//OUT @@@
 		.EX_RS(EX_RS),				//OUT
@@ -244,8 +247,8 @@ module ID_tb;
 		.EX_Sign_extend(EX_Sign_extend),	//OUT
 		.EX_Shmpt(EX_Shmpt),			//OUT
 		.EX_Funct(EX_Funct),			//OUT
-		.EX_RD(EX_RD)				//OUT
-		//.EX_PC_4(EX_PC_4)			//OUT
+		.EX_RD(EX_RD),				//OUT
+		.EX_PC_4(EX_PC_4)			//OUT
 	);
 
 	initial

@@ -43,7 +43,7 @@ Branch,Jump,PCWrite, IFIDWrite, IF_Flush, Hazard_Ctrl
 
 	assign CONT_1 =  
 	((opcode_ID == 6'b000100) ||  (opcode_ID == 6'b000101)) ? (
-	((opcode_EX != 6'b000100) && (opcode_EX != 6'b000101) && (opcode_EX != 6'b100011) && (opcode_EX != 6'b000010) && (opcode_EX != 6'b000011)) ? (
+	((EX_RegWrite == 1'b1) && (opcode_EX != 6'b000100) && (opcode_EX != 6'b000101) && (opcode_EX != 6'b100011) && (opcode_EX != 6'b000010) && (opcode_EX != 6'b000011)) ? (
 	 ((EX_RD == ID_RS) || (EX_RD == ID_RT)) ? 1'b1 : 1'b0 ) : 1'b0
 	) : 1'b0;
 				
