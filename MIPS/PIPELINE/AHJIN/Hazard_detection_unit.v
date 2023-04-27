@@ -1,10 +1,10 @@
 //Control hazard
-// : Rformat - Branch (1 bubble)	CONT_1
-// : lw - Branch (2 bubbles) 		CONT_2a, CONT_2b
+// : R, I format(sw, lw x) - Branch (1 bubble)	CONT_1
+// : lw - Branch (2 bubbles) 			CONT_2a, CONT_2b
 //Data hazard > Source duplicated
-// : lw-Rformat (2 bubble) 		DATA_1a, DATA_1b
-// : lw-lw,sw (2 bubble)		DATA_2a, DATA_2b
-// : sw-lw (1 bubble)			DATA_3 X
+// : lw - R format (2 bubble) 			DATA_1a, DATA_1b
+// : lw - I format (2 bubble)			DATA_2a, DATA_2b
+// : sw - lw (1 bubble)				DATA_3 X
 //Branch taken
 // (flush)
 //Jump
@@ -65,7 +65,12 @@ Branch,Jump,PCWrite, IFIDWrite, IF_Flush, Hazard_Ctrl
  	//((EX_RD == ID_RS) || (EX_RD == ID_RT)) ? 1'b1 : 1'b0 ) : 1'b0
 	//) : 1'b0;
 
-	assign DATA_1a = ((opcode_ID != 6'b000100) && (opcode_ID != 6'b000101) && (opcode_ID != 6'b000010) && (opcode_ID != 6'b000011) && (opcode_ID != 6'b100011) && (opcode_ID != 6'b101011)) ? (
+	//assign DATA_1a = ((opcode_ID != 6'b000100) && (opcode_ID != 6'b000101) && (opcode_ID != 6'b000010) && (opcode_ID != 6'b000011) && (opcode_ID != 6'b100011) && (opcode_ID != 6'b101011)) ? (
+ 	//(opcode_EX == 6'b100011) ? ( ((EX_RD == ID_RS) || (EX_RD == ID_RT)) ? 1'b1 : 1'b0 ) : 1'b0 
+	//) : 1'b0;
+
+
+	assign DATA_1a = (opcode_ID == 6'b000000) ? (
  	(opcode_EX == 6'b100011) ? ( ((EX_RD == ID_RS) || (EX_RD == ID_RT)) ? 1'b1 : 1'b0 ) : 1'b0 
 	) : 1'b0;
 
@@ -74,15 +79,29 @@ Branch,Jump,PCWrite, IFIDWrite, IF_Flush, Hazard_Ctrl
  	//((opcode_ID == 6'b100011) || (opcode_ID == 6'b101011)) ? (
  	//(EX_RD == ID_RS) ? 1'b1 : 1'b0 ) : 1'b0
 	//) : 1'b0;
-	assign DATA_1b = ((opcode_ID != 6'b000100) && (opcode_ID != 6'b000101) && (opcode_ID != 6'b000010) && (opcode_ID != 6'b000011) && (opcode_ID != 6'b100011) && (opcode_ID != 6'b101011)) ? (
+
+	//assign DATA_1b = ((opcode_ID != 6'b000100) && (opcode_ID != 6'b000101) && (opcode_ID != 6'b000010) && (opcode_ID != 6'b000011) && (opcode_ID != 6'b100011) && (opcode_ID != 6'b101011)) ? (
+ 	//(opcode_MEM == 6'b100011) ? ( ((MEM_RD == ID_RS) || (MEM_RD == ID_RT)) ? 1'b1 : 1'b0 ) : 1'b0 
+	//) : 1'b0;
+
+	assign DATA_1b = (opcode_ID == 6'b000000) ? (
  	(opcode_MEM == 6'b100011) ? ( ((MEM_RD == ID_RS) || (MEM_RD == ID_RT)) ? 1'b1 : 1'b0 ) : 1'b0 
 	) : 1'b0;
 
-	assign DATA_2a = ((opcode_ID == 6'b100011) || (opcode_ID == 6'b101011)) ? (
+
+	//assign DATA_2a = ((opcode_ID == 6'b100011) || (opcode_ID == 6'b101011)) ? (
+	//((EX_RegWrite == 1'b1) && (opcode_EX == 6'b100011) && (EX_RD == ID_RS)) ? 1'b1 : 1'b0 ) : 1'b0 ;
+
+	assign DATA_2a = ((opcode_ID != 6'b000000) && (opcode_ID != 6'b000010) && (opcode_ID != 6'b000011)) ? (
 	((EX_RegWrite == 1'b1) && (opcode_EX == 6'b100011) && (EX_RD == ID_RS)) ? 1'b1 : 1'b0 ) : 1'b0 ;
 
-	assign DATA_2b = ((opcode_ID == 6'b100011) || (opcode_ID == 6'b101011)) ? (
+
+	//assign DATA_2b = ((opcode_ID == 6'b100011) || (opcode_ID == 6'b101011)) ? (
+	//((MEM_RegWrite == 1'b1) && (opcode_MEM == 6'b100011) && (MEM_RD == ID_RS)) ? 1'b1 : 1'b0 ) : 1'b0 ;
+
+	assign DATA_2b = ((opcode_ID != 6'b000000) && (opcode_ID != 6'b000010) && (opcode_ID != 6'b000011)) ? (
 	((MEM_RegWrite == 1'b1) && (opcode_MEM == 6'b100011) && (MEM_RD == ID_RS)) ? 1'b1 : 1'b0 ) : 1'b0 ;
+
 
 	//assign DATA_3 = 
 	//(opcode_EX == 6'b101011) ? (

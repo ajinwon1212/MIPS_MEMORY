@@ -36,13 +36,13 @@ module EX_tb();
 	wire [4:0] EX_Shmpt;        
 	wire [5:0] EX_Funct;      
 	wire [4:0] EX_RD;          
-	wire [31:0] EX_PC_4;       
+	//wire [31:0] EX_PC_4;       
 
 	wire [3:0] ALU_control;
 	wire [31:0] EX_ALU_RESULT;
 
 	wire [4:0] WB_MEM; //[2] == RegWrite
-	wire [31:0] MEM_PC_4;
+	//wire [31:0] MEM_PC_4;
 	wire [31:0] MEM_RT_DATA;
 	wire [5:0] MEM_Opcode;
 
@@ -149,13 +149,13 @@ module EX_tb();
 		.EX_ALU_RESULT(EX_ALU_RESULT),
 		.EX_RT_DATA(EX_RT_DATA),
 		.EX_RD(EX_RD),
-		.EX_PC_4(EX_PC_4),
+		//.EX_PC_4(EX_PC_4),
 		.WB_MEM(WB_MEM),
 		.MEM_Opcode(MEM_Opcode),
 		.MEM_ALU_RESULT(MEM_ALU_RESULT),
 		.MEM_RT_DATA(MEM_RT_DATA),
-		.MEM_RD(MEM_RD),
-		.MEM_PC_4(MEM_PC_4)
+		.MEM_RD(MEM_RD)
+		//.MEM_PC_4(MEM_PC_4)
 	);
 
 
@@ -328,7 +328,7 @@ module EX_tb();
 		#20 CASE = 4'd5; CYCLE = 4'd1;
 		WB_MEM_EX_32 = 32'b00000000000000000000000000001000;
 		ID_Instruction = 32'b00000000101001100000000000011000;
-		ID_RS_DATA = 32'h7fffffff; 
+		ID_RS_DATA = 32'hffffffff; 
 		ID_RT_DATA = 32'd3; //2 FFFF FFFD
 		ID_RD_32 = 32'd0;
 		ID_PC_4 = 32'd0;

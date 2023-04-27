@@ -234,7 +234,7 @@ module ID_tb;
 		.ID_Shmpt(ID_Instruction[10:6]),	//IN
 		.ID_Funct(ID_Instruction[5:0]),		//IN
 		.ID_RD(ID_RD_32[4:0]),			//IN
-		.ID_PC_4(ID_PC_4),			//IN
+		//.ID_PC_4(ID_PC_4),			//IN
 		.WB_MEM_EX(WB_MEM_EX),			//OUT
 		.EX_Opcode(EX_Opcode),			//OUT @@@
 		.EX_RS(EX_RS),				//OUT
@@ -244,8 +244,8 @@ module ID_tb;
 		.EX_Sign_extend(EX_Sign_extend),	//OUT
 		.EX_Shmpt(EX_Shmpt),			//OUT
 		.EX_Funct(EX_Funct),			//OUT
-		.EX_RD(EX_RD),				//OUT
-		.EX_PC_4(EX_PC_4)			//OUT
+		.EX_RD(EX_RD)				//OUT
+		//.EX_PC_4(EX_PC_4)			//OUT
 	);
 
 	initial
@@ -442,6 +442,7 @@ module ID_tb;
 		WB = 3'd1;
 		MEM_RD = 5'd2;
 		MEM_ALU_RESULT = 32'd2;
+		WB_MEM = 6'b000100;
 		
 		#20 CYCLE = 4'd2;
 		IF_Instruction  = 32'b00000000000000000000000000000000;
@@ -451,6 +452,7 @@ module ID_tb;
 		WB = 3'd0;
 		MEM_RD = 5'd0;
 		MEM_ALU_RESULT = 32'd0;
+		WB_MEM = 6'b000000;
 	
 		//--------------------
 		#20 CASE = 4'd10; CYCLE = 4'd1;
