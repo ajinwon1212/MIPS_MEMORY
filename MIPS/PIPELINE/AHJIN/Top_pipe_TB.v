@@ -101,7 +101,7 @@ module Top_pipe_TB();
 	begin
 		RESET = 1'b1; 
 
-		#400 RESET = 1'b0; 
+		#800 RESET = 1'b0; 
 
 
 	end
