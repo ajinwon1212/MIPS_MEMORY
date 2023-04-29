@@ -12,7 +12,7 @@ module Data_memory(CLK, RESET, Address, Write_Data, MemWrite, MemRead, Read_data
 	assign Read_data = (MemRead == 1'b1) ? Data_memory[Address>>2] : 31'd0;
 
 	initial begin 
-		$readmemb("C:/PIPELINE/Data_reset.txt", Data_memory, 0, 511);
+		$readmemb("Data_reset.txt", Data_memory, 0, 511);
 	end
 
 	always@(posedge CLK)
