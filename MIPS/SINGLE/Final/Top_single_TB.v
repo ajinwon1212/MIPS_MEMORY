@@ -52,7 +52,7 @@ module Top_single_TB;
 	initial
 	begin
 		RESET = 1'b1;
-		#800 RESET = 1'b0; 
+		#400 RESET = 1'b0; 
 	end
 
 
