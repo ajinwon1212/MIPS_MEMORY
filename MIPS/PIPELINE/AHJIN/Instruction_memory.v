@@ -20,7 +20,7 @@ module Instruction_memory (CLK, RESET, PC, IF_Instruction);
 	input [31:0] PC;
    	output [31:0] IF_Instruction;
 	
-	reg [31:0] inst_mem[0:63];
+	reg [31:0] inst_mem[0:127];
 
 
 	initial
