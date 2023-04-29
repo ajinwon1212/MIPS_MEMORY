@@ -90,7 +90,7 @@ module Top_pipe_TB();
 
 	initial
 	begin
-		CLK = 1'b0;
+		CLK = 1'b1;
 		forever
 		begin
 			#100 CLK = !CLK;
