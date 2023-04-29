@@ -42,7 +42,7 @@ module Top_single_TB;
 
 	initial
 	begin
-		CLK = 1'b0;
+		CLK = 1'b1;
 		forever
 		begin
 			#400 CLK = !CLK;
@@ -52,7 +52,7 @@ module Top_single_TB;
 	initial
 	begin
 		RESET = 1'b1;
-		#400 RESET = 1'b0; 
+		#800 RESET = 1'b0; 
 	end
 
 
