@@ -1,4 +1,4 @@
-`timescale 1ns / 1ns  
+`timescale 1ps / 1ps  
 
 module Top_single_TB;
 
@@ -45,14 +45,14 @@ module Top_single_TB;
 		CLK = 1'b0;
 		forever
 		begin
-			#10 CLK = !CLK;
+			#400 CLK = !CLK;
 		end
 	end
 
 	initial
 	begin
 		RESET = 1'b1;
-		#30 RESET = 1'b0; 
+		#800 RESET = 1'b0; 
 	end
 
 
