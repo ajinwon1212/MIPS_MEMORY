@@ -44,7 +44,7 @@ module Registers( CLK, RESET, RegWrite, Read_register_1, Read_register_2, Write_
 			Register[26] <= 32'h00000000;   // reserved
 			Register[27] <= 32'h00000000;   // reserved
 			Register[28] <= 32'h10008000;   // $gp
-			Register[29] <= 32'h7FFFEFFC;   // &sp
+			Register[29] <= 32'h70000180;   // &sp
 			Register[30] <= 32'h00000000;   // &fp
 			Register[31] <= 32'h00000000;   // $ra		
 		end
