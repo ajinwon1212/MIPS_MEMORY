@@ -1,0 +1,168 @@
+-[31:0] WB_MEM_EX_32 구조-
+//   21   /   2    /   1    /   1   /   1    /  3  /  1   /  2 /
+//   0   /MemtoReg/RegWrite/MemRead/MemWrite/ALUOP/ALUSrc/HiLo/
+
+
+[EX_tb]
+
+0. normal operation
+No Forwarding RS, RT
+: FW_sig_EX_1(00), FW_sig_EX_2(00 or 01)
+
+//--------------
+#20 CYCLE = 4'd0; CYCLE = 4'd1;
+WB_MEM_EX_32 = 32'b000000000000000000000 011 10 000100;
+ID_Instruction = 32'b10001111101010000000000000000000;
+ID_RD_32 = 32'd8;
+ID_PC_4 = 32'd0;
+WB_RD = 5'd0;
+WB_RD_DATA = 32'd0;
+WB = 3'b0; //[0]
+
+#20 CYCLE = 4'd0; CYCLE = 4'd2;
+WB_MEM_EX_32 = 32'b000000000000000000000 001 00 001000;
+ID_Instruction = 32'b000000 00101 00110 00111 00000100000;
+ID_RD_32 = 32'd7;
+ID_PC_4 = 32'd4;
+
+#20 CYCLE = 4'd0; CYCLE = 4'd3;
+WB_MEM_EX_32 = 32'b0;
+ID_Instruction = 32'b0;
+ID_RD_32 = 32'd0;
+ID_PC_4 = 32'd8;
+
+
+1. Fowarding case RT
+No Forwarding RS, Forwarding RT(MEM)
+: FW_sig_EX_1(00), FW_sig_EX_2(11)
+
+//--------------
+#20 CYCLE = 4'd1; CYCLE = 4'd1;
+WB_MEM_EX_32 = 32'b000000000000000000000 001 00 001000;
+ID_Instruction = 32'b000000 00101 00110 00111 00000100000;
+ID_RD_32 = 32'd7;
+ID_PC_4 = 32'd0;
+
+#20 CYCLE = 4'd1; CYCLE = 4'd2;
+WB_MEM_EX_32 = 32'b000000000000000000000 011 10 000100;
+ID_Instruction = 32'b000000 00110 00111 01000 00000100000;
+ID_RD_32 = 32'd8;
+ID_PC_4 = 32'd4;
+
+#20 CYCLE = 4'd1; CYCLE = 4'd3;
+WB_MEM_EX_32 = 32'b0;
+ID_Instruction = 32'b0;
+ID_RD_32 = 32'd0;
+ID_PC_4 = 32'd8;
+
+
+2. Fowarding case RS
+Forwarding RS(MEM), No Forwarding RT
+: FW_sig_EX_1(01), FW_sig_EX_2(00)
+
+//--------------
+#20 CYCLE = 4'd2; CYCLE = 4'd1;
+WB_MEM_EX_32 = 32'b000000000000000000000 001 00 001000;
+ID_Instruction = 32'b000000 00101 00110 00111 00000100000;
+ID_RD_32 = 32'd7;
+ID_PC_4 = 32'd0;
+
+#20 CYCLE = 4'd2; CYCLE = 4'd2;
+WB_MEM_EX_32 = 32'b000000000000000000000 011 10 000100;
+ID_Instruction = 32'b000000 00111 00110 01000 00000100000;
+ID_RD_32 = 32'd8;
+ID_PC_4 = 32'd4;
+
+#20 CYCLE = 4'd2; CYCLE = 4'd3;
+WB_MEM_EX_32 = 32'b0;
+ID_Instruction = 32'b0;
+ID_RD_32 = 32'd0;
+ID_PC_4 = 32'd8;
+
+
+3. Fowarding case RS, RT
+Forwarding RS(WB), Forwarding RT(WB)
+: FW_sig_EX_1(10), FW_sig_EX_2(10)
+
+//--------------
+#20 CYCLE = 4'd3; CYCLE = 4'd1;
+WB_MEM_EX_32 = 32'b000000000000000000000 001 00 001000;
+ID_Instruction = 32'b000000 00101 00101 00111 00000100000;
+ID_RD_32 = 32'd7;
+ID_PC_4 = 32'd0;
+WB_RD = 5'd5;
+WB_RD_DATA = 32'd99;
+WB = 3'b001; //[0]
+
+#20 CYCLE = 4'd3; CYCLE = 4'd2;
+WB_MEM_EX_32 = 32'b0;
+ID_Instruction = 32'b0;
+ID_RD_32 = 32'd0;
+ID_PC_4 = 32'd4;
+WB_RD = 5'd0;
+WB_RD_DATA = 32'd0;
+WB = 3'b0; //[0]
+
+4. Double data hazard RS
+Forwarding RS(MEM, WB), No forwarding RT
+: FW_sig_EX_1(01), FW_sig_EX_2(00 or 01)
+>> FW_sig_EX_1(01)나오는지 확인 필요
+
+//--------------
+#20 CYCLE = 4'd4; CYCLE = 4'd1;
+WB_MEM_EX_32 = 32'b000000000000000000000 001 00 001000;
+ID_Instruction = 32'b000000 00101 00110 00101 00000100000;
+ID_RD_32 = 32'd5;
+ID_PC_4 = 32'd0;
+WB_RD = 5'd0;
+WB_RD_DATA = 32'd0;
+WB = 3'b0; //[0]
+
+#20 CYCLE = 4'd4; CYCLE = 4'd2;
+WB_MEM_EX_32 = 32'b000000000000000000000 001 00 001000;
+ID_Instruction = 32'b000000 00101 00110 00111 00000100000;
+ID_RD_32 = 32'd7;
+ID_PC_4 = 32'd4;
+WB_RD = 5'd7;
+WB_RD_DATA = 32'd99;
+WB = 3'b001; //[0]
+
+#20 CYCLE = 4'd4; CYCLE = 4'd3;
+WB_MEM_EX_32 = 32'b0;
+ID_Instruction = 32'b0;
+ID_RD_32 = 32'd0;
+ID_PC_4 = 32'd8;
+WB_RD = 5'd0;
+WB_RD_DATA = 32'd0;
+WB = 3'b0; //[0]
+
+
+5. mflo, mfhi test
+mult명령어 쓴 후 mfhi, mflo 실시 (Special register에 Hi, Lo값 저장해야 하니까)
+:WB_MEM_EX[1:0] = 01 //mfhi
+:WB_MEM_EX[1:0] = 10 //mflo
+
+//--------------
+#20 CYCLE = 4'd5; CYCLE = 4'd1;
+WB_MEM_EX_32 = 32'b000000000000000000000 000 00 001000;
+ID_Instruction = 32'b000000 00101 00110 00000 00000 011000;
+ID_RD_32 = 32'd0;
+ID_PC_4 = 32'd0;
+
+#20 CYCLE = 4'd5; CYCLE = 4'd2;
+WB_MEM_EX_32 = 32'b000000000000000000000 001 00 001010;
+ID_Instruction = 32'b000000 00000 00000 00011 00000 010000;
+ID_RD_32 = 32'd3;
+ID_PC_4 = 32'd4;
+
+#20 CYCLE = 4'd5; CYCLE = 4'd3;
+WB_MEM_EX_32 = 32'b000000000000000000000 001 00 001001;
+ID_Instruction = 32'b000000 00000 00000 00100 00000 010010;
+ID_RD_32 = 32'd4;
+ID_PC_4 = 32'd8;
+
+#20 CYCLE = 4'd5; CYCLE = 4'd4;
+WB_MEM_EX_32 = 32'b0;
+ID_Instruction = 32'b0;
+ID_RD_32 = 32'd0;
+ID_PC_4 = 32'd12;

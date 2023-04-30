@@ -9,7 +9,7 @@ module Top_pipe_TB();
 	wire [31:0] PC_next;
 	wire [31:0] IF_Instruction;
 	wire IFIDWrite, IF_Flush;
-	wire [31:0] IF_PC_4,JUMP_Addr,BTB_Addr;
+	wire [31:0] IF_PC_4;
 	wire [31:0] ID_PC_4, ID_Instruction, ID_RS_data, ID_RT_data;
 	wire CONT_1, CONT_2a, CONT_2b, DATA_1a, DATA_1b, DATA_2a, DATA_2b;
 	wire [1:0] FW_sig_ID_1, FW_sig_ID_2;
@@ -27,7 +27,6 @@ module Top_pipe_TB();
 	wire [4:0] WB_MEM;
 	wire [5:0] MEM_Opcode;
 	wire [31:0] MEM_ALU_RESULT;
-	wire [31:0] MEM_RT_DATA, MEM_RD_DATA;
 	wire [31:0] WB_PC_4;
 	wire [4:0] WB_RD;
 	wire [2:0] WB;
@@ -43,8 +42,6 @@ module Top_pipe_TB();
 		.IFIDWrite(IFIDWrite), 
 		.IF_Flush(IF_Flush), 
 		.IF_PC_4(IF_PC_4),
-		.JUMP_Addr(JUMP_Addr), 
-		.BTB_Addr(BTB_Addr),
 		.ID_PC_4(ID_PC_4), 
 		.ID_Instruction(ID_Instruction), 
 		.ID_RS_data(ID_RS_data), 
@@ -83,8 +80,6 @@ module Top_pipe_TB();
 		.WB_MEM(WB_MEM), 
 		.MEM_Opcode(MEM_Opcode),
 		.MEM_ALU_RESULT(MEM_ALU_RESULT), 
-		.MEM_RD_DATA(MEM_RD_DATA), 
-		.MEM_RT_DATA(MEM_RT_DATA),
 		.WB_PC_4(WB_PC_4),
 		.WB_RD(WB_RD), 
 		.WB(WB), 
@@ -95,7 +90,7 @@ module Top_pipe_TB();
 
 	initial
 	begin
-		CLK = 1'b1;
+		CLK = 1'b0;
 		forever
 		begin
 			#100 CLK = !CLK;
@@ -104,9 +99,9 @@ module Top_pipe_TB();
 
 	initial
 	begin
-		RESET = 1'b1; 
+		#100 RESET = 1'b1; 
 
-		#800 RESET = 1'b0; 
+		#100 RESET = 1'b0; 
 
 
 	end

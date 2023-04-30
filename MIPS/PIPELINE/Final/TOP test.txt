@@ -1,0 +1,21 @@
+[Top_pipe_tb]
+
+1. Normal operation 
+2. Data Hazard 1 (lw-R)
+연속 2번 stall, lw*-r-r*
+3. Data Hazard 2 (lw-lw)
+4. Control Hazard 1 (R-Branch)
+5. Control Hazard 2 (lw-Branch)
+6. Branch taken
+7. Jump
+8. Branch not taken ID_Forwarding (MEM)
+9. Branch not taken ID_Forwarding (WB)
+10. Double Data Hazard(MEM, WB) => Branch not taken ID_Forwarding 
+11. Branch taken with ID_Forwarding (MEM)
+12. EX_Forwarding (RT, MEM)
+13. EX_Forwarding (RS, MEM)
+14. EX_Forwarding (RS, WB) & (RT, WB)
+15. Double Data Hazard(MEM, WB) => EX_Forwarding (RS)
+16. mflo, mfhi
+17. jr
+18. jal

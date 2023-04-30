@@ -5,13 +5,28 @@ module Data_memory(CLK, RESET, Address, Write_Data, MemWrite, MemRead, Read_data
 	input signed [31:0] Write_Data; // Data that needs to be written into the address 
 	input MemWrite; 		// Control signal for memory write 
 	input MemRead; 			// Control signal for memory read 
+	output reg [31:0] Read_data;
 
-	output reg signed [31:0] Read_data; // Contents of memory location at Address
-
-      	reg 	[31:0] 	Data_memory[0:127];
+	reg 	[31:0] 	Data_memory[0:511];
 
 	assign Read_data = (MemRead == 1'b1) ? Data_memory[Address>>2] : 31'd0;
 
+	initial begin 
+		$readmemb("C:/PIPELINE/Data_reset.txt", Data_memory, 0, 511);
+	end
+
+	always@(posedge CLK)
+	begin
+		//if (MemRead == 1)
+		//	Read_data = Data_memory[Address>>2];
+		if (MemWrite == 1)
+			Data_memory[Address>>2] = Write_Data;
+		//else
+			//Read_data = 31'd0;
+	end
+
+
+/*	
    	always 	@(posedge RESET or posedge CLK) // When a signal is received from control, the process starts.
 		if (RESET)
 		begin
@@ -79,70 +94,6 @@ module Data_memory(CLK, RESET, Address, Write_Data, MemWrite, MemRead, Read_data
 			Data_memory[61] <= 32'd0; 
 			Data_memory[62] <= 32'd0; 
 			Data_memory[63] <= 32'd0; 
-			Data_memory[64] <= 32'd0; 
-			Data_memory[65] <= 32'd0; 
-			Data_memory[66] <= 32'd0; 
-			Data_memory[67] <= 32'd0; 
-			Data_memory[68] <= 32'd0; 
-			Data_memory[69] <= 32'd0; 
-			Data_memory[70] <= 32'd0; 
-			Data_memory[71] <= 32'd0; 
-			Data_memory[72] <= 32'd0; 
-			Data_memory[73] <= 32'd0; 
-			Data_memory[74] <= 32'd0; 
-			Data_memory[75] <= 32'd0; 
-			Data_memory[76] <= 32'd0; 
-			Data_memory[77] <= 32'd0; 
-			Data_memory[78] <= 32'd0; 
-			Data_memory[79] <= 32'd0; 
-			Data_memory[80] <= 32'd0; 
-			Data_memory[81] <= 32'd0; 
-			Data_memory[82] <= 32'd0; 
-			Data_memory[83] <= 32'd0; 
-			Data_memory[84] <= 32'd0; 
-			Data_memory[85] <= 32'd0; 
-			Data_memory[86] <= 32'd0; 
-			Data_memory[87] <= 32'd0; 
-			Data_memory[88] <= 32'd0; 
-			Data_memory[89] <= 32'd0; 
-			Data_memory[90] <= 32'd0; 
-			Data_memory[91] <= 32'd0; 
-			Data_memory[92] <= 32'd0; 
-			Data_memory[93] <= 32'd0; 
-			Data_memory[94] <= 32'd0; 
-			Data_memory[95] <= 32'd0; 
-			Data_memory[96] <= 32'd0; 
-			Data_memory[97] <= 32'd0; 
-			Data_memory[98] <= 32'd0; 
-			Data_memory[99] <= 32'd0; 
-			Data_memory[100] <= 32'd0; 
-			Data_memory[101] <= 32'd0; 
-			Data_memory[102] <= 32'd0; 
-			Data_memory[103] <= 32'd0; 
-			Data_memory[104] <= 32'd0; 
-			Data_memory[105] <= 32'd0; 
-			Data_memory[106] <= 32'd0; 
-			Data_memory[107] <= 32'd0; 
-			Data_memory[108] <= 32'd0; 
-			Data_memory[109] <= 32'd0; 
-			Data_memory[110] <= 32'd0; 
-			Data_memory[111] <= 32'd0; 
-			Data_memory[112] <= 32'd0; 
-			Data_memory[113] <= 32'd0; 
-			Data_memory[114] <= 32'd0; 
-			Data_memory[115] <= 32'd0; 
-			Data_memory[116] <= 32'd0; 
-			Data_memory[117] <= 32'd0; 
-			Data_memory[118] <= 32'd0; 
-			Data_memory[119] <= 32'd0; 
-			Data_memory[120] <= 32'd0; 
-			Data_memory[121] <= 32'd0; 
-			Data_memory[122] <= 32'd0; 
-			Data_memory[123] <= 32'd0; 
-			Data_memory[124] <= 32'd0; 
-			Data_memory[125] <= 32'd0; 
-			Data_memory[126] <= 32'd0; 
-			Data_memory[127] <= 32'd0;
 			$display("RESET MODE");	
 		end   	
 	
@@ -212,81 +163,12 @@ module Data_memory(CLK, RESET, Address, Write_Data, MemWrite, MemRead, Read_data
 			Data_memory[61] <=	Data_memory[61]	;
 			Data_memory[62] <=	Data_memory[62]	;
 			Data_memory[63] <=	Data_memory[63]	;
-			Data_memory[64] <=	Data_memory[64]	;
-			Data_memory[65] <=	Data_memory[65]	;
-			Data_memory[66] <=	Data_memory[66]	;
-			Data_memory[67] <=	Data_memory[67]	;
-			Data_memory[68] <=	Data_memory[68]	;
-			Data_memory[69] <=	Data_memory[69]	;
-			Data_memory[70] <=	Data_memory[70]	;
-			Data_memory[71] <=	Data_memory[71]	;
-			Data_memory[72] <=	Data_memory[72]	;
-			Data_memory[73] <=	Data_memory[73]	;
-			Data_memory[74] <= 	Data_memory[74]	;
-			Data_memory[75] <=	Data_memory[75]	;
-			Data_memory[76] <=	Data_memory[76]	;
-			Data_memory[77] <=	Data_memory[77]	;
-			Data_memory[78] <=	Data_memory[78]	;
-			Data_memory[79] <=	Data_memory[79]	;
-			Data_memory[80] <=	Data_memory[80]	;
-			Data_memory[81] <=	Data_memory[81]	;
-			Data_memory[82] <=	Data_memory[82]	;
-			Data_memory[83] <=	Data_memory[83]	;
-			Data_memory[84] <=	Data_memory[84]	;
-			Data_memory[85] <=	Data_memory[85]	;
-			Data_memory[86] <=	Data_memory[86]	;
-			Data_memory[87] <=	Data_memory[87]	;
-			Data_memory[88] <=	Data_memory[88]	;
-			Data_memory[89] <=	Data_memory[89]	;
-			Data_memory[90] <=	Data_memory[90]	;
-			Data_memory[91] <=	Data_memory[91]	;
-			Data_memory[92] <=	Data_memory[92]	;
-			Data_memory[93] <=	Data_memory[93]	;
-			Data_memory[94] <=	Data_memory[94]	;
-			Data_memory[95] <=	Data_memory[95]	;
-			Data_memory[96] <=	Data_memory[96]	;
-			Data_memory[97] <=	Data_memory[97]	;
-			Data_memory[98] <=	Data_memory[98]	;
-			Data_memory[99] <=	Data_memory[99]	;
-			Data_memory[100] <=	Data_memory[100]	;
-			Data_memory[101] <=	Data_memory[101]	;
-			Data_memory[102] <=	Data_memory[102]	;
-			Data_memory[103] <=	Data_memory[103]	;
-			Data_memory[104] <=	Data_memory[104]	;
-			Data_memory[105] <=	Data_memory[105]	;
-			Data_memory[106] <=	Data_memory[106]	;
-			Data_memory[107] <=	Data_memory[107]	;
-			Data_memory[108] <=	Data_memory[108]	;
-			Data_memory[109] <=	Data_memory[109]	;
-			Data_memory[110] <=	Data_memory[110]	;
-			Data_memory[111] <=	Data_memory[111]	;
-			Data_memory[112] <=	Data_memory[112]	;
-			Data_memory[113] <=	Data_memory[113]	;
-			Data_memory[114] <=	Data_memory[114]	;
-			Data_memory[115] <=	Data_memory[115]	;
-			Data_memory[116] <=	Data_memory[116]	;
-			Data_memory[117] <=	Data_memory[117]	;
-			Data_memory[118] <=	Data_memory[118]	;
-			Data_memory[119] <=	Data_memory[119]	;
-			Data_memory[120] <=	Data_memory[120]	;
-			Data_memory[121] <=	Data_memory[121]	;
-			Data_memory[122] <=	Data_memory[122]	;
-			Data_memory[123] <=	Data_memory[123]	;
-			Data_memory[124] <=	Data_memory[124]	;
-			Data_memory[125] <=	Data_memory[125]	;
-			Data_memory[126] <=	Data_memory[126]	;
-			Data_memory[127] <=	Data_memory[127]	;
 
-   			//$display("Data_mem_Address: %d", Address);
+
 			if (MemWrite==1) begin
 				Data_memory[Address>>2] <= Write_Data;
-				//$display("Write_data: %d", Write_Data);
 			end
-   			//else if	(MemRead == 1) begin
-                		//Read_data <= Data_memory[Address>>2];
-				//$display("Read_data: %d", Read_data);
-   			//end 
-			//else Read_data <= 32'h00000000;
-   		end
 
+   		end
+*/
 endmodule

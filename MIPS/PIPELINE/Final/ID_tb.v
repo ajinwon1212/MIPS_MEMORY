@@ -147,7 +147,7 @@ module ID_tb;
 
 	MUX2to1 MUX10(
 		.a(Jump_Addr), //j, jal
-		.b(ID_RS_DATA), //jr
+		.b(ID_RS_data), //jr
 		.sig(Jump[1]),
 		.out(JUMP_Addr)
 	);

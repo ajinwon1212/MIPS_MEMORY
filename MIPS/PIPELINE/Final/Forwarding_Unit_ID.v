@@ -1,24 +1,60 @@
-//Consider double data hazard!
-//Only Branch forwarding > ALL need!! because WB timing is later than ID
 module Forwarding_Unit_ID (
-	//input [5:0] opcode_ID,
-	input [4:0] ID_RS, ID_RT,
-	input [4:0] MEM_RD, WB_RD,
-	input MEM_FW, WB_FW,
-	output [1:0] FW_sig1,
-	output [1:0] FW_sig2
+    input [5:0] opcode,
+    input [4:0] ID_RS, ID_RT,
+    input [4:0] MEM_RD, WB_RD,
+    input [31:0] MEM_RD_DATA_I, WB_RD_DATA_I,
+    output reg [31:0] MEM_RD_DATA_O_RS, MEM_RD_DATA_O_RT,
+    output reg [31:0] WB_RD_DATA_O_RS, WB_RD_DATA_O_RT,
+    output reg FW_sig1_RS, FW_sig2_RS,
+    output reg FW_sig1_RT, FW_sig2_RT
 );
-	//assign FW_sig1 = ((opcode_ID == 6'b000100)||(opcode_ID ==6'b000101)) ? ((MEM_FW &&(MEM_RD == ID_RS)) ? (2'b01) : (
-	//	(WB_FW&&(WB_RD == ID_RS)) ? (2'b10) : (2'b00))) : (WB_FW&&(WB_RD == ID_RT) ? 2'b10 : 2'b00);
-	//assign FW_sig2 = ((opcode_ID == 6'b000100)||(opcode_ID ==6'b000101)) ? ((MEM_FW &&(MEM_RD == ID_RT)) ? (2'b01) : (
-	//	(WB_FW&&(WB_RD == ID_RT)) ? (2'b10) : (2'b00))) : (WB_FW&&(WB_RD == ID_RT) ? 2'b10 : 2'b00);
 
-	assign FW_sig1 = (MEM_FW &&(MEM_RD == ID_RS)) ? (2'b01) : (
-		(WB_FW&&(WB_RD == ID_RS)) ? 2'b10 : 2'b00 );
+  // Forwarding conditions
+  wire MEM_to_ID_RS = (ID_RS == MEM_RD) && (ID_RS != 5'b0) && (opcode != 6'b000000);
+  wire WB_to_ID_RS = (ID_RS == WB_RD) && (ID_RS != 5'b0) && (opcode != 6'b000000);
+  wire MEM_to_ID_RT = (ID_RT == MEM_RD) && (ID_RT != 5'b0) && (opcode != 6'b000000);
+  wire WB_to_ID_RT = (ID_RT == WB_RD) && (ID_RT != 5'b0) && (opcode != 6'b000000);
 
-	assign FW_sig2 = (MEM_FW &&(MEM_RD == ID_RT)) ? (2'b01) : (
-		(WB_FW&&(WB_RD == ID_RT)) ? 2'b10 : 2'b00 );
+  // Forwarding signals
+  assign FW_sig1_RS = MEM_to_ID_RS;
+  assign FW_sig2_RS = WB_to_ID_RS && !MEM_to_ID_RS;
+  assign FW_sig1_RT = MEM_to_ID_RT;
+  assign FW_sig2_RT = WB_to_ID_RT && !MEM_to_ID_RT;
 
-	//Register Saving timing(WB) is later than Reading Resister(ID)
-	//Therefore need WB forwarding
+  // Forwarding logic for MEM_RD_DATA (RS)
+  always @(*) begin
+    if (MEM_to_ID_RS)
+      MEM_RD_DATA_O_RS = MEM_RD_DATA_I;
+    else if (WB_to_ID_RS)
+      MEM_RD_DATA_O_RS = WB_RD_DATA_I;
+    else
+      MEM_RD_DATA_O_RS = 32'b0;
+  end
+
+  // Forwarding logic for MEM_RD_DATA (RT)
+  always @(*) begin
+    if (MEM_to_ID_RT)
+      MEM_RD_DATA_O_RT = MEM_RD_DATA_I;
+    else if (WB_to_ID_RT)
+      MEM_RD_DATA_O_RT = WB_RD_DATA_I;
+    else
+      MEM_RD_DATA_O_RT = 32'b0;
+  end
+
+  // Forwarding logic for WB_RD_DATA (RS)
+  always @(*) begin
+    if (WB_to_ID_RS)
+      WB_RD_DATA_O_RS = WB_RD_DATA_I;
+    else
+      WB_RD_DATA_O_RS = 32'b0;
+  end
+
+  // Forwarding logic for WB_RD_DATA (RT)
+  always @(*) begin
+    if (WB_to_ID_RT)
+      WB_RD_DATA_O_RT = WB_RD_DATA_I;
+    else
+      WB_RD_DATA_O_RT = 32'b0;
+  end
+
 endmodule
