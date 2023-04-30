@@ -16,7 +16,7 @@ module Forwarding_Unit_ID (
 	assign FW_sig1 = (MEM_FW &&(MEM_RD == ID_RS)) ? (2'b01) : (
 		(WB_FW&&(WB_RD == ID_RS)) ? 2'b10 : 2'b00 );
 
-	assign FW_sig2 = ((opcode_ID==6'b000000)||(opcode_ID==6'b000100)||(opcode_ID==6'b000101)||(opcode_ID==6'b101011)) ? (
+	assign FW_sig2 = ((opcode_ID!=6'b100011)&&(opcode_ID!=6'b000010)&&(opcode_ID!=6'b000011)) ? (
 	(MEM_FW &&(MEM_RD == ID_RT)) ? (2'b01) : ( (WB_FW&&(WB_RD == ID_RT)) ? 2'b10 : 2'b00 )) : (2'b00) ;
 
 

@@ -31,12 +31,12 @@ module ALU_control(
 				ALU_control <= 4'b0100;	//SUB operation 1 (subi, beq)
 				//$display("[subi, beq] ALUop: %b", ALUOp);
 				end
-		9'b100_xxxxxx: 
+		9'b101_xxxxxx: 
 				begin 
 				ALU_control <= 4'b0110;	//SUB operation 2 (bne)
 				//$display("[bne] ALUop: %b", ALUOp);
 				end
-		9'b100_xxxxxx: 
+		9'b110_xxxxxx: 
 				begin 
 				ALU_control <= 4'b0101;	//SUB operation 3 (slti)
 				//$display("[slti] ALUop: %b", ALUOp);
