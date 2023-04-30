@@ -12,12 +12,12 @@ module EX_tb();
 	reg [31:0] ID_PC_4; 
 
 	wire [31:0] ALU_result;
-	wire [1:0] FW_sig_EX_1, FW_sig_EX_2;
+	wire [1:0] FW_sig_EX_1, FW_sig_EX_2, FW_sig_EX_3;
 
    	wire [4:0] EX_RS;         
 	wire [4:0] EX_RT;        
 	wire [31:0] EX_RS_Data;      
-	wire [31:0] EX_RT_Data;   
+	wire [31:0] EX_RT_Data, EX_RT_Data_FW;   
 	wire [31:0] EX_RS_DATA, EX_RT_DATA;  
 
 	wire [31:0] Hi, Lo, HI, LO;
@@ -91,6 +91,16 @@ module EX_tb();
 		.out(EX_RT_DATA)
 	);
 
+	MUX4to1 MUX11(
+		.a(EX_RT_Data),
+		.b(MEM_ALU_RESULT),
+		.c(WB_RD_DATA),
+		.d(32'd0),
+		.sig(FW_sig_EX_3),
+		.out(EX_RT_Data_FW)
+	);
+
+
 	ALU_control ALU_control_top(
 		.ALU_control_IN(EX_Funct),
 		.ALUOp(WB_MEM_EX[5:3]),
@@ -147,7 +157,7 @@ module EX_tb();
 		.WB_MEM_EX(WB_MEM_EX),
 		.EX_Opcode(EX_Opcode),
 		.EX_ALU_RESULT(EX_ALU_RESULT),
-		.EX_RT_DATA(EX_RT_DATA),
+		.EX_RT_DATA(EX_RT_Data_FW),
 		.EX_RD(EX_RD),
 		.EX_PC_4(EX_PC_4),
 		.WB_MEM(WB_MEM),
@@ -328,7 +338,7 @@ module EX_tb();
 		#20 CASE = 4'd5; CYCLE = 4'd1;
 		WB_MEM_EX_32 = 32'b00000000000000000000000000001000;
 		ID_Instruction = 32'b00000000101001100000000000011000;
-		ID_RS_DATA = 32'h7fffffff; 
+		ID_RS_DATA = 32'hffffffff; 
 		ID_RT_DATA = 32'd3; //2 FFFF FFFD
 		ID_RD_32 = 32'd0;
 		ID_PC_4 = 32'd0;
