@@ -1,6 +1,6 @@
 module PC (
 	input CLK, RESET, PCWrite,
-	input [31:0] IF_PC_4,
+	input [31:0] PC_next,
 	output reg [31:0] PC
 	);
 
@@ -11,9 +11,9 @@ begin
 	end
 	else
 	begin 
-		if (PCWrite == 1'b0)
+		if (PCWrite == 1'b1)
 		begin
-			PC <= IF_PC_4;
+			PC <= PC_next;
 		end
 		else
 		begin
