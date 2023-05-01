@@ -20,7 +20,7 @@ module Instruction_memory (CLK, RESET, Read_address, Instruction);
 	input [31:0] Read_address; //PC
    	output [31:0] Instruction;
 	
-	reg [31:0] inst_mem[0:63];
+	reg [31:0] inst_mem[0:127];
 
 
 	initial
@@ -33,13 +33,13 @@ module Instruction_memory (CLK, RESET, Read_address, Instruction);
 		if (RESET) 
 		begin 
 			$readmemb("reset.txt",inst_mem); 
-			$display("RESET MODE");	
+			//$display("RESET MODE");	
 		end
 
 		else 
 		begin 
 			$readmemb("code.txt",inst_mem); 
-			$display("Current Instruction: %b", inst_mem[Read_address>>2]);	
+			//$display("Current Instruction: %b", inst_mem[Read_address>>2]);	
 		end
 		
 	end

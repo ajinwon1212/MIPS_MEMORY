@@ -55,5 +55,4 @@ module Top_single_TB;
 		#800 RESET = 1'b0; 
 	end
 
-
 endmodule

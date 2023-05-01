@@ -44,7 +44,7 @@ module Registers( CLK, RESET, RegWrite, Read_register_1, Read_register_2, Write_
 			Register[26] <= 32'h00000000;   // reserved 
 			Register[27] <= 32'h00000000;   // reserved 
 			Register[28] <= 32'h10008000;   // $gp
-			Register[29] <= 32'h000000FC;   // &sp
+			Register[29] <= 32'h00000180;   // &sp
 			Register[30] <= 32'h00000000;   // &fp
 			Register[31] <= 32'h00000000;   // $ra	
 			$display("RESET MODE");	
@@ -85,13 +85,13 @@ module Registers( CLK, RESET, RegWrite, Read_register_1, Read_register_2, Write_
 			Register[30]	<=	Register[30]	;
 			Register[31]	<=	Register[31]	;
 
-			$display("Read_reg_1	: %d, Read_Data_1	: %d", Read_register_1,Register[Read_register_1]);
-			$display("Read_reg_2	: %d, Read_Data_2	: %d", Read_register_2,Register[Read_register_2]);			
+			//$display("Read_reg_1	: %d, Read_Data_1	: %d", Read_register_1,Register[Read_register_1]);
+			//$display("Read_reg_2	: %d, Read_Data_2	: %d", Read_register_2,Register[Read_register_2]);			
 
 			if (RegWrite == 1'b1) 
 			begin 
 				Register[Write_register] <= Write_Data;
-				$display("Write_reg	: %d, Wrtie_Data	: %h", Write_register,Write_Data);
+				//$display("Write_reg	: %d, Wrtie_Data	: %h", Write_register,Write_Data);
 		end
 		end
 	end
