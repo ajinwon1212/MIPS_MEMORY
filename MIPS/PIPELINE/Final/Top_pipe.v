@@ -2,7 +2,8 @@ module Top_pipe(CLK, RESET,
 PC, PCWrite, PC_next, IF_Instruction, IFIDWrite, IF_Flush, IF_PC_4, JUMP_Addr, BTB_Addr,
 ID_PC_4, ID_Instruction, ID_RS_data, ID_RT_data, FW_sig_ID_1, FW_sig_ID_2, ID_RS_DATA, ID_RT_DATA, 
 Hazard_Ctrl, Branch, Jump, RegDst,
-CONT_1, CONT_2a, CONT_2b, DATA_1a, DATA_1b, DATA_2a, DATA_2b,
+//CONT_1, CONT_2a, CONT_2b, DATA_1a, DATA_1b, DATA_2a, DATA_2b,
+CONT_1, CONT_2a, CONT_2b, DATA_1a, DATA_2a,
 EX_PC_4, WB_MEM_EX, EX_Opcode, EX_RS_Data, EX_RT_Data, EX_Sign_extend, FW_sig_EX_1, FW_sig_EX_2, FW_sig_EX_3, EX_RS_DATA, EX_RT_DATA, EX_RT_Data_FW,
 ALU_result, HI, LO, EX_ALU_RESULT,
 MEM_PC_4, MEM_RD, WB_MEM, MEM_Opcode, MEM_ALU_RESULT, MEM_RD_DATA, MEM_RT_DATA,
@@ -34,7 +35,8 @@ WB_PC_4, WB_RD, WB, WB_ALU_RESULT, WB_RD_Data, WB_RD_DATA
 	output wire Hazard_Ctrl;
 	
 	//This signal should be deleted after test
-	output wire CONT_1, CONT_2a, CONT_2b, DATA_1a, DATA_1b, DATA_2a, DATA_2b;
+	//output wire CONT_1, CONT_2a, CONT_2b, DATA_1a, DATA_1b, DATA_2a, DATA_2b;
+	output wire CONT_1, CONT_2a, CONT_2b, DATA_1a, DATA_2a;
 
 	wire [31:0] ID_Sign_extend;
 	wire [31:0] Branch_WO_PC;
@@ -172,9 +174,9 @@ WB_PC_4, WB_RD, WB, WB_ALU_RESULT, WB_RD_Data, WB_RD_DATA
 		.CONT_2a(CONT_2a), 
 		.CONT_2b(CONT_2b), 
 		.DATA_1a(DATA_1a), 
-		.DATA_1b(DATA_1b), 
-		.DATA_2a(DATA_2a),
-		.DATA_2b(DATA_2b)
+		//.DATA_1b(DATA_1b), 
+		.DATA_2a(DATA_2a)
+		//.DATA_2b(DATA_2b)
 	);
 	
 	Sign_extend Sign_extend_top(

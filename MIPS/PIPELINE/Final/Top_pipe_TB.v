@@ -11,7 +11,8 @@ module Top_pipe_TB();
 	wire IFIDWrite, IF_Flush;
 	wire [31:0] IF_PC_4,JUMP_Addr,BTB_Addr;
 	wire [31:0] ID_PC_4, ID_Instruction, ID_RS_data, ID_RT_data;
-	wire CONT_1, CONT_2a, CONT_2b, DATA_1a, DATA_1b, DATA_2a, DATA_2b;
+	//wire CONT_1, CONT_2a, CONT_2b, DATA_1a, DATA_1b, DATA_2a, DATA_2b;
+	wire CONT_1, CONT_2a, CONT_2b, DATA_1a, DATA_2a;
 	wire [1:0] FW_sig_ID_1, FW_sig_ID_2;
 	wire [31:0] ID_RS_DATA, ID_RT_DATA;
 	wire Hazard_Ctrl, Branch;
@@ -61,9 +62,9 @@ module Top_pipe_TB();
 		.CONT_2a(CONT_2a), 
 		.CONT_2b(CONT_2b), 
 		.DATA_1a(DATA_1a), 
-		.DATA_1b(DATA_1b), 
+		//.DATA_1b(DATA_1b), 
 		.DATA_2a(DATA_2a), 
-		.DATA_2b(DATA_2b),
+		//.DATA_2b(DATA_2b),
 		.EX_PC_4(EX_PC_4), 
 		.WB_MEM_EX(WB_MEM_EX), 
 		.EX_Opcode(EX_Opcode), 

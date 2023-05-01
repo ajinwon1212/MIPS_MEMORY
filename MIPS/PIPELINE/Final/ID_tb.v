@@ -16,7 +16,8 @@ module ID_tb;
 	wire PCWrite;
 	wire Hazard_Ctrl;
 	//
-	wire CONT_1, CONT_2a, CONT_2b, DATA_1a, DATA_1b, DATA_2a, DATA_2b;
+	//wire CONT_1, CONT_2a, CONT_2b, DATA_1a, DATA_1b, DATA_2a, DATA_2b;
+	wire CONT_1, CONT_2a, CONT_2b, DATA_1a, DATA_2a;
 
 	wire [31:0] ID_Sign_extend;
 	wire [31:0] Branch_WO_PC;
@@ -92,9 +93,9 @@ module ID_tb;
 		.CONT_2a(CONT_2a), 
 		.CONT_2b(CONT_2b), 
 		.DATA_1a(DATA_1a), 
-		.DATA_1b(DATA_1b), 
-		.DATA_2a(DATA_2a),
-		.DATA_2b(DATA_2b)
+		//.DATA_1b(DATA_1b), 
+		.DATA_2a(DATA_2a)
+		//.DATA_2b(DATA_2b)
 	);
 	
 	Sign_extend Sign_extend_top(

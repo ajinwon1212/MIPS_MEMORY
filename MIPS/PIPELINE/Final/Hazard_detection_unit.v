@@ -14,17 +14,17 @@ module Hazard_detection_unit(CLK, RESET, IF_PC_4,
 opcode_ID, opcode_EX, opcode_MEM, EX_RegWrite,MEM_RegWrite,
 ID_RS, ID_RT, EX_RS, EX_RD, MEM_RD,
 Branch,Jump,PCWrite, IFIDWrite, IF_Flush, Hazard_Ctrl
-,CONT_1, CONT_2a, CONT_2b, DATA_1a, DATA_1b, DATA_2a, DATA_2b
-);
+,CONT_1, CONT_2a, CONT_2b, DATA_1a, DATA_2a );
 //,Bub_CNT,Bub_CNT_1d, CONT_2a, CONT_2b);
 
-//module Hazard_detection_unit(
-//CLK, opcode_ID, opcode_EX, ID_RS, ID_RT, EX_RS, EX_RD, 
-//Branch,Jump,
-//CONT_1, CONT_2a, CONT_2b, DATA_1, DATA_2, DATA_3,
-//NOT_EX_JUMP_LW_JP,
-//PCWrite, IFIDWrite, IF_Flush, Hazard_Ctrl
-//);
+/*
+module Hazard_detection_unit(CLK, RESET, IF_PC_4,
+opcode_ID, opcode_EX, opcode_MEM, EX_RegWrite,MEM_RegWrite,
+ID_RS, ID_RT, EX_RS, EX_RD, MEM_RD,
+Branch,Jump,PCWrite, IFIDWrite, IF_Flush, Hazard_Ctrl
+,CONT_1, CONT_2a, CONT_2b, DATA_1a, DATA_1b, DATA_2a, DATA_2b
+);
+*/
 
 	input CLK, RESET;
 	input [31:0] IF_PC_4;
@@ -38,7 +38,8 @@ Branch,Jump,PCWrite, IFIDWrite, IF_Flush, Hazard_Ctrl
 
 	//reg CONT_2a_1d, CONT_2a_2d;
 
-	output wire CONT_1, CONT_2a, CONT_2b, DATA_1a, DATA_1b, DATA_2a, DATA_2b;
+	//output wire CONT_1, CONT_2a, CONT_2b, DATA_1a, DATA_1b, DATA_2a, DATA_2b;
+	output wire CONT_1, CONT_2a, CONT_2b, DATA_1a, DATA_2a;
 	wire FLUS;
 
 	assign CONT_1 =  
@@ -66,23 +67,24 @@ Branch,Jump,PCWrite, IFIDWrite, IF_Flush, Hazard_Ctrl
 
  	
 
-	assign DATA_1b = (opcode_ID == 6'b000000) ? (
- 	(opcode_MEM == 6'b100011) ? ( ((MEM_RD == ID_RS) || (MEM_RD == ID_RT)) ? 1'b1 : 1'b0 ) : 1'b0 
-	) : 1'b0;
+	//assign DATA_1b = (opcode_ID == 6'b000000) ? (
+ 	//(opcode_MEM == 6'b100011) ? ( ((MEM_RD == ID_RS) || (MEM_RD == ID_RT)) ? 1'b1 : 1'b0 ) : 1'b0 
+	//) : 1'b0;
 
 
 	assign DATA_2a = ((opcode_ID != 6'b000000) && (opcode_ID != 6'b000010) && (opcode_ID != 6'b000011)) ? (
 	((EX_RegWrite == 1'b1) && (opcode_EX == 6'b100011) && (EX_RD == ID_RS)) ? 1'b1 : 1'b0 ) : 1'b0 ;
 
 
-	assign DATA_2b = ((opcode_ID != 6'b000000) && (opcode_ID != 6'b000010) && (opcode_ID != 6'b000011)) ? (
-	((MEM_RegWrite == 1'b1) && (opcode_MEM == 6'b100011) && (MEM_RD == ID_RS)) ? 1'b1 : 1'b0 ) : 1'b0 ;
+	//assign DATA_2b = ((opcode_ID != 6'b000000) && (opcode_ID != 6'b000010) && (opcode_ID != 6'b000011)) ? (
+	//((MEM_RegWrite == 1'b1) && (opcode_MEM == 6'b100011) && (MEM_RD == ID_RS)) ? 1'b1 : 1'b0 ) : 1'b0 ;
 
-
+/*
 	assign FLUS = (!CONT_1)&&(!CONT_2a)&&(!CONT_2b)&&(Branch || Jump[0] || Jump[1]);
 
 	assign PCWrite = (IF_PC_4 == 32'd0) ? 1'b1 : ( 
 	(CONT_1 || CONT_2a|| CONT_2b || DATA_1a || DATA_1b || DATA_2a || DATA_2b) ? 1'b0 : 1'b1 );
+
 	assign IFIDWrite= (IF_PC_4 == 32'd0) ? 1'b1 : ( 
 	(CONT_1 || CONT_2a|| CONT_2b || DATA_1a || DATA_1b || DATA_2a || DATA_2b) ? 1'b0 : 1'b1 );
 
@@ -90,6 +92,20 @@ Branch,Jump,PCWrite, IFIDWrite, IF_Flush, Hazard_Ctrl
 
 	assign Hazard_Ctrl= (IF_PC_4 == 32'd0) ? 1'b0 : (
 	(CONT_1 || CONT_2a || CONT_2b || DATA_1a || DATA_1b || DATA_2a || DATA_2b) ? 1'b1 : 1'b0 );
+*/
+	assign FLUS = (!CONT_1)&&(!CONT_2a)&&(!CONT_2b)&&(Branch || Jump[0] || Jump[1]);
+
+	assign PCWrite = (IF_PC_4 == 32'd0) ? 1'b1 : ( 
+	(CONT_1 || CONT_2a||CONT_2b||DATA_1a || DATA_2a ) ? 1'b0 : 1'b1 );
+
+	assign IFIDWrite= (IF_PC_4 == 32'd0) ? 1'b1 : ( 
+	(CONT_1 || CONT_2a|| CONT_2b || DATA_1a || DATA_2a) ? 1'b0 : 1'b1 );
+
+	assign IF_Flush = FLUS ? 1'b1 : 1'b0 ;  //because of lw-lw
+
+	assign Hazard_Ctrl= (IF_PC_4 == 32'd0) ? 1'b0 : (
+	(CONT_1 || CONT_2a || CONT_2b || DATA_1a || DATA_2a) ? 1'b1 : 1'b0 );
+
 
 
 /*
