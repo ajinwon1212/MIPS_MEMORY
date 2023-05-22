@@ -1,16 +1,16 @@
-module cache_controller(CLK,HITWrite,Access);
-    input clk;
-    input hit;
+module cache_controller(CLK, HitWrite, Access_MM);
+    input CLK;
+    input HitWrite;
     
-    output reg read;
+    output reg Access_MM;
 
     always@(posedge clk)
     begin
-        if(hit == 1) begin
-            read = 1;
+        if(HitWrite == 1) begin
+            Access_MM = 0;
         end
         else begin
-            read = 0;
+            Access_MM = 1;
         end
     end
 endmodule
