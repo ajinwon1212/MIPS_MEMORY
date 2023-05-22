@@ -1,4 +1,4 @@
-module cache_controller(clk,hit,read);
+module cache_controller(CLK,HITWrite,Access);
     input clk;
     input hit;
     
