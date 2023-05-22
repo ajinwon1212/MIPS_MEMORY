@@ -1,98 +1,66 @@
-`define BLOCKS 8
-`define WORDS 4
-`define SIZE 32
-`define BLOCK_SIZE 128
+//Direct mapped Cache
+//Size = 8
+//Blocks = 8, Words = 1
 
+//  0000    0000    0000    0000    0000    0000    0000    0000
+//                                         tag        /index /00
+//                                                            /valid
+//Change valid bit as 0 when processing Data_Cache
 
-module cache_memory(clk,address,read,dataIn,dataOut,hit);
+//module cache_memory(clk,address,read,dataIn,dataOut,hit);
+module Cache_Direct(CLK, RESET, PC, Access_MM, Data_MM, Data_Cache, HIT, MISS);
 
-    input clk;
-    input [31:0] address;
-    input read;
-    input [`BLOCK_SIZE-1:0] dataIn;
+    input CLK;
+    input RESET;
+    input [31:0] PC;
+    input Access_MM; //0: Read Data from MM sig
+    input [31:0] Data_MM; //Read Data from MM
 
-    output reg hit;
-    output reg [31:0] dataOut;
+    output reg HitWrite; //Hit, PCWrite, IFIDWrite
+    output reg [31:0] Data_Cache;
+    output reg [19:0] CNT_HIT, CNT_MISS; //Counter for Checking
 
-    reg [`BLOCK_SIZE+25:0] buffer;
     reg [2:0] index;
-    reg [1:0] blockOffset;
-    reg [`BLOCK_SIZE+25:0] cache [`BLOCKS-1:0];
-
+    reg [59:0] cache [7:0]; 
+    //Data: [31:0], Valid: [32], Tag: [59:33]
+ 
     always@(posedge clk)
     begin
-        index = address[6:4];
-        blockOffset = address[3:2];
-        if(read == 0) begin
-            buffer[0] = 1;
-            buffer[25:1] = address[31:7];
-            buffer[153:26] = dataIn;
-            cache[index] = buffer;
-            dataOut = cache[index][32*blockOffset+26+31-:32];
-            hit = 1;
-        end
-        if(read == 1) begin
-            if(address[31:7] == cache[index][25:1]) begin
-                hit = 1;
-            end
-            else begin
-                hit = 0;
-            end
-            // hit = 0;
-            dataOut = cache[index][32*blockOffset+26+31-:32];
+        index = PC[4:2];
+        if (!RESET) begin
+            index <= 3'd0;
+            cache[0] <= 60'd0;
+            cache[1] <= 60'd0;
+            cache[2] <= 60'd0;
+            cache[3] <= 60'd0;
+            cache[4] <= 60'd0;
+            cache[5] <= 60'd0;
+            cache[6] <= 60'd0;
+            cache[7] <= 60'd0;
+            CNT_HIT <= 20'd0;
+            CNT_MISS <= 20'd0; 
         end
         else begin
-            hit = 1;
+            if(Access_MM == 0) begin
+                cache[index][32] = 1'b1; //Valid =1
+                cache[index][31:0] = Data_MM;
+                cache[index][59:33] = PC[31:5]; //Tag
+                Data_Cache = Data_MM;
+                HitWrite = 1'b1;
+            end
+            else if (Access_MM == 1) begin
+                if(PC[31:5] == cache[index][59:33]) begin
+                    if (cache[index][32] == 1'b1) begin
+                        HitWrite = 1;
+                        Data_Cache = cache[index][31:0];
+                        CNT_HIT = CNT_HIT+1;
+                    end
+                else begin 
+                    HitWrite = 0;
+                    CNT_MISS = CNT_MISS +1;
+                end
+            end
         end
     end
 
 endmodule
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // input clk,
-    // input mode,
-    // input [7:0] index,
-    // input [3:0] blkOffset,
-    // input [19:0] tagin,
-    // input [`SIZE*`WORDS-1:0] datain,
-    // output reg [`SIZE-1:0] dataout,
-    // output reg [19:0] tagout,
-    // output reg valid
-    // );
-
-    // reg[`BLOCKS-1:0] cache [`WORDS*`SIZE+20:0];
-
-    // reg [532:0] out;
-
-    // always @(posedge clk)
-    //     begin
-    //     if(mode == 1)
-    //         begin
-    //             out[0] <= 1;
-    //             out[20:1] <= tagin;
-    //             out[532:21] <= datain;
-    //             cache[index] <= out;
-    //         end
-    //     else
-    //         begin
-    //             out <= cache[index];
-    //             valid <= out[0];
-    //             dataout = out[32*(blkOffset)+:32];
-    //             tagout <= out[20:1];
-    //         end
-    //     end
-
-// endmodule
