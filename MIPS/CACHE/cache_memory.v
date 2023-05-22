@@ -8,7 +8,7 @@
 //Change valid bit as 0 when processing Data_Cache
 
 //module cache_memory(clk,address,read,dataIn,dataOut,hit);
-module Cache_Direct(CLK, RESET, PC, Access_MM, Data_MM, Data_Cache, HIT, MISS);
+module Cache_Direct(CLK, RESET, PC, Access_MM, Data_MM, HitWrite, Data_Cache, CNT_HIT, CNT_MISS);
 
     input CLK;
     input RESET;
