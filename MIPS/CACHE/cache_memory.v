@@ -41,14 +41,14 @@ module Cache_Direct(CLK, RESET, PC, Access_MM, Data_MM, HitWrite, Data_Cache, CN
             CNT_MISS <= 20'd0; 
         end
         else begin
-            if(Access_MM == 0) begin
+            if(Access_MM) begin
                 cache[index][32] = 1'b1; //Valid =1
                 cache[index][31:0] = Data_MM;
                 cache[index][59:33] = PC[31:5]; //Tag
                 Data_Cache = Data_MM;
                 HitWrite = 1'b1;
             end
-            else if (Access_MM == 1) begin
+            else if (!Access_MM) begin
                 if(PC[31:5] == cache[index][59:33]) begin
                     if (cache[index][32] == 1'b1) begin
                         HitWrite = 1;
