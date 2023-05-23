@@ -47,15 +47,41 @@ module Cache_Fully(CLK, RESET, PC, Access_MM, Data_MM, HitWrite, Data_Cache, CNT
             end
             else if (!Access_MM) begin
                         if(PC[31:5] == cache[0][59:33]) begin
-                                if (cache[0[32] == 1'b1) begin
+                            if (cache[1][32] == 1'b1) begin
                                         HitWrite = 1;
                                         Data_Cache = cache[0][31:0];
                                         CNT_HIT = CNT_HIT+1;
                                 end
                          end
+                         else if(PC[31:5] == cache[1][59:33]) begin
+                             if (cache[1][32] == 1'b1) begin
+                                        HitWrite = 1;
+                                        Data_Cache = cache[1][31:0];
+                                        CNT_HIT = CNT_HIT+1;
+                                end
+                         end
+                         else if(PC[31:5] == cache[2][59:33]) begin
+                            if (cache[2][32] == 1'b1) begin
+                                        HitWrite = 1;
+                                        Data_Cache = cache[2][31:0];
+                                        CNT_HIT = CNT_HIT+1;
+                                end
+                         end
+                         else if(PC[31:5] == cache[3][59:33]) begin
+                            if (cache[3][32] == 1'b1) begin
+                                        HitWrite = 1;
+                                        Data_Cache = cache[3][31:0];
+                                        CNT_HIT = CNT_HIT+1;
+                                end
+                         end
+                
+                
+                
+                
                         else begin 
                                 HitWrite = 0;
                                 CNT_MISS = CNT_MISS +1;
+                                Data_Cache = 32'd0;
                         end
             end
         end
