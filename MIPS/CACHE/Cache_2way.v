@@ -38,14 +38,36 @@ module Cache_Fully(CLK, RESET, PC, Access_MM, Data_MM, HitWrite, Data_Cache, CNT
                         cache2[3] <= 61'd0;
                 end
                 else begin
+                        cache1 <= cache1; //@
+                        cache2 <= cache2; //@
+                        
                         if(Access_MM) begin
-                                ;
+                                if(cache1[set][60] == 1'b0) begin //Cache1 recently not used
+                                        cache1[set][32] <= 1'b1; //Valid     
+                                        cache1[set][31:0] <= Data_MM;
+                                        cache1[set][60] <= 1'b1; //Recent
+                                        cache2[set][60] <= 1'b0; //Recent
+                                        cache1[set][59:33] <= PC[31:5]; //Tag
+                                        Data_Cache <= Data_MM;
+                                        HitWrite <= 1'b1;                                                     
+                                end
+                                else if(cache2[set][60] == 1'b0) begin //Cache2 recently not used
+                                        cache2[set][32] <= 1'b1; //Valid     
+                                        cache2[set][31:0] <= Data_MM;
+                                        cache2[set][60] <= 1'b1; //Recent
+                                        cache1[set][60] <= 1'b0; //Recent
+                                        cache2[set][59:33] <= PC[31:5]; //Tag
+                                        Data_Cache <= Data_MM;
+                                        HitWrite <= 1'b1;         
+                                end
                         end
                         else if(!Access_MM) begin
                                 if(PC[31:5] == cache1[set][59:33]) begin
                                         if(cache1[set][32] == 1'b1) begin
                                            HitWrite <= 1'b1;
                                                 Data_Cache <= cache1[set][31:0];
+                                                cache1[set][60] <= 1'b1;
+                                                cache2[set][60] <= 1'b0;
                                                 CNT_HIT <= CNT_HIT + 1;
                                         end
                                         else begin
@@ -55,11 +77,24 @@ module Cache_Fully(CLK, RESET, PC, Access_MM, Data_MM, HitWrite, Data_Cache, CNT
                                         end
                                 end
                                 else if(PC[31:5] == cache2[set][59:33]) begin
-                                        
+                                        if(cache2[set][32] == 1'b1) begin
+                                           HitWrite <= 1'b1;
+                                                Data_Cache <= cache1[set][31:0];
+                                                cache1[set][60] <= 1'b0;
+                                                cache2[set][60] <= 1'b1;
+                                                CNT_HIT <= CNT_HIT + 1;
+                                        end
+                                        else begin
+                                                HitWrite <= 1'b0;
+                                                CNT_MISS <= CNT_MISS + 1;
+                                                Data_Cache <= 32'd0;
+                                        end  
                                 end
                                 else begin
-                                        
-                                end
+                                        HitWrite <= 1'b0;
+                                        CNT_MISS <= CNT_MISS + 1;
+                                        Data_Cache <= 32'd0;
+                                end 
                         end
                 end
 
