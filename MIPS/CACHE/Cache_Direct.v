@@ -55,6 +55,7 @@ module Cache_Direct(CLK, RESET, PC, Access_MM, Data_MM, HitWrite, Data_Cache, CN
                         Data_Cache = cache[index][31:0];
                         CNT_HIT = CNT_HIT+1;
                     end
+                end
                 else begin 
                     HitWrite = 0;
                     CNT_MISS = CNT_MISS +1;
