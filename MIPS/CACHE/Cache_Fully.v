@@ -7,7 +7,8 @@
 //                                         tag                /00
 
 //module cache_memory(clk,address,read,dataIn,dataOut,hit);
-module Cache_Fully(CLK, RESET, PC, Access_MM, Data_MM, HitWrite, Data_Cache, CNT_HIT, CNT_MISS);
+module Cache_Fully(CLK, RESET, PC, Access_MM, Data_MM, HitWrite, Data_Cache, CNT_HIT, CNT_MISS
+,FIFO);
 
     input CLK;
     input RESET;
@@ -19,22 +20,21 @@ module Cache_Fully(CLK, RESET, PC, Access_MM, Data_MM, HitWrite, Data_Cache, CNT
     output reg [31:0] Data_Cache;
     output reg [19:0] CNT_HIT, CNT_MISS; //Counter for Checking
 
-    reg [59:0] cache [7:0];
-    //Data: [31:0], Valid: [32], Tag: [59:33]
-    reg [2:0] FIFO; //First in First out
+    reg [62:0] cache [7:0];
+    //Data: [31:0], Valid: [32], Tag: [62:33]
+    output reg [2:0] FIFO; //First in First out
  
-    always@(posedge clk)
+    always@(posedge CLK or posedge RESET)
     begin
-        if (!RESET) begin
-            index <= 3'd0;
-            cache[0] <= 60'd0;
-            cache[1] <= 60'd0;
-            cache[2] <= 60'd0;
-            cache[3] <= 60'd0;
-            cache[4] <= 60'd0;
-            cache[5] <= 60'd0;
-            cache[6] <= 60'd0;
-            cache[7] <= 60'd0;
+        if (RESET) begin
+            cache[0] <= 63'd0;
+            cache[1] <= 63'd0;
+            cache[2] <= 63'd0;
+            cache[3] <= 63'd0;
+            cache[4] <= 63'd0;
+            cache[5] <= 63'd0;
+            cache[6] <= 63'd0;
+            cache[7] <= 63'd0;
             CNT_HIT <= 20'd0;
             CNT_MISS <= 20'd0; 
             FIFO <= 3'd0;
@@ -44,14 +44,14 @@ module Cache_Fully(CLK, RESET, PC, Access_MM, Data_MM, HitWrite, Data_Cache, CNT
             if(Access_MM) begin
                 cache[FIFO][32] <= 1'b1; //Valid =1
                 cache[FIFO][31:0] <= Data_MM;
-                cache[FIFO][59:33] <= PC[31:5]; //Tag
+                cache[FIFO][62:33] <= PC[31:2]; //Tag
                 Data_Cache <= Data_MM;
                 HitWrite <= 1'b1;
                 FIFO <= FIFO + 1; //Fill cache[0] > [1] > ... > [7] > [0] > ...
             end
             else if (!Access_MM) begin
                 //Cache[0]
-                        if(PC[31:5] == cache[0][59:33]) begin
+                        if(PC[31:2] == cache[0][62:33]) begin
                             if (cache[1][32] == 1'b1) begin
                                         HitWrite <= 1;
                                         Data_Cache <= cache[0][31:0];
@@ -64,7 +64,7 @@ module Cache_Fully(CLK, RESET, PC, Access_MM, Data_MM, HitWrite, Data_Cache, CNT
                                 end
                          end
                 //Cache[1]
-                         else if(PC[31:5] == cache[1][59:33]) begin
+                         else if(PC[31:2] == cache[1][62:33]) begin
                              if (cache[1][32] == 1'b1) begin
                                         HitWrite <= 1;
                                         Data_Cache <= cache[1][31:0];
@@ -77,7 +77,7 @@ module Cache_Fully(CLK, RESET, PC, Access_MM, Data_MM, HitWrite, Data_Cache, CNT
                                 end
                          end
                 //Cache[2]
-                         else if(PC[31:5] == cache[2][59:33]) begin
+                         else if(PC[31:2] == cache[2][62:33]) begin
                             if (cache[2][32] == 1'b1) begin
                                         HitWrite <= 1;
                                         Data_Cache <= cache[2][31:0];
@@ -90,7 +90,7 @@ module Cache_Fully(CLK, RESET, PC, Access_MM, Data_MM, HitWrite, Data_Cache, CNT
                                 end
                          end
                 //Cache[3]
-                         else if(PC[31:5] == cache[3][59:33]) begin
+                         else if(PC[31:2] == cache[3][62:33]) begin
                             if (cache[3][32] == 1'b1) begin
                                         HitWrite <= 1;
                                         Data_Cache <= cache[3][31:0];
@@ -103,7 +103,7 @@ module Cache_Fully(CLK, RESET, PC, Access_MM, Data_MM, HitWrite, Data_Cache, CNT
                                 end
                          end
                 //Cache[4]
-                         else if(PC[31:5] == cache[4][59:33]) begin
+                         else if(PC[31:2] == cache[4][62:33]) begin
                              if (cache[4][32] == 1'b1) begin
                                         HitWrite <= 1;
                                          Data_Cache <= cache[4][31:0];
@@ -116,7 +116,7 @@ module Cache_Fully(CLK, RESET, PC, Access_MM, Data_MM, HitWrite, Data_Cache, CNT
                                 end
                        end           
                 //Cache[5]
-                       else if(PC[31:5] == cache[5][59:33]) begin
+                       else if(PC[31:2] == cache[5][62:33]) begin
                            if (cache[5][32] == 1'b1) begin
                                         HitWrite <= 1;
                                         Data_Cache <= cache[5][31:0];
@@ -129,7 +129,7 @@ module Cache_Fully(CLK, RESET, PC, Access_MM, Data_MM, HitWrite, Data_Cache, CNT
                                 end
                       end       
                 //Cache[6]
-                      else if(PC[31:5] == cache[6][59:33]) begin
+                      else if(PC[31:2] == cache[6][62:33]) begin
                             if (cache[6][32] == 1'b1) begin
                                         HitWrite <= 1;
                                         Data_Cache <= cache[6][31:0];
@@ -142,7 +142,7 @@ module Cache_Fully(CLK, RESET, PC, Access_MM, Data_MM, HitWrite, Data_Cache, CNT
                                 end
                     end      
                 //Cache[7]
-                    else if(PC[31:5] == cache[7][59:33]) begin
+                    else if(PC[31:2] == cache[7][62:33]) begin
                         if (cache[7][32] == 1'b1) begin
                                         HitWrite <= 1;
                                         Data_Cache <= cache[7][31:0];

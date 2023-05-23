@@ -1,16 +1,21 @@
-module cache_controller(CLK, HitWrite, Access_MM);
-    input CLK;
+module cache_controller(CLK, RESET, HitWrite, Access_MM);
+    input CLK, RESET;
     input HitWrite;
     
     output reg Access_MM;
 
-    always@(posedge CLK)
+    always@(HitWrite or RESET)
     begin
-        if(HitWrite == 1) begin
-            Access_MM = 0;
-        end
-        else begin
-            Access_MM = 1;
-        end
+	if (RESET) begin
+		Access_MM <= 1'b0;
+	end
+	else begin 
+        	if(HitWrite == 0) begin
+            		Access_MM <= 1'b1;
+        	end
+        	else begin
+            		Access_MM <= 1'b0;
+        	end
+	end
     end
 endmodule
