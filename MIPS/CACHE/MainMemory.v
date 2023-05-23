@@ -2,7 +2,7 @@
 //4byte = address >> mem[PC_next>>2] used!
 //How many registers to use? 64. This can be changed.
 
-module MainMemory (CLK, RESET, PC, Access_MM, IF_Instruction);
+module MainMemory (CLK, RESET, PC, Access_MM, Data_MM);
 	input CLK, RESET;
 	input [31:0] PC;
     input Access_MM;
