@@ -14,9 +14,10 @@ module Cache_Direct_Multiword(CLK, RESET, PC, index, Access_MM, Data_MM, HitWrit
 	input CLK;
 	input RESET;
 	input [31:0] PC;
-	input [2:0] index;
+	input [1:0] index;
+	input block_offset;
 	input Access_MM; //0: Read Data from MM sig
-  input [63:0] Data_MM; //Read Data from MM
+	input [63:0] Data_MM; //Read Data from MM
 
 	output reg HitWrite; //Hit, PCWrite, IFIDWrite
 	output reg [31:0] Data_Cache;
@@ -25,23 +26,20 @@ module Cache_Direct_Multiword(CLK, RESET, PC, index, Access_MM, Data_MM, HitWrit
 	output reg [1:0] CONT;
 
 	//output reg [2:0] index;
-	reg [59:0] cache [7:0]; 
+	reg [91:0] cache [3:0]; 
 	//Data: [31:0], Valid: [32], Tag: [59:33]
  	//wire CACHE;
 
 	always@(posedge CLK, posedge RESET)
 	begin
-		//index <= PC[4:2];
+		//index <= PC[4:3];
+		//block_offset <= PC[2];
 		if (RESET) begin
 			//index <= 3'd0;
-			cache[0] <= 60'd0;
-			cache[1] <= 60'd0;
-			cache[2] <= 60'd0;
-			cache[3] <= 60'd0;
-			cache[4] <= 60'd0;
-			cache[5] <= 60'd0;
-			cache[6] <= 60'd0;
-			cache[7] <= 60'd0;
+			cache[0] <= 92'd0;
+			cache[1] <= 92'd0;
+			cache[2] <= 92'd0;
+			cache[3] <= 92'd0;
 			CNT_HIT <= 20'd0;
 			CNT_MISS <= 20'd0;
 			HitWrite <= 1'b1; 
