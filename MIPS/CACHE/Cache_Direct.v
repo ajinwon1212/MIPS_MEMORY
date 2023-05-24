@@ -56,8 +56,14 @@ module Cache_Direct(CLK, RESET, PC, index, Access_MM, Data_MM, HitWrite, Data_Ca
 				CONT <= 2'd0;
 			end
 			else if (!Access_MM) begin
-				if(PC[31:5] == cache[index][59:33]) begin
-					if (cache[index][32] == 1'b1) begin
+				if(cache[index][32] == 1'b0) begin
+					HitWrite <= 1'b0;
+					CNT_MISS <= CNT_MISS +1;
+					Data_Cache <= 32'd0;  
+					CONT <= 2'd2;
+				end
+				else begin
+					if (PC[31:5] == cache[index][59:33]) begin
 						HitWrite <= 1'b1;
 						Data_Cache <= cache[index][31:0];
 						CNT_HIT <= CNT_HIT+1;
@@ -66,16 +72,10 @@ module Cache_Direct(CLK, RESET, PC, index, Access_MM, Data_MM, HitWrite, Data_Ca
 					else begin
 						HitWrite <= 1'b0;
 						CNT_MISS <= CNT_MISS +1;
-						Data_Cache <= 32'd0;  
-						CONT <= 2'd2;                      
+						Data_Cache <= 32'd0;
+						CONT <= 2'd3;                   
 					end
 				end
-                		else begin 
-					HitWrite <= 1'b0;
-					CNT_MISS <= CNT_MISS +1;
-					Data_Cache <= 32'd0;
-					CONT <= 2'd3;
-               			end
 			end
 		end
 	end
