@@ -73,8 +73,8 @@ module Cache_2way(CLK, RESET, PC, set, Access_MM, Data_MM, HitWrite, Data_Cache,
                                 end
                         end
                         else if(!Access_MM) begin
-                                if(PC[31:4] == cache1[set][60:33]) begin
-                                        if(cache1[set][32] == 1'b1) begin
+                                if(cache1[set][32] == 1'b1) begin
+                                        if(PC[31:4] == cache1[set][60:33]) begin
                                            HitWrite <= 1'b1;
                                                 Data_Cache <= cache1[set][31:0];
                                                 cache1[set][61] <= 1'b1;
@@ -83,22 +83,28 @@ module Cache_2way(CLK, RESET, PC, set, Access_MM, Data_MM, HitWrite, Data_Cache,
 						recent2 <= 1'b0;
                                                 CNT_HIT <= CNT_HIT + 1;
                                         end
-                                        else begin
-                                                HitWrite <= 1'b0;
-                                                CNT_MISS <= CNT_MISS + 1;
-                                                Data_Cache <= 32'd0;
-                                        end
-                                end
-                                else if(PC[31:4] == cache2[set][60:33]) begin
-                                        if(cache2[set][32] == 1'b1) begin
-                                           HitWrite <= 1'b1;
+					else if(cache2[set][32] == 1'b1) begin
+						if(PC[31:4] == cache2[set][60:33]) begin
+						HitWrite <= 1'b1;
                                                 Data_Cache <= cache2[set][31:0];
                                                 cache1[set][61] <= 1'b0;
                                                 cache2[set][61] <= 1'b1;
 						recent1 <= 1'b0;
 						recent2 <= 1'b1;
                                                 CNT_HIT <= CNT_HIT + 1;
-                                        end
+						end
+					end
+				end
+				else if(cache2[set][32] == 1'b1) begin
+                                        if(PC[31:4] == cache2[set][60:33]) begin
+						HitWrite <= 1'b1;
+                                                Data_Cache <= cache2[set][31:0];
+                                                cache1[set][61] <= 1'b0;
+                                                cache2[set][61] <= 1'b1;
+						recent1 <= 1'b0;
+						recent2 <= 1'b1;
+                                                CNT_HIT <= CNT_HIT + 1;
+					end
                                         else begin
                                                 HitWrite <= 1'b0;
                                                 CNT_MISS <= CNT_MISS + 1;
