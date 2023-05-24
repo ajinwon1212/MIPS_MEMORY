@@ -51,99 +51,69 @@ module Cache_Fully(CLK, RESET, PC, Access_MM, Data_MM, HitWrite, Data_Cache, CNT
             end
             else if (!Access_MM) begin
                 //Cache[0]
-                        if(cache[0][32] == 1'b1) begin
-                            if (PC[31:2] == cache[0][62:33]) begin
-                                        HitWrite <= 1;
-                                        Data_Cache <= cache[0][31:0];
-                                        CNT_HIT <= CNT_HIT+1;
-                            end
-                        end
+                if(cache[0][32] == 1'b1) begin
+                    if (PC[31:2] == cache[0][62:33]) begin
+                        HitWrite <= 1;
+                        Data_Cache <= cache[0][31:0];
+                        CNT_HIT <= CNT_HIT+1;
+                    end
+                end
                 //Cache[1]
-                        else if(cache[1][32] == 1'b1) begin
-                             if (PC[31:2] == cache[1][62:33]) begin
-                                        HitWrite <= 1;
-                                        Data_Cache <= cache[1][31:0];
-                                        CNT_HIT <= CNT_HIT+1;
-                             end
-                         end
+                else if(cache[1][32] == 1'b1) begin
+                    if (PC[31:2] == cache[1][62:33]) begin
+                        HitWrite <= 1;
+                        Data_Cache <= cache[1][31:0];
+                        CNT_HIT <= CNT_HIT+1;
+                    end
+                end
                 //Cache[2]
-                         else if(PC[31:2] == cache[2][62:33]) begin
-                            if (cache[2][32] == 1'b1) begin
-                                        HitWrite <= 1;
-                                        Data_Cache <= cache[2][31:0];
-                                        CNT_HIT <= CNT_HIT+1;
-                                end
-                             else begin 
-                                HitWrite <= 0;
-                                CNT_MISS <= CNT_MISS +1;
-                                Data_Cache <= 32'd0;
-                                end
-                         end
+                else if(cache[2][32] == 1'b1) begin
+                    if (PC[31:2] == cache[2][62:33]) begin
+                        HitWrite <= 1;
+                        Data_Cache <= cache[2][31:0];
+                        CNT_HIT <= CNT_HIT+1;
+                    end
+                end
                 //Cache[3]
-                         else if(PC[31:2] == cache[3][62:33]) begin
-                            if (cache[3][32] == 1'b1) begin
-                                        HitWrite <= 1;
-                                        Data_Cache <= cache[3][31:0];
-                                        CNT_HIT <= CNT_HIT+1;
-                                end
-                             else begin 
-                                HitWrite <= 0;
-                                CNT_MISS <= CNT_MISS +1;
-                                Data_Cache <= 32'd0;
-                                end
-                         end
+                else if(cache[3][32] == 1'b1) begin
+                    if (PC[31:2] == cache[3][62:33]) begin
+                        HitWrite <= 1;
+                        Data_Cache <= cache[3][31:0];
+                        CNT_HIT <= CNT_HIT+1;
+                    end
+                end
                 //Cache[4]
-                         else if(PC[31:2] == cache[4][62:33]) begin
-                             if (cache[4][32] == 1'b1) begin
-                                        HitWrite <= 1;
-                                         Data_Cache <= cache[4][31:0];
-                                        CNT_HIT <= CNT_HIT+1;
-                                end
-                            else begin 
-                                HitWrite <= 0;
-                                CNT_MISS <= CNT_MISS +1;
-                                Data_Cache <= 32'd0;
-                                end
-                       end           
+                else if(cache[4][32] == 1'b1) begin
+                    if (PC[31:2] == cache[4][62:33]) begin
+                        HitWrite <= 1;
+                        Data_Cache <= cache[4][31:0];
+                        CNT_HIT <= CNT_HIT+1;
+                    end
+                end        
                 //Cache[5]
-                       else if(PC[31:2] == cache[5][62:33]) begin
-                           if (cache[5][32] == 1'b1) begin
-                                        HitWrite <= 1;
-                                        Data_Cache <= cache[5][31:0];
-                                        CNT_HIT <= CNT_HIT+1;
-                                end
-                            else begin 
-                                HitWrite <= 0;
-                                CNT_MISS <= CNT_MISS +1;
-                                Data_Cache <= 32'd0;
-                                end
-                      end       
+                else if(cache[5][32] == 1'b1) begin
+                    if (PC[31:2] == cache[5][62:33]) begin
+                        HitWrite <= 1;
+                        Data_Cache <= cache[5][31:0];
+                        CNT_HIT <= CNT_HIT+1;
+                    end
+                end      
                 //Cache[6]
-                      else if(PC[31:2] == cache[6][62:33]) begin
-                            if (cache[6][32] == 1'b1) begin
-                                        HitWrite <= 1;
-                                        Data_Cache <= cache[6][31:0];
-                                        CNT_HIT <= CNT_HIT+1;
-                                end
-                         else begin 
-                                HitWrite <= 0;
-                                CNT_MISS <= CNT_MISS +1;
-                                Data_Cache <= 32'd0;
-                                end
-                    end      
+                else if(cache[6][32] == 1'b1) begin
+                    if (PC[31:2] == cache[6][62:33]) begin
+                        HitWrite <= 1;
+                        Data_Cache <= cache[6][31:0];
+                        CNT_HIT <= CNT_HIT+1;
+                    end
+                end
                 //Cache[7]
-                    else if(PC[31:2] == cache[7][62:33]) begin
-                        if (cache[7][32] == 1'b1) begin
-                                        HitWrite <= 1;
-                                        Data_Cache <= cache[7][31:0];
-                                        CNT_HIT <= CNT_HIT+1;
-                                end
-                         else begin 
-                                HitWrite <= 0;
-                                CNT_MISS <= CNT_MISS +1;
-                                Data_Cache <= 32'd0;
-                                end
-                    end      
+                else if(cache[7][32] == 1'b1) begin
+                    if (PC[31:2] == cache[7][62:33]) begin
+                        HitWrite <= 1;
+                        Data_Cache <= cache[7][31:0];
+                        CNT_HIT <= CNT_HIT+1;
+                    end
+                end     
                  //ELSE
                     else begin 
                          HitWrite <= 0;
