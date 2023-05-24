@@ -51,30 +51,20 @@ module Cache_Fully(CLK, RESET, PC, Access_MM, Data_MM, HitWrite, Data_Cache, CNT
             end
             else if (!Access_MM) begin
                 //Cache[0]
-                        if(PC[31:2] == cache[0][62:33]) begin
-                            if (cache[1][32] == 1'b1) begin
+                        if(cache[0][32] == 1'b1) begin
+                            if (PC[31:2] == cache[0][62:33]) begin
                                         HitWrite <= 1;
                                         Data_Cache <= cache[0][31:0];
                                         CNT_HIT <= CNT_HIT+1;
-                                end
-                             else begin 
-                                HitWrite <= 0;
-                                CNT_MISS <= CNT_MISS +1;
-                                Data_Cache <= 32'd0;
-                                end
-                         end
+                            end
+                        end
                 //Cache[1]
-                         else if(PC[31:2] == cache[1][62:33]) begin
-                             if (cache[1][32] == 1'b1) begin
+                        else if(cache[1][32] == 1'b1) begin
+                             if (PC[31:2] == cache[1][62:33]) begin
                                         HitWrite <= 1;
                                         Data_Cache <= cache[1][31:0];
                                         CNT_HIT <= CNT_HIT+1;
-                                end
-                             else begin 
-                                HitWrite <= 0;
-                                CNT_MISS <= CNT_MISS +1;
-                                Data_Cache <= 32'd0;
-                                end
+                             end
                          end
                 //Cache[2]
                          else if(PC[31:2] == cache[2][62:33]) begin
