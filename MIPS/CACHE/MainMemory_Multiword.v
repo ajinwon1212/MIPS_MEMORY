@@ -30,8 +30,8 @@ module MainMemory (CLK, RESET, PC, Access_MM, Data_MM);
 		
 	end
 
-  assign Data_MM[63:32] = (Access_MM==1'b1) ? inst_mem[(PC>>3)<<1] : 32'd0 ;	
-  assign Data_MM[31:0] = (Access_MM==1'b1) ? inst_mem[((PC>>2)<<1)+1] : 32'd0 ;	
+  assign Data_MM[63:32] = (Access_MM==1'b1) ? inst_mem[(PC>>3)<<1] : 32'd0 ;
+  assign Data_MM[31:0] = (Access_MM==1'b1) ? inst_mem[((PC>>3)<<1)+1] : 32'd0 ;	
 	
 
 endmodule
