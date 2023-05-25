@@ -30,7 +30,7 @@ module Cache_TB;
                 .Access_MM(Access_MM),          //IN
                 .Data_MM(Data_MM),              //IN
                 .HitWrite(HitWrite),            //OUT
-                .Data_Cache(IF_Instruction),    //OUT
+                .Data_Cache(Data_Cache),    //OUT
                 .CNT_HIT(CNT_HIT),              //OUT
                 .CNT_MISS(CNT_MISS),            //OUT
 		.CCLK(),			//OUT
