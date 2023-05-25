@@ -42,12 +42,12 @@ module Cache__Fully_Random(CLK, RESET, PC, Access_MM, Data_MM, HitWrite, Data_Ca
                     hit = 1;
                     Data_Cache <= cache[i][31:0];
                     CNT_HIT <= CNT_HIT + 1;
-                    break;
+                    // break;
                 end
             end
             
             if(!hit && Access_MM) begin
-                rand_num = $random % 8;
+                rand_num = $urandom % 8;
                 cache[rand_num][32] <= 1'b1; // Valid =1
                 cache[rand_num][31:0] <= Data_MM; // Data
                 cache[rand_num][62:33] <= PC[31:2]; // Tag
@@ -55,6 +55,11 @@ module Cache__Fully_Random(CLK, RESET, PC, Access_MM, Data_MM, HitWrite, Data_Ca
                 CNT_MISS <= CNT_MISS + 1;
             end
         end
+    end
+
+    always @ (hit)
+    begin 
+        HitWrite <= hit;
     end
 
 endmodule

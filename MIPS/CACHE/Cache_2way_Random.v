@@ -45,7 +45,7 @@ module Cache_2way_Random(CLK, RESET, PC, set, Access_MM, Data_MM, HitWrite, Data
         end
         else begin
         if(Access_MM) begin
-            random = $random % 2; // Generate random number, 0 or 1
+            random = $urandom % 2; // Generate random number, 0 or 1
 
             if(random == 0) begin // Replace Cache1 
                     cache1[set][32] <= 1'b1; //Valid     
