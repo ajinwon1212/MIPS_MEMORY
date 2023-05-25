@@ -23,7 +23,7 @@ module Cache_TB;
 
 
         Cache_Direct Direct(
-                .CLK(PCLK),                     //IN
+                .CLK(CLK),                     //IN
                 .RESET(RESET),                  //IN
                 .PC(PC),                        //IN
 		.index(PC[4:2]),		//IN
