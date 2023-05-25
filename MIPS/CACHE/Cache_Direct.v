@@ -9,7 +9,7 @@
 
 //module cache_memory(clk,address,read,dataIn,dataOut,hit);
 module Cache_Direct(CLK, RESET, PC, index, Access_MM, Data_MM, HitWrite, Data_Cache, CNT_HIT, CNT_MISS
-,CONT);
+,CCLK,CONT);
 
 	input CLK;
 	input RESET;
@@ -22,6 +22,7 @@ module Cache_Direct(CLK, RESET, PC, index, Access_MM, Data_MM, HitWrite, Data_Ca
 	output reg [31:0] Data_Cache;
 	output reg [19:0] CNT_HIT, CNT_MISS; //Counter for Checking
 	//output [60:0] CACHE;
+	output reg CCLK;
 	output reg [1:0] CONT;
 
 	//output reg [2:0] index;
@@ -44,7 +45,8 @@ module Cache_Direct(CLK, RESET, PC, index, Access_MM, Data_MM, HitWrite, Data_Ca
 			cache[7] <= 60'd0;
 			CNT_HIT <= 20'd0;
 			CNT_MISS <= 20'd0;
-			HitWrite <= 1'b1; 
+			HitWrite <= 1'b1;
+			CCLK <= 1'b0; 
         	end
         	else begin
 			if(Access_MM) begin
@@ -80,4 +82,7 @@ module Cache_Direct(CLK, RESET, PC, index, Access_MM, Data_MM, HitWrite, Data_Ca
 		end
 	end
 
+always@(CLK) begin CCLK <= (!CCLK); end
+
 endmodule
+
