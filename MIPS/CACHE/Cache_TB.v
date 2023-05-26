@@ -121,7 +121,8 @@ module Cache_TB;
 		.HitWrite(HitWrite_6), 		//OUT
 		.Data_Cache(Data_Cache_6), 	//OUT
 		.CNT_HIT(CNT_HIT_6), 		//OUT
-		.CNT_MISS(CNT_MISS_6)		//OUT
+		.CNT_MISS(CNT_MISS_6),		//OUT
+		.rand_num()
 	);
 
 
