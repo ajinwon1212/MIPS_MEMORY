@@ -34,6 +34,8 @@ module Cache_Direct(CLK, RESET, PC, index, Access_MM, Data_MM, HitWrite, Data_Ca
 //----------------------------------------
 	//Data: [31:0], Valid: [32], Tag: [59:33]
 
+	reg [31:0] PC_REG;
+	
 	always@(posedge CLK, posedge RESET)
 	begin
 		if (RESET) begin
@@ -81,8 +83,10 @@ module Cache_Direct(CLK, RESET, PC, index, Access_MM, Data_MM, HitWrite, Data_Ca
 			CNT_MISS <= 20'd0;
 			HitWrite <= 1'b1;
 			CCLK <= 1'b0; 
+			PC_REG <= 31'd0;
         	end
         	else begin
+			PC_REG <= PC;
 			if(Access_MM) begin
 				cache[index][32] <= 1'b1; //Valid =1
 				cache[index][31:0] <= Data_MM;
@@ -97,6 +101,7 @@ module Cache_Direct(CLK, RESET, PC, index, Access_MM, Data_MM, HitWrite, Data_Ca
 				Data_Cache <= Data_MM;
 				HitWrite <= 1'b1;
 				CONT <= 2'd0;
+				if (PC != PC_REG) CNT_MISS <= CNT_MISS +1;
 			end
 			else if (!Access_MM) begin
 				if(cache[index][32] == 1'b0) begin
