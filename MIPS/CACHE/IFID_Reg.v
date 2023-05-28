@@ -26,16 +26,16 @@ begin
 	end
 	else
 	begin
-		//if (IF_Flush == 1'b1)
-		//begin
-		//	ID_Instruction <= 32'b0;
-		//	id_pc_4 <= 32'b0;
-		//	flush <= 1'b1;
-		//	TYPE <= 3'd2;
-		//end
+		if (IF_Flush == 1'b1)
+		begin
+			ID_Instruction <= 32'b0;
+			id_pc_4 <= 32'b0;
+			flush <= 1'b1;
+			TYPE <= 3'd2;
+		end
 		//else
 		//begin
-			if (IFIDWrite == 1'b1)
+			else if (IFIDWrite == 1'b1)
 			begin
 				ID_Instruction <= IF_Instruction;
 				id_pc_4 <= IF_PC_4;

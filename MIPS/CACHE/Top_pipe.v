@@ -1,13 +1,13 @@
-module Top_pipe_CACHE_1(CLK, RESET,
+module Top_pipe(CLK, RESET,
 PC, PCWrite, PC_next, IF_Instruction, IFIDWrite, IF_Flush, IF_PC_4, JUMP_Addr, BTB_Addr,
 ID_PC_4, ID_Instruction, ID_RS_data, ID_RT_data, FW_sig_ID_1, FW_sig_ID_2, ID_RS_DATA, ID_RT_DATA, 
 Hazard_Ctrl, Branch, Jump, RegDst,
+//CONT_1, CONT_2a, CONT_2b, DATA_1a, DATA_1b, DATA_2a, DATA_2b,
 CONT_1, CONT_2a, CONT_2b, DATA_1a, DATA_2a,
 EX_PC_4, WB_MEM_EX, EX_Opcode, EX_RS_Data, EX_RT_Data, EX_Sign_extend, FW_sig_EX_1, FW_sig_EX_2, FW_sig_EX_3, EX_RS_DATA, EX_RT_DATA, EX_RT_Data_FW,
 ALU_result, HI, LO, EX_ALU_RESULT,
 MEM_PC_4, MEM_RD, WB_MEM, MEM_Opcode, MEM_ALU_RESULT, MEM_RD_DATA, MEM_RT_DATA,
-WB_PC_4, WB_RD, WB, WB_ALU_RESULT, WB_RD_Data, WB_RD_DATA,
-PCWRITE_JUMP,HitWrite, Access_MM, Data_MM, CNT_HIT, CNT_MISS, CONT, TYPE, PCLK, CCLK 
+WB_PC_4, WB_RD, WB, WB_ALU_RESULT, WB_RD_Data, WB_RD_DATA 
 );
  
 
@@ -23,7 +23,6 @@ PCWRITE_JUMP,HitWrite, Access_MM, Data_MM, CNT_HIT, CNT_MISS, CONT, TYPE, PCLK, 
 	output wire [31:0] PC;
 
 	output wire [31:0] IF_Instruction;
-	//output wire [2:0] TYPE;
 
 	output wire IFIDWrite, IF_Flush;
 	output wire [31:0] ID_Instruction;
@@ -35,6 +34,8 @@ PCWRITE_JUMP,HitWrite, Access_MM, Data_MM, CNT_HIT, CNT_MISS, CONT, TYPE, PCLK, 
 	output wire [1:0] Jump;
 	output wire Hazard_Ctrl;
 	
+	//This signal should be deleted after test
+	//output wire CONT_1, CONT_2a, CONT_2b, DATA_1a, DATA_1b, DATA_2a, DATA_2b;
 	output wire CONT_1, CONT_2a, CONT_2b, DATA_1a, DATA_2a;
 
 	wire [31:0] ID_Sign_extend;
@@ -96,48 +97,26 @@ PCWRITE_JUMP,HitWrite, Access_MM, Data_MM, CNT_HIT, CNT_MISS, CONT, TYPE, PCLK, 
 	output wire [31:0] WB_RD_Data;
 	output wire [31:0] WB_PC_4;
 
-	wire PCWRITE; //PCWrite || HitWrite
-	output wire PCWRITE_JUMP; //PCWRITE || IF_Flush
-	//wire IFIDWRITE; //IFIDWrite || HitWrite
-
-	output wire HitWrite;
-        output wire Access_MM;
-        output wire [31:0] Data_MM;
-        output wire [19:0] CNT_HIT, CNT_MISS;
-	output wire [1:0] CONT;
-	output wire [2:0] TYPE;
-	output wire PCLK, CCLK;
 
 	//IF__________________________________________________
 
-		MUX4to1 MUX1(
+	MUX4to1 MUX1(
 		.a(IF_PC_4),		//IN (00)
 		.b(JUMP_Addr),		//IN (01)
 		.c(BTB_Addr),		//IN (10)
-		.d(32'd0),		//IN
-		.sig({Branch, JUMP}),	//IN 
+		.d(32'd0),
+		.sig({Branch, JUMP}),	//IN @@@@@@@@@@@@@@@@@@@@@@
 		.out(PC_next)		//OUT
 	);
-	
-	and_gate AND1(
-		.a(PCWrite),
-		.b(HitWrite),
-		.out(PCWRITE)	
-	);
-	or_gate OR0(
-		.a(PCWRITE),
-		.b(IF_Flush),
-		.out(PCWRITE_JUMP)
-	);
+
 
 
 	PC PC_top(
 		.CLK(CLK),		//IN
 		.RESET(RESET),		//IN
-		.PCWrite(PCWRITE_JUMP),	//IN @@@@
+		.PCWrite(PCWrite),	//IN
 		.PC_next(PC_next),	//IN
-		.PC(PC),		//OUT
-		.PCLK(PCLK)		//OUT @@@
+		.PC(PC)			//OUT
 	);
 
 	ADD ADD1(
@@ -146,68 +125,29 @@ PCWRITE_JUMP,HitWrite, Access_MM, Data_MM, CNT_HIT, CNT_MISS, CONT, TYPE, PCLK, 
 		.out(IF_PC_4)	//OUT
 	);
 
-        Cache_Direct Direct(
-                .CLK(PCLK),                     //IN
-                .RESET(RESET),                  //IN
-                .PC(PC),                        //IN
-//size8
-		.index(PC[4:2]),		//IN
-//size16
-		//.index(PC[5:2]),		//IN
-//size32
-		//.index(PC[6:2]),		//IN
-                .Access_MM(Access_MM),          //IN
-                .Data_MM(Data_MM),              //IN
-                .HitWrite(HitWrite),            //OUT
-                .Data_Cache(IF_Instruction),    //OUT
-                .CNT_HIT(CNT_HIT),              //OUT
-                .CNT_MISS(CNT_MISS),            //OUT
-		.CCLK(CCLK),			//OUT
-		.CONT(CONT)			//OUT
-		//.INDEX(INDEX),
-		//.VALID(VALID)
-        );
-        MainMemory MM(
-                .CLK(CLK),                      //IN
-                .RESET(RESET),                  //IN
-                .PC(PC),                        //IN
-                .Access_MM(Access_MM),          //IN
-                .Data_MM(Data_MM)               //IN
-        );
 
-        cache_controller Cache_CONT(
-                .CLK(CLK),                      //IN
+
+	Instruction_memory Inst_Mem(
+		.CLK(CLK),			//IN
 		.RESET(RESET),			//IN
-                .HitWrite(HitWrite),            //IN
-                .Access_MM(Access_MM)           //OUT
-        ); 
+		.PC(PC),			//IN
+		.IF_Instruction(IF_Instruction)	//OUT
+	);
 
-//	Instruction_memory Inst_Mem(
-//		.CLK(CLK),			//IN
-//		.RESET(RESET),			//IN
-//		.PC(PC),			//IN
-//		.IF_Instruction(IF_Instruction)	//OUT
-//	);
 
-	//and_gate AND2(
-	//	.a(IFIDWrite),
-		//.b(HitWrite),
-		//.out(IFIDWRITE)	
-	//);
 
 	IFID_Reg IFID(
-		.CLK(CLK),				//IN @@@
+		.CLK(CLK),				//IN
 		.RESET(RESET),				//IN
-		.CCLK(CCLK),				//IN @@@@@
-		.IFIDWrite(IFIDWrite),			//IN @@@@
+		.IFIDWrite(IFIDWrite),			//IN @@
 		.IF_Instruction(IF_Instruction),	//IN
 		.IF_Flush(IF_Flush),			//IN
 		.IF_PC_4(IF_PC_4),			//IN
-		.ID_INSTRUCTION(ID_Instruction),	//OUT
+		.ID_Instruction(ID_Instruction),	//OUT
 		.ID_PC_4(ID_PC_4),			//OUT
-		.FLUSH(FLUSH),				//OUT
-		.TYPE(TYPE)
+		.FLUSH(FLUSH)
 	);
+
 	//ID__________________________________________________
 
 	Hazard_detection_unit Hazard(

@@ -1,4 +1,4 @@
-module Top_pipe_CACHE_1(CLK, RESET,
+module Top_pipe_CACHE_2(CLK, RESET,
 PC, PCWrite, PC_next, IF_Instruction, IFIDWrite, IF_Flush, IF_PC_4, JUMP_Addr, BTB_Addr,
 ID_PC_4, ID_Instruction, ID_RS_data, ID_RT_data, FW_sig_ID_1, FW_sig_ID_2, ID_RS_DATA, ID_RT_DATA, 
 Hazard_Ctrl, Branch, Jump, RegDst,
@@ -7,7 +7,7 @@ EX_PC_4, WB_MEM_EX, EX_Opcode, EX_RS_Data, EX_RT_Data, EX_Sign_extend, FW_sig_EX
 ALU_result, HI, LO, EX_ALU_RESULT,
 MEM_PC_4, MEM_RD, WB_MEM, MEM_Opcode, MEM_ALU_RESULT, MEM_RD_DATA, MEM_RT_DATA,
 WB_PC_4, WB_RD, WB, WB_ALU_RESULT, WB_RD_Data, WB_RD_DATA,
-PCWRITE_JUMP,HitWrite, Access_MM, Data_MM, CNT_HIT, CNT_MISS, CONT, TYPE, PCLK, CCLK 
+PCWRITE_JUMP, HitWrite, Access_MM, Data_MM, CNT_HIT, CNT_MISS, CONT, TYPE, PCLK, CCLK 
 );
  
 
@@ -102,7 +102,7 @@ PCWRITE_JUMP,HitWrite, Access_MM, Data_MM, CNT_HIT, CNT_MISS, CONT, TYPE, PCLK, 
 
 	output wire HitWrite;
         output wire Access_MM;
-        output wire [31:0] Data_MM;
+        output wire [63:0] Data_MM;
         output wire [19:0] CNT_HIT, CNT_MISS;
 	output wire [1:0] CONT;
 	output wire [2:0] TYPE;
@@ -146,33 +146,30 @@ PCWRITE_JUMP,HitWrite, Access_MM, Data_MM, CNT_HIT, CNT_MISS, CONT, TYPE, PCLK, 
 		.out(IF_PC_4)	//OUT
 	);
 
-        Cache_Direct Direct(
+	Cache_Direct_Multiword Direct_MULT(
                 .CLK(PCLK),                     //IN
                 .RESET(RESET),                  //IN
                 .PC(PC),                        //IN
-//size8
-		.index(PC[4:2]),		//IN
-//size16
-		//.index(PC[5:2]),		//IN
-//size32
-		//.index(PC[6:2]),		//IN
+		.index(PC[4:3]),		//IN Size8
+		//.index(PC[5:3]),		//IN Size16
+		//.index(PC[6:3]),		//IN Size32
+		.block_offset(PC[2]),		//IN
                 .Access_MM(Access_MM),          //IN
                 .Data_MM(Data_MM),              //IN
                 .HitWrite(HitWrite),            //OUT
-                .Data_Cache(IF_Instruction),    //OUT
+                .Data_Cache(IF_Instruction),  	//OUT
                 .CNT_HIT(CNT_HIT),              //OUT
-                .CNT_MISS(CNT_MISS),            //OUT
+                .CNT_MISS(CNT_MISS),            //OUT	
 		.CCLK(CCLK),			//OUT
-		.CONT(CONT)			//OUT
-		//.INDEX(INDEX),
-		//.VALID(VALID)
-        );
-        MainMemory MM(
+		.CONT()
+	);
+
+        MainMemory_Multiword MM_MULT(
                 .CLK(CLK),                      //IN
                 .RESET(RESET),                  //IN
                 .PC(PC),                        //IN
                 .Access_MM(Access_MM),          //IN
-                .Data_MM(Data_MM)               //IN
+                .Data_MM(Data_MM)               //OUT
         );
 
         cache_controller Cache_CONT(
