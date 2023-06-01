@@ -14,8 +14,8 @@ module MainMemory_Multiword (CLK, RESET, PC, Access_MM, Data_MM);
 	initial
 	begin
 		//$readmemb("fact.txt",inst_mem);
-		//$readmemb("code.txt",inst_mem);
-		$readmemb("prime.txt",inst_mem);
+		$readmemb("code.txt",inst_mem);
+		//$readmemb("prime.txt",inst_mem);
 	end
 
 	always@(posedge CLK, posedge RESET)
@@ -27,9 +27,9 @@ module MainMemory_Multiword (CLK, RESET, PC, Access_MM, Data_MM);
 
 		else 
 		begin 
-			//$readmemb("code.txt",inst_mem, 0, 127); 
+			$readmemb("code.txt",inst_mem, 0, 127); 
 			//$readmemb("fact.txt",inst_mem, 0, 127); 
-			$readmemb("prime.txt",inst_mem, 0, 127); 
+			//$readmemb("prime.txt",inst_mem, 0, 127); 
 		end
 		
 	end
